@@ -42,7 +42,7 @@ LOCAL_AAPT_FLAGS := --auto-add-overlay \
     --extra-packages me.zhanghai.android.materialprogressbar
 
 LOCAL_JAR_EXCLUDE_FILES := none
-LOCAL_PROGUARD_FLAG_FILES := proguard-rules.pro
+LOCAL_PROGUARD_ENABLED := disabled
 LOCAL_SRC_FILES += $(call all-java-files-under, java)
 LOCAL_PACKAGE_NAME := MatLog
 LOCAL_SDK_VERSION := current
