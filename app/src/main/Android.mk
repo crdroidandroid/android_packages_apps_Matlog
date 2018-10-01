@@ -26,66 +26,20 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-v13 \
     android-support-annotations
 
-LOCAL_STATIC_JAVA_AAR_LIBRARIES := material-dialogs-core-matlog-target \
+# AAR libraries
+LOCAL_STATIC_ANDROID_LIBRARIES += material-dialogs-core-matlog-target \
     material-dialogs-commons-matlog-target \
     material-progressbar-library-matlog-target
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
-LOCAL_RESOURCE_DIR += $(foreach lib, $(LOCAL_STATIC_JAVA_AAR_LIBRARIES),\
-  $(call intermediates-dir-for,JAVA_LIBRARIES,$(lib),,COMMON)/aar/res)
 
 LOCAL_USE_AAPT2 := true
 
-LOCAL_AAPT_FLAGS := --auto-add-overlay \
-    --extra-packages com.afollestad.materialdialogs \
-    --extra-packages com.afollestad.materialdialogs.commons \
-    --extra-packages me.zhanghai.android.materialprogressbar
-
 LOCAL_JAR_EXCLUDE_FILES := none
-LOCAL_PROGUARD_ENABLED := disabled
+LOCAL_PROGUARD_FLAG_FILES := proguard-rules.pro
 LOCAL_SRC_FILES += $(call all-java-files-under, java)
 LOCAL_PACKAGE_NAME := MatLog
 LOCAL_SDK_VERSION := current
 LOCAL_MODULE_TAGS := optional
 LOCAL_PRIVILEGED_MODULE := true
 include $(BUILD_PACKAGE)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE_TAGS := optional
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := \
-    material-dialogs-core-matlog:libs/aar/material-dialogs-core-0.9.4.2.aar \
-    material-dialogs-commons-matlog:libs/aar/material-dialogs-commons-0.9.4.2.aar \
-    material-progressbar-library-matlog:libs/aar/material-progressbar-library-1.3.0.aar
-
-include $(BUILD_MULTI_PREBUILT)
-
-# Enumerate target prebuilts to avoid linker warnings
-include $(CLEAR_VARS)
-
-LOCAL_MODULE_CLASS := JAVA_LIBRARIES
-LOCAL_MODULE := material-dialogs-core-matlog-target
-LOCAL_SRC_FILES := libs/aar/material-dialogs-core-0.9.4.2.aar
-LOCAL_UNINSTALLABLE_MODULE := true
-LOCAL_SDK_VERSION := current
-
-include $(BUILD_PREBUILT)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE_CLASS := JAVA_LIBRARIES
-LOCAL_MODULE := material-dialogs-commons-matlog-target
-LOCAL_SRC_FILES := libs/aar/material-dialogs-commons-0.9.4.2.aar
-LOCAL_UNINSTALLABLE_MODULE := true
-LOCAL_SDK_VERSION := current
-
-include $(BUILD_PREBUILT)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE_CLASS := JAVA_LIBRARIES
-LOCAL_MODULE := material-progressbar-library-matlog-target
-LOCAL_SRC_FILES := libs/aar/material-progressbar-library-1.3.0.aar
-LOCAL_UNINSTALLABLE_MODULE := true
-LOCAL_SDK_VERSION := current
-
-include $(BUILD_PREBUILT)
