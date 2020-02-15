@@ -19,7 +19,7 @@ android_library_import {
 	"android-support-v7-appcompat",
 	"android-support-annotations",
 	"android-support-v7-recyclerview",
-	"material-dialogs-core-target"
+	"material-dialogs-core-matlog-target"
     ],
 }
 
