@@ -1,7 +1,6 @@
 package com.pluscubed.logcat.data;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,6 +15,8 @@ import com.pluscubed.logcat.db.FilterItem;
 import org.omnirom.logcat.R;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 public class FilterAdapter extends ArrayAdapter<FilterItem> {
 

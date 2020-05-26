@@ -18,18 +18,12 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_STATIC_ANDROID_LIBRARIES := \
-    $(ANDROID_SUPPORT_DESIGN_TARGETS) \
-    android-support-v4 \
-    android-support-v7-appcompat \
-    android-support-v7-recyclerview \
-    android-support-v13 \
-    android-support-annotations
-
-# AAR libraries
-LOCAL_STATIC_ANDROID_LIBRARIES += material-dialogs-core-matlog-target \
-    material-dialogs-commons-matlog-target \
-    material-progressbar-library-matlog-target
+LOCAL_STATIC_ANDROID_LIBRARIES := androidx.core_core \
+    androidx.annotation_annotation \
+    androidx.appcompat_appcompat \
+    androidx.recyclerview_recyclerview \
+    androidx.preference_preference \
+    com.google.android.material_material
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 

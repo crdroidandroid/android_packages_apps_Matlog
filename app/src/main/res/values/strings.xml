@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- non-translateable strings-->
 
@@ -22,7 +22,7 @@
     <string name="log_level_wtf">What a Terrible Failure</string>
 
     <string name="pref_about">about</string>
-    <string name="pref_buffer">buffer</string>
+    <string name="pref_buffer">bufferSet</string>
     <string name="pref_buffer_choice_events_value">events</string>
     <string name="pref_buffer_choice_main_value">main</string>
     <string name="pref_buffer_choice_radio_value">radio</string>
@@ -63,8 +63,8 @@
     <string name="add_filter_ellipsis">Add Filter…</string>
 
     <plurals name="are_you_sure">
-        <item quantity="one">%d file will be deleted</item>
-        <item quantity="other">%d files will be deleted</item>
+        <item quantity="one"><xliff:g id="files" example="1">%1$d</xliff:g> file will be deleted</item>
+        <item quantity="other"><xliff:g id="files" example="1">%1$d</xliff:g> files will be deleted</item>
     </plurals>
 
     <string name="as_attachment">As Attachment</string>
@@ -93,8 +93,8 @@
     <string name="enter_good_filename">Please enter a valid filename.</string>
 
     <plurals name="files_deleted">
-        <item quantity="one">%d file be deleted</item>
-        <item quantity="other">%d files deleted</item>
+        <item quantity="one"><xliff:g id="files" example="1">%1$d</xliff:g> file be deleted</item>
+        <item quantity="other"><xliff:g id="files" example="1">%1$d</xliff:g> files deleted</item>
     </plurals>
 
     <string name="filter_choice">Search by</string>
@@ -201,8 +201,8 @@
     <string name="toast_invalid_selection">Invalid selection.  Please try again.</string>
 
     <plurals name="toast_log_truncated">
-        <item quantity="one">Log too large; showing last %d line.</item>
-        <item quantity="other">Log too large; showing last %d lines.</item>
+        <item quantity="one">Log too large; showing last <xliff:g id="lines" example="1">%1$d</xliff:g> line.</item>
+        <item quantity="other">Log too large; showing last <xliff:g id="lines" example="1">%1$d</xliff:g> lines.</item>
     </plurals>
 
     <string name="toast_no_root">Could not obtain root.  You will only see MatLog\'s own logs.</string>
@@ -221,6 +221,7 @@
     <string name="clear">Clear</string>
     <string name="expand_all">Expand All</string>
     <string name="collapse_all">Collapse All</string>
+    <string name="expand_or_collapse_all">Expand/Collapse all</string>
     <string name="pause_unpause">Play/Pause</string>
     <string name="undo">Undo</string>
     <string name="no_logs_warning_title">Can\'t access system logs</string>
@@ -237,4 +238,5 @@
     <string name="pref_include_dmesg" translatable="false">dmesg</string>
     <string name="save_log_zip">Save zip</string>
     <string name="share_log">Share</string>
+    <string name="channel_name">Record log</string>
 </resources>

@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -137,11 +138,19 @@ public class SaveLogHelper {
      *
      * @return
      */
-    public static List<String> getLogFilenames() {
+    public static List<String> getLogFilenames(final boolean textFilesOnly) {
 
         File catlogDir = getSavedLogsDirectory();
 
-        File[] filesArray = catlogDir.listFiles();
+        File[] filesArray = catlogDir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if (textFilesOnly) {
+                    return name.endsWith(".txt");
+                }
+                return true;
+            }
+        });
 
         if (filesArray == null) {
             return Collections.emptyList();

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class LogcatReaderLoader implements Parcelable {
 
@@ -38,7 +39,7 @@ public class LogcatReaderLoader implements Parcelable {
         }
     }
 
-    private LogcatReaderLoader(List<String> buffers, boolean recordingMode) {
+    private LogcatReaderLoader(Set<String> buffers, boolean recordingMode) {
         this.recordingMode = recordingMode;
         this.multiple = buffers.size() > 1;
         for (String buffer : buffers) {
@@ -49,7 +50,7 @@ public class LogcatReaderLoader implements Parcelable {
     }
 
     public static LogcatReaderLoader create(Context context, boolean recordingMode) {
-        List<String> buffers = PreferenceHelper.getBuffers(context);
+        Set<String> buffers = PreferenceHelper.getBuffers(context);
         return new LogcatReaderLoader(buffers, recordingMode);
     }
 

@@ -36,33 +36,6 @@ public class UpdateHelper {
 
     private enum Update {
 
-        // update to change "all_combined" to a comma-separation of all three buffers
-        Update1(new Function<Context, Boolean>() {
-
-            @Override
-            public Boolean apply(Context context) {
-                SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-                String bufferPref = sharedPrefs.getString(
-                        context.getString(R.string.pref_buffer), context.getString(R.string.pref_buffer_choice_main));
-
-                return bufferPref.equals("all_combined");
-            }
-        }, new Callback<Context>() {
-
-            @Override
-            public void onCallback(Context context) {
-                SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-                String bufferPref = sharedPrefs.getString(
-                        context.getString(R.string.pref_buffer), context.getString(R.string.pref_buffer_choice_main));
-
-                if (bufferPref.equals("all_combined")) {
-                    Editor editor = sharedPrefs.edit();
-                    editor.putString(context.getString(R.string.pref_buffer), "main,events,radio");
-                    editor.apply();
-                }
-            }
-        }),
-
         // update to move saved logs from /sdcard/catlog_saved_logs to /sdcard/catlog/saved_logs
         Update2(new Function<Context, Boolean>() {
 

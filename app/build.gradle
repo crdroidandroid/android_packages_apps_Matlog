@@ -1,79 +1,40 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.22.2'
-    }
-}
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-    maven { url "https://jitpack.io" }
-}
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "org.omnirom.logcat"
-        minSdkVersion 16
-        targetSdkVersion 26
+        minSdkVersion 26
+        targetSdkVersion 29
         versionName '1.1.1'
         versionCode 6
 
         testApplicationId "com.pluscubed.matlog.test"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-        manifestPlaceholders = [appName: "@string/app_name"]
-
-        vectorDrawables.useSupportLibrary = true
-    }
-
-    if (project.hasProperty("RELEASE_STORE_FILE")) {
-        signingConfigs {
-            release {
-                storeFile file(RELEASE_STORE_FILE)
-                storePassword RELEASE_STORE_PASSWORD
-                keyAlias RELEASE_KEY_ALIAS_MATLOG
-                keyPassword RELEASE_KEY_PASSWORD_MATLOG
-            }
-        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if (project.hasProperty("RELEASE_STORE_FILE")) {
-                signingConfig signingConfigs.release
-            } else {
-                signingConfig signingConfigs.debug
-            }
         }
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix '-DEBUG'
-            manifestPlaceholders = [appName: "MatLog DEBUG"]
-            ext.enableCrashlytics = false
         }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
     }
 }
 
-def supportLibrariesVersion = "26.0.0-beta2"
-
 dependencies {
-    compile "com.android.support:appcompat-v7:$supportLibrariesVersion"
-    compile "com.android.support:recyclerview-v7:$supportLibrariesVersion"
-    compile "com.android.support:support-annotations:$supportLibrariesVersion"
-    compile "com.android.support:design:$supportLibrariesVersion"
-    compile "com.android.support:support-v13:$supportLibrariesVersion"
-
-    compile 'com.afollestad.material-dialogs:commons:0.9.4.5'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.preference:preference:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
 }

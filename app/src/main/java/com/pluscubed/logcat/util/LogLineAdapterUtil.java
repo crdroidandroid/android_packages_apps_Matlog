@@ -1,13 +1,14 @@
 package com.pluscubed.logcat.util;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.pluscubed.logcat.data.ColorScheme;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 
 import org.omnirom.logcat.R;
+
+import androidx.core.content.ContextCompat;
 
 public class LogLineAdapterUtil {
 

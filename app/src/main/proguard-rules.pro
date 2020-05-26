@@ -19,6 +19,6 @@
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 
--keep class android.support.v7.widget.SearchView {*;}
+-keep class androidx.appcompat.widget.SearchView {*;}
 -keep class com.pluscubed.logcat.RecordingWidgetProvider {*;}
 -keep class me.zhanghai.android.materialprogressbar.** { *; }

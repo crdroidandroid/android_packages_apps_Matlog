@@ -1,17 +1,16 @@
 package com.pluscubed.logcat.helper;
 
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.text.Html;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import org.omnirom.logcat.R;
 import com.pluscubed.logcat.util.UtilLogger;
 
@@ -47,26 +46,18 @@ public class SuperUserHelper {
             @Override
             public void run() {
                 final String command = String.format("adb shell pm grant %s android.permission.READ_LOGS", context.getPackageName());
-                new MaterialDialog.Builder(context)
-                        .title(R.string.no_logs_warning_title)
-                        .content(Html.fromHtml(context.getString(R.string.no_logs_warning, context.getString(R.string.app_name), command)))
-                        .positiveText(android.R.string.ok)
-                        .neutralText(R.string.copy_command)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                new AlertDialog.Builder(context)
+                        .setTitle(R.string.no_logs_warning_title)
+                        .setMessage(Html.fromHtml(context.getString(R.string.no_logs_warning, context.getString(R.string.app_name), command)))
+                        .setPositiveButton(android.R.string.ok, null)
+                        .setNeutralButton(R.string.copy_command, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 ((ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE))
                                         .setPrimaryClip(ClipData.newPlainText(context.getString(R.string.adb_command), command));
                                 Toast.makeText(context, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show();
                             }
                         })
-                        .autoDismiss(false)
                         .show();
             }
         });

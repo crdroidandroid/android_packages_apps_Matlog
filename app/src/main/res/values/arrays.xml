@@ -12,6 +12,10 @@
         <item>@string/pref_buffer_choice_radio_value</item>
     </string-array>
 
+    <string-array name="pref_buffer_choice_values_default">
+        <item>@string/pref_buffer_choice_main_value</item>
+    </string-array>
+
     <string-array name="pref_theme_choices_values">
         <item>@string/pref_theme_choice_dark_value</item>
         <item>@string/pref_theme_choice_light_value</item>

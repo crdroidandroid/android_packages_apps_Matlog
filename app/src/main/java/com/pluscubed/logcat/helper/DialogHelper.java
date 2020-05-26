@@ -1,10 +1,12 @@
 package com.pluscubed.logcat.helper;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,8 +17,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.pluscubed.logcat.data.FilterQueryWithLevel;
 import com.pluscubed.logcat.data.SortedFilterArrayAdapter;
 import com.pluscubed.logcat.util.ArrayUtil;
@@ -32,20 +32,20 @@ import java.util.List;
 
 public class DialogHelper {
 
+    public interface InputTextCallback {
+        void setInputText(String text);
+    }
+
     public static void startRecordingWithProgressDialog(final String filename,
                                                         final String filterQuery, final String logLevel, final Runnable onPostExecute, final Context context) {
 
-        final MaterialDialog progressDialog = new MaterialDialog.Builder(context)
-                .title(R.string.dialog_please_wait)
-                .content(R.string.dialog_initializing_recorder)
-                .progress(true, -1)
-                .build();
+        final ProgressDialog progressDialog = ProgressDialog.show(context,
+                context.getResources().getString(R.string.dialog_please_wait),
+                context.getResources().getString(R.string.dialog_initializing_recorder),
+                true, false);
 
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
 
         final Handler handler = new Handler(Looper.getMainLooper());
-        progressDialog.show();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -112,14 +112,13 @@ public class DialogHelper {
                 logLevelText));
 
         // create alertdialog for the "Filter..." button
-        new MaterialDialog.Builder(context)
-                .title(R.string.title_filter)
-                .customView(filterView, true)
-                .negativeText(android.R.string.cancel)
-                .positiveText(android.R.string.ok)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
+        new AlertDialog.Builder(context)
+                .setTitle(R.string.title_filter)
+                .setView(filterView)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         int logLevelIdx = spinner.getSelectedItemPosition();
                         String[] logLevelValues = context.getResources().getStringArray(R.array.log_levels_values);
                         String logLevelValue = logLevelValues[logLevelIdx];
@@ -130,7 +129,6 @@ public class DialogHelper {
                     }
                 })
                 .show();
-
     }
 
     public static void stopRecordingLog(Context context) {
@@ -139,23 +137,34 @@ public class DialogHelper {
 
 
     public static void showFilenameSuggestingDialog(final Context context,
-                                                    final MaterialDialog.SingleButtonCallback callback, final MaterialDialog.InputCallback inputCallback, int titleResId) {
+                                                    final Runnable negativeCallback, final InputTextCallback inputCallback, int titleResId) {
 
+        final View v = initFilenameInputDialog(context);
+        final EditText input = v.findViewById(R.id.edit_text);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(titleResId)
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        negativeCallback.run();
+                    }
+                })
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String text = input.getText().toString();
+                        inputCallback.setInputText(text);
+                    }
+                })
+                .setMessage(R.string.enter_filename)
+                .setView(v);
 
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
-        builder.title(titleResId)
-                .negativeText(android.R.string.cancel)
-                .positiveText(android.R.string.ok)
-                .content(R.string.enter_filename)
-                .input("", "", inputCallback)
-                .onAny(callback);
-
-        MaterialDialog show = builder.show();
-        initFilenameInputDialog(show);
+        AlertDialog show = builder.show();
     }
 
-    public static void initFilenameInputDialog(MaterialDialog show) {
-        final EditText editText = show.getInputEditText();
+    public static View initFilenameInputDialog(final Context context) {
+        View v = LayoutInflater.from(context).inflate(R.layout.dialog_input_text, null, false);
+        final EditText editText = v.findViewById(R.id.edit_text);
         editText.setSingleLine();
         editText.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -166,6 +175,7 @@ public class DialogHelper {
 
         // highlight everything but the .txt at the end
         editText.setSelection(0, filename.length() - 4);
+        return v;
     }
 
     public static String createLogFilename() {

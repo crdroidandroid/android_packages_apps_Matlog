@@ -1,15 +1,16 @@
 package com.pluscubed.logcat.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.pluscubed.logcat.data.FilterQueryWithLevel;
 import com.pluscubed.logcat.helper.DialogHelper;
 import com.pluscubed.logcat.helper.PreferenceHelper;
@@ -20,6 +21,8 @@ import org.omnirom.logcat.R;
 
 import java.util.Arrays;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class RecordLogDialogActivity extends AppCompatActivity {
 
@@ -65,22 +68,26 @@ public class RecordLogDialogActivity extends AppCompatActivity {
             final List<String> suggestions = Arrays.asList(getArguments().getStringArray(QUERY_SUGGESTIONS));
 
             String logFilename = DialogHelper.createLogFilename();
+            final View v = DialogHelper.initFilenameInputDialog(getActivity());
+            final EditText input = v.findViewById(R.id.edit_text);
 
             String defaultLogLevel = Character.toString(PreferenceHelper.getDefaultLogLevelPreference(getActivity()));
             final StringBuilder queryFilterText = new StringBuilder();
             final StringBuilder logLevelText = new StringBuilder(defaultLogLevel);
             final Activity activity = getActivity();
-            MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                    .title(R.string.record_log)
-                    .content(R.string.enter_filename)
-                    .input("", logFilename, new MaterialDialog.InputCallback() {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.record_log)
+                    .setMessage(R.string.enter_filename)
+                    .setView(v)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
-                            if (DialogHelper.isInvalidFilename(charSequence)) {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String inputText = input.getText().toString();
+                            if (DialogHelper.isInvalidFilename(inputText)) {
                                 Toast.makeText(getActivity(), R.string.enter_good_filename, Toast.LENGTH_SHORT).show();
                             } else {
-                                materialDialog.dismiss();
-                                String filename = charSequence.toString();
+                                String filename = inputText;
                                 Runnable runnable = new Runnable() {
                                     @Override
                                     public void run() {
@@ -92,35 +99,29 @@ public class RecordLogDialogActivity extends AppCompatActivity {
                             }
                         }
                     })
-                    .neutralText(R.string.text_filter_ellipsis)
-                    .negativeText(android.R.string.cancel)
-                    .autoDismiss(false)
-                    .onAny(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            WidgetHelper.updateWidgets(getActivity());
-                            switch (which) {
-                                case NEUTRAL:
-                                    DialogHelper.showFilterDialogForRecording(getActivity(), queryFilterText.toString(),
-                                            logLevelText.toString(), suggestions,
-                                            new Callback<FilterQueryWithLevel>() {
-                                                @Override
-                                                public void onCallback(FilterQueryWithLevel result) {
-                                                    queryFilterText.replace(0, queryFilterText.length(), result.getFilterQuery());
-                                                    logLevelText.replace(0, logLevelText.length(), result.getLogLevel());
-                                                }
-                                            });
-                                    break;
-                                case NEGATIVE:
-                                    dialog.dismiss();
-                                    getActivity().finish();
-                                    break;
-                            }
-                        }
-                    }).build();
-            //noinspection ConstantConditions
-            DialogHelper.initFilenameInputDialog(dialog);
+                    .setNeutralButton(R.string.text_filter_ellipsis, null);
 
+            final AlertDialog dialog = builder.create();
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface d) {
+                    Button neutral = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+                    neutral.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            DialogHelper.showFilterDialogForRecording(getActivity(), queryFilterText.toString(),
+                                    logLevelText.toString(), suggestions,
+                                    new Callback<FilterQueryWithLevel>() {
+                                        @Override
+                                        public void onCallback(FilterQueryWithLevel result) {
+                                            queryFilterText.replace(0, queryFilterText.length(), result.getFilterQuery());
+                                            logLevelText.replace(0, logLevelText.length(), result.getLogLevel());
+                                        }
+                                    });
+                        }
+                    });
+                }
+            });
             return dialog;
         }
     }

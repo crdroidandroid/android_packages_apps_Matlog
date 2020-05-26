@@ -8,13 +8,14 @@ import android.preference.PreferenceManager;
 import com.pluscubed.logcat.data.ColorScheme;
 import com.pluscubed.logcat.util.StringUtil;
 import com.pluscubed.logcat.util.UtilLogger;
-import com.pluscubed.logcat.widget.MultipleChoicePreference;
 
 import org.omnirom.logcat.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PreferenceHelper {
 
@@ -25,6 +26,7 @@ public class PreferenceHelper {
     private static ColorScheme colorScheme = null;
     private static int displayLimit = -1;
     private static UtilLogger log = new UtilLogger(PreferenceHelper.class);
+    public static final String DELIMITER = ",";
 
     public static void clearCache() {
         defaultLogLevel = null;
@@ -241,53 +243,14 @@ public class PreferenceHelper {
 
     }
 
-    public static void setColorScheme(Context context, ColorScheme colorScheme) {
-
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Editor editor = sharedPrefs.edit();
-
-        editor.putString(context.getString(R.string.pref_theme), context.getText(colorScheme.getNameResource()).toString());
-
-        editor.apply();
-
-    }
-
-    public static List<String> getBuffers(Context context) {
+    public static Set<String> getBuffers(Context context) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String defaultValue = context.getString(R.string.pref_buffer_choice_main_value);
+        Set<String> defaultValue = new HashSet<String>();
+        defaultValue.add(context.getString(R.string.pref_buffer_choice_main_value));
         String key = context.getString(R.string.pref_buffer);
 
-        String value = sharedPrefs.getString(key, defaultValue);
-
-        return Arrays.asList(StringUtil.split(value, MultipleChoicePreference.DELIMITER));
-    }
-
-    public static List<String> getBufferNames(Context context) {
-        List<String> buffers = getBuffers(context);
-
-        List<String> bufferNames = new ArrayList<>();
-
-        // TODO: this is inefficient - O(n^2)
-        for (String buffer : buffers) {
-            int idx = Arrays.asList(context.getResources().getStringArray(
-                    R.array.pref_buffer_choice_values)).indexOf(buffer);
-            bufferNames.add(context.getResources().getStringArray(R.array.pref_buffer_choices)[idx]);
-        }
-        return bufferNames;
-    }
-
-    public static void setBuffer(Context context, int stringResId) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        String key = context.getString(R.string.pref_buffer);
-        String value = context.getString(stringResId);
-
-        Editor editor = sharedPrefs.edit();
-
-        editor.putString(key, value);
-
-        editor.apply();
+        return sharedPrefs.getStringSet(key, defaultValue);
     }
 
     public static boolean getIncludeDeviceInfoPreference(Context context) {

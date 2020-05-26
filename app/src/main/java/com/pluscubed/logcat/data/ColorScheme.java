@@ -1,14 +1,15 @@
 package com.pluscubed.logcat.data;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
+
+import com.pluscubed.logcat.util.ArrayUtil;
 
 import org.omnirom.logcat.R;
-import com.pluscubed.logcat.util.ArrayUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.core.content.ContextCompat;
 
 public enum ColorScheme {
     Dark(R.string.pref_theme_choice_dark_value, R.color.main_background_dark,

@@ -2,6 +2,8 @@ package com.pluscubed.logcat;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,7 +12,6 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.pluscubed.logcat.data.LogLine;
@@ -31,6 +32,8 @@ import org.omnirom.logcat.R;
 import java.io.IOException;
 import java.util.Random;
 
+import androidx.core.app.NotificationCompat;
+
 /**
  * Reads logs.
  *
@@ -44,6 +47,8 @@ public class LogcatRecordingService extends IntentService {
     public static final String EXTRA_QUERY_FILTER = "filter";
     public static final String EXTRA_LEVEL = "level";
     private static final String ACTION_STOP_RECORDING = "com.pluscubed.catlog.action.STOP_RECORDING";
+    private static final String NOTIFICATION_CHANNEL_ID = "com.pluscubed.logcat.notification";
+
     private static UtilLogger log = new UtilLogger(LogcatRecordingService.class);
     private final Object lock = new Object();
     private LogcatReader mReader;
@@ -60,7 +65,7 @@ public class LogcatRecordingService extends IntentService {
     };
 
     private Handler handler;
-
+    private NotificationChannel mNotificationChannel;
 
     public LogcatRecordingService() {
         super("AppTrackerService");
@@ -71,6 +76,8 @@ public class LogcatRecordingService extends IntentService {
     public void onCreate() {
         super.onCreate();
         log.d("onCreate()");
+
+        createNotificationChannel();
 
         IntentFilter intentFilter = new IntentFilter(ACTION_STOP_RECORDING);
         intentFilter.addDataScheme(URI_SCHEME);
@@ -141,7 +148,7 @@ public class LogcatRecordingService extends IntentService {
                 0 /* no requestCode */, stopRecordingIntent, PendingIntent.FLAG_ONE_SHOT);
 
         // Set the icon, scrolling text and timestamp
-        Notification notification = new NotificationCompat.Builder(getApplicationContext())
+        Notification notification = new Notification.Builder(getApplicationContext(),NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker(tickerText)
                 .setWhen(System.currentTimeMillis())
@@ -262,4 +269,11 @@ public class LogcatRecordingService extends IntentService {
         }
     }
 
+    private void createNotificationChannel() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        CharSequence name = getString(R.string.channel_name);
+        int importance = NotificationManager.IMPORTANCE_LOW;
+        mNotificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+        notificationManager.createNotificationChannel(mNotificationChannel);
+    }
 }
