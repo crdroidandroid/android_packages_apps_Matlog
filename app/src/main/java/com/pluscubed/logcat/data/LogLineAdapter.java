@@ -247,14 +247,14 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         t.setTextColor(LogLineAdapterUtil.getForegroundColorForLogLevel(context, logLine.getLogLevel()));
         t.setVisibility(logLine.getLogLevel() == -1 ? View.GONE : View.VISIBLE);
 
-        int textColor = PreferenceHelper.getColorScheme(context).getForegroundColor(context);
+        //int textColor = PreferenceHelper.getColorScheme(context).getForegroundColor(context);
         float textSize = PreferenceHelper.getTextSizePreference(context);
 
         //OUTPUT TEXT VIEW
         TextView output = (TextView) holder.itemView.findViewById(R.id.log_output_text);
         output.setSingleLine(!logLine.isExpanded());
         output.setText(logLine.getLogOutput());
-        output.setTextColor(textColor);
+        //output.setTextColor(textColor);
 
 
         //TAG TEXT VIEW
@@ -281,8 +281,8 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
 
         if (extraInfoIsVisible) {
 
-            pidText.setTextColor(textColor);
-            timestampText.setTextColor(textColor);
+            //pidText.setTextColor(textColor);
+            //timestampText.setTextColor(textColor);
 
             pidText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             timestampText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
@@ -291,14 +291,14 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
             timestampText.setText(logLine.getTimestamp());
         }
 
-        tag.setTextColor(LogLineAdapterUtil.getOrCreateTagColor(context, logLine.getTag()));
+        //tag.setTextColor(LogLineAdapterUtil.getOrCreateTagColor(context, logLine.getTag()));
 
         // if this is a "partially selected" log, change the color to orange or whatever
 
-        int selectedBackground = logLine.isHighlighted()
+        /*int selectedBackground = logLine.isHighlighted()
                 ? PreferenceHelper.getColorScheme(context).getSelectedColor(context)
                 : ContextCompat.getColor(context,android.R.color.transparent);
-        holder.itemView.setBackgroundColor(selectedBackground);
+        holder.itemView.setBackgroundColor(selectedBackground);*/
     }
 
     /**

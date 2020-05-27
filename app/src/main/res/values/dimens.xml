@@ -12,5 +12,5 @@
     <dimen name="main_button_height">47dp</dimen>
     <dimen name="main_button_width">52dp</dimen>
 
-    <dimen name="fab_compat_margin">0dp</dimen>
+    <dimen name="fab_compat_margin">16dp</dimen>
 </resources>

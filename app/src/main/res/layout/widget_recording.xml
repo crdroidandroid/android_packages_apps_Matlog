@@ -43,7 +43,7 @@
         android:fontFamily="sans-serif-condensed"
         android:gravity="center"
         android:text="@string/widget_start_recording"
-        android:textColor="@color/primary_text_default_material_dark"
-        android:textSize="14sp" />
+        android:textColor="@android:color/white"
+        android:textAppearance="@android:style/TextAppearance.Material.Small" />
 
 </RelativeLayout>

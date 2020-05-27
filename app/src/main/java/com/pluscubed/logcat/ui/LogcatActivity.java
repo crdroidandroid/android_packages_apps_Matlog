@@ -10,7 +10,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.MatrixCursor;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,7 +45,6 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.pluscubed.logcat.LogcatRecordingService;
 import com.pluscubed.logcat.data.ColorScheme;
 import com.pluscubed.logcat.data.FilterAdapter;
@@ -69,6 +71,7 @@ import com.pluscubed.logcat.reader.LogcatReaderLoader;
 import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
 import com.pluscubed.logcat.util.StringUtil;
+import com.pluscubed.logcat.util.Util;
 import com.pluscubed.logcat.util.UtilLogger;
 
 import org.omnirom.logcat.R;
@@ -86,11 +89,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuItemImpl;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.ColorUtils;
 import androidx.cursoradapter.widget.CursorAdapter;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -243,7 +248,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         setUpAdapter();
-        updateBackgroundColor();
         runUpdatesIfNecessaryAndShowWelcomeMessage();
     }
 
@@ -375,6 +379,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         super.onResume();
 
         if (mLogListAdapter.getItemCount() > 0) {
+            mLogListAdapter.notifyDataSetChanged();
+
             // scroll to bottom, since for some reason it always scrolls to the top, which is annoying
             scrollToBottom();
         }
@@ -419,7 +425,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             onSettingsActivityResult(data);
         }
         mLogListAdapter.notifyDataSetChanged();
-        updateBackgroundColor();
         updateUiForFilename();
     }
 
@@ -427,7 +432,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                updateBackgroundColor();
                 if (data.hasExtra("bufferChanged") && data.getBooleanExtra("bufferChanged", false)
                         && mCurrentlyOpenLog == null) {
                     // log buffer changed, so update list
@@ -490,7 +494,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private void populateSuggestionsAdapter(String query) {
         final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "suggestion"});
         List<String> suggestionsForQuery = getSuggestionsForQuery(query);
-        for (int i = 0, suggestionsForQuerySize = suggestionsForQuery.size(); i < suggestionsForQuerySize; i++) {
+        for (int i = 0, suggestionsForQuerySize = suggestionsForQuery.size(); i < Math.min(suggestionsForQuerySize, 8); i++) {
             String suggestion = suggestionsForQuery.get(i);
             c.addRow(new Object[]{i, suggestion});
         }
@@ -524,8 +528,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        invalidateDarkOrLightMenuItems(this, menu);
-
         boolean showingMainLog = (mTask != null);
 
         /*MenuItem item = menu.findItem(R.id.menu_expand_all);
@@ -732,8 +734,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_searchby, null);
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.filter_choice)
-                .setIcon(R.drawable.ic_search)
+                .setMessage(R.string.filter_choice_messager)
                 .setView(dialogView)
+                .setNegativeButton(android.R.string.cancel, null)
                 .show();
 
         LinearLayout customView = (LinearLayout) dialogView;
@@ -743,16 +746,16 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         TextView tagText = (TextView) customView.findViewById(R.id.dialog_searchby_tag_text);
         TextView pidText = (TextView) customView.findViewById(R.id.dialog_searchby_pid_text);
 
-        ColorScheme colorScheme = PreferenceHelper.getColorScheme(this);
+        //ColorScheme colorScheme = PreferenceHelper.getColorScheme(this);
 
         tagText.setText(logLine.getTag());
         pidText.setText(Integer.toString(logLine.getProcessId()));
-        tagText.setTextColor(tagColor);
-        pidText.setTextColor(colorScheme.getForegroundColor(this));
+        //tagText.setTextColor(tagColor);
+        //pidText.setTextColor(colorScheme.getForegroundColor(this));
 
-        int backgroundColor = colorScheme.getSpinnerColor(this);
+        /*int backgroundColor = colorScheme.getSpinnerColor(this);
         pidText.setBackgroundColor(backgroundColor);
-        tagText.setBackgroundColor(backgroundColor);
+        tagText.setBackgroundColor(backgroundColor);*/
 
         tag.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -829,6 +832,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
                         final AlertDialog dialog = new AlertDialog.Builder(LogcatActivity.this)
                                 .setTitle(R.string.title_filters)
+                                .setMessage(R.string.message_filters)
                                 .setView(view)
                                 .setNegativeButton(android.R.string.cancel, null)
                                 .show();
@@ -1102,7 +1106,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         if (finalDeleteCount > 0) {
 
             builder.setTitle(R.string.delete_saved_log)
-                    .setCancelable(true)
                     .setMessage(getResources().getQuantityString(R.plurals.are_you_sure, finalDeleteCount, finalDeleteCount))
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
@@ -1174,7 +1177,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        sendLogToTargetApp(false, includeDeviceInfoCheckBox.isChecked(), includeDmesgCheckBox.isChecked());
+                        sendLogToTargetApp(includeDeviceInfoCheckBox.isChecked(), includeDmesgCheckBox.isChecked());
                     }
                 }).show();
     }
@@ -1227,10 +1230,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 }).show();
     }
 
-    protected void sendLogToTargetApp(final boolean asText, final boolean includeDeviceInfo, final boolean includeDmesg) {
+    protected void sendLogToTargetApp(final boolean includeDeviceInfo, final boolean includeDmesg) {
 
-        if (!(mCurrentlyOpenLog == null && asText) && !SaveLogHelper.checkSdCard(this)) {
-            // if asText is false, then we need to check to make sure we can access the sdcard
+        if (!SaveLogHelper.checkSdCard(this)) {
             return;
         }
 
@@ -1243,15 +1245,15 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 ui.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (asText || mCurrentlyOpenLog == null || includeDeviceInfo || includeDmesg) {
+                        if (mCurrentlyOpenLog == null || includeDeviceInfo || includeDmesg) {
                             mDialog = ProgressDialog.show(LogcatActivity.this,
                                     getResources().getString(R.string.dialog_please_wait),
                                     getResources().getString(R.string.dialog_compiling_log),
-                                            true, false);
+                                    true, false);
                         }
                     }
                 });
-                final SendLogDetails sendLogDetails = getSendLogDetails(asText, includeDeviceInfo, includeDmesg);
+                final SendLogDetails sendLogDetails = getSendLogDetails(includeDeviceInfo, includeDmesg);
                 ui.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1259,9 +1261,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                                 sendLogDetails.getAttachmentType(), sendLogDetails.getAttachment());
                         if (mDialog != null && mDialog.isShowing()) {
                             mDialog.dismiss();
-                        }
-                        if (asText && sendLogDetails.getBody().length() > 100000) {
-                            Snackbar.make(findViewById(android.R.id.content), getString(R.string.as_text_not_work), Snackbar.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -1273,7 +1272,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     protected void saveLogToTargetApp(final boolean includeDeviceInfo, final boolean includeDmesg) {
 
         if (!SaveLogHelper.checkSdCard(this)) {
-            // if asText is false, then we need to check to make sure we can access the sdcard
             return;
         }
 
@@ -1310,45 +1308,34 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     @WorkerThread
-    private SendLogDetails getSendLogDetails(boolean asText, boolean includeDeviceInfo, boolean includeDmesg) {
+    private SendLogDetails getSendLogDetails(boolean includeDeviceInfo, boolean includeDmesg) {
         SendLogDetails sendLogDetails = new SendLogDetails();
         StringBuilder body = new StringBuilder();
 
         List<File> files = new ArrayList<>();
         SaveLogHelper.cleanTemp();
 
-        if (!asText) {
-            if (mCurrentlyOpenLog != null) { // use saved log file
-                files.add(SaveLogHelper.getFile(mCurrentlyOpenLog));
-            } else { // create a temp file to hold the current, unsaved log
-                File tempLogFile = SaveLogHelper.saveTemporaryFile(this,
-                        SaveLogHelper.TEMP_LOG_FILENAME, null, getCurrentLogAsListOfStrings());
-                files.add(tempLogFile);
-            }
+        if (mCurrentlyOpenLog != null) { // use saved log file
+            files.add(SaveLogHelper.getFile(mCurrentlyOpenLog));
+        } else { // create a temp file to hold the current, unsaved log
+            File tempLogFile = SaveLogHelper.saveTemporaryFile(this,
+                    SaveLogHelper.TEMP_LOG_FILENAME, null, getCurrentLogAsListOfStrings());
+            files.add(tempLogFile);
         }
 
         if (includeDeviceInfo) {
             // include device info
             String deviceInfo = BuildHelper.getBuildInformationAsString();
-            if (asText) {
-                // append to top of body
-                body.append(deviceInfo).append('\n');
-            } else {
-                // or create as separate file called device.txt
-                File tempFile = SaveLogHelper.saveTemporaryFile(this,
-                        SaveLogHelper.TEMP_DEVICE_INFO_FILENAME, deviceInfo, null);
-                files.add(tempFile);
-            }
+            // or create as separate file called device.txt
+            File tempFile = SaveLogHelper.saveTemporaryFile(this,
+                    SaveLogHelper.TEMP_DEVICE_INFO_FILENAME, deviceInfo, null);
+            files.add(tempFile);
         }
 
         if (includeDmesg) {
             File tempDmsgFile = SaveLogHelper.saveTemporaryFile(this,
                     SaveLogHelper.TEMP_DMESG_FILENAME, null, DmesgHelper.getDmsg());
             files.add(tempDmsgFile);
-        }
-
-        if (asText) {
-            body.append(getCurrentLogAsCharSequence());
         }
 
         sendLogDetails.setBody(body.toString());
@@ -1451,7 +1438,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                     saveLog(filename);
                 }
             }
-        };
+        }
+        ;
 
         DialogHelper.showFilenameSuggestingDialog(this, null, new InputCallback(), R.string.save_log);
     }
@@ -1563,6 +1551,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.open_log)
+                .setNegativeButton(android.R.string.cancel, null)
                 .setView(view);
 
         final AlertDialog dialog = builder.show();
@@ -1658,14 +1647,11 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     void hideProgressBar() {
-        findViewById(R.id.main_dark_progress_bar).setVisibility(View.GONE);
-        findViewById(R.id.main_light_progress_bar).setVisibility(View.GONE);
+        findViewById(R.id.progress_bar).setVisibility(View.GONE);
     }
 
     private void showProgressBar() {
-        ColorScheme colorScheme = PreferenceHelper.getColorScheme(LogcatActivity.this);
-        findViewById(R.id.main_dark_progress_bar).setVisibility(colorScheme.isUseLightProgressBar() ? View.GONE : View.VISIBLE);
-        findViewById(R.id.main_light_progress_bar).setVisibility(colorScheme.isUseLightProgressBar() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
     }
 
 
@@ -1682,7 +1668,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         boolean logFileMode = mCurrentlyOpenLog != null;
 
         //noinspection ConstantConditions
-        getSupportActionBar().setSubtitle(logFileMode ? mCurrentlyOpenLog : "");
+        getSupportActionBar().setTitle(logFileMode ? mCurrentlyOpenLog : getString(R.string.app_name));
         getSupportActionBar().setDisplayHomeAsUpEnabled(logFileMode);
         supportInvalidateOptionsMenu();
     }
@@ -1707,7 +1693,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle(R.string.log_level)
-                .setCancelable(true)
+                .setNegativeButton(android.R.string.cancel, null)
                 .setSingleChoiceItems(logLevels, mLogListAdapter.getLogLevelLimit(), new DialogInterface.OnClickListener() {
 
                     @Override
@@ -1782,7 +1768,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                     savePartialLog(filename, partiallySelectedLogLines.get(0), partiallySelectedLogLines.get(1));
                 }
             }
-        };
+        }
+        ;
 
         Runnable negativeCallback = new Runnable() {
             @Override
@@ -1878,11 +1865,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 findViewById(R.id.main_background).setBackgroundColor(color);
             }
         });
-
-        //TODO:
-        //mListView.setCacheColorHint(color);
-        //mListView.setDivider(new ColorDrawable(color));
-
     }
 
 
@@ -1901,28 +1883,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             mSearchSuggestionsSet.add(trimmed);
             populateSuggestionsAdapter(mSearchingString);
             //searchSuggestionsAdapter.add(trimmed);
-        }
-    }
-
-    @SuppressLint("RestrictedApi")
-    public void invalidateDarkOrLightMenuItems(Context context, Menu menu) {
-        if (menu != null && menu instanceof MenuBuilder) {
-            ((MenuBuilder) menu).setOptionalIconsVisible(true);
-            /*final boolean darkMode = ThemeUtils.isDarkMode(context);
-            final int textColorPrimary = Utils.resolveColor(context, android.R.attr.textColorPrimary);
-
-            mToolbar.post(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < menu.size(); i++) {
-                        MenuItemImpl item = (MenuItemImpl) menu.getItem(i);
-                        int color = darkMode || item.isActionButton() ? Color.WHITE : textColorPrimary;
-                        if (item.getIcon() != null) {
-                            item.getIcon().setColorFilter(color, PorterDuff.Mode.SRC_IN);
-                        }
-                    }
-                }
-            });*/
         }
     }
 
@@ -2091,14 +2051,5 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         if (mLogListAdapter != null) {
             mLogListAdapter.clear();
         }
-        Snackbar.make(findViewById(android.R.id.content), R.string.log_cleared, Snackbar.LENGTH_LONG)
-                .setAction(getString(R.string.undo), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startMainLog();
-                    }
-                })
-                .setActionTextColor(ContextCompat.getColor(this, R.color.accent))
-                .show();
     }
 }

@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp">
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp">
 
     <AutoCompleteTextView
         android:id="@+id/filter_text"
@@ -14,6 +14,7 @@
         android:hint="@string/text_filter_text"
         android:imeOptions="actionDone"
         android:inputType="textNoSuggestions"
-        android:maxLines="1" />
+        android:maxLines="1"
+        android:textAppearance="@android:style/TextAppearance.Material.Menu"/>
 
 </LinearLayout>

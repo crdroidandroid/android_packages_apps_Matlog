@@ -4,27 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:baselineAligned="false"
-    android:orientation="horizontal"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp">
+    android:orientation="vertical"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp">
 
     <LinearLayout
         android:id="@id/dialog_searchby_tag_linear"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:paddingBottom="8dp"
             android:text="@string/filter_choice_tag"
-            android:textSize="16sp"
-            android:maxLines="1" />
+            android:textAppearance="@android:style/TextAppearance.Material.Menu"
+            android:singleLine="true" />
 
         <TextView
             android:id="@id/dialog_searchby_tag_text"
@@ -32,31 +30,29 @@
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:padding="8dp"
-            android:textColor="@color/secondary_text_default_material_dark"
-            android:textSize="12sp"
-            android:typeface="monospace"
+            android:textAppearance="@android:style/TextAppearance.Material.Menu"
+            android:fontFamily="@font/roboto_mono_family"
             tools:text="text"
-            android:maxLines="1" />
+            android:singleLine="true" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@id/dialog_searchby_pid_linear"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:paddingBottom="8dp"
             android:text="@string/filter_choice_pid"
-            android:textSize="16sp"
-            android:maxLines="1" />
+            android:textAppearance="@android:style/TextAppearance.Material.Menu"
+            android:singleLine="true" />
 
         <TextView
             android:id="@id/dialog_searchby_pid_text"
@@ -64,11 +60,10 @@
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:padding="8dp"
-            android:textColor="@color/secondary_text_default_material_dark"
-            android:textSize="12sp"
-            android:typeface="monospace"
+            android:textAppearance="@android:style/TextAppearance.Material.Menu"
+            android:fontFamily="@font/roboto_mono_family"
             tools:text="text"
-            android:maxLines="1" />
+            android:singleLine="true" />
 
     </LinearLayout>
 

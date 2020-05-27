@@ -56,18 +56,10 @@ public class RecordLogDialogActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onResume() {
-            super.onResume();
-            getDialog().setCancelable(false);
-            getDialog().setCanceledOnTouchOutside(false);
-        }
-
-        @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             //noinspection ConstantConditions
             final List<String> suggestions = Arrays.asList(getArguments().getStringArray(QUERY_SUGGESTIONS));
 
-            String logFilename = DialogHelper.createLogFilename();
             final View v = DialogHelper.initFilenameInputDialog(getActivity());
             final EditText input = v.findViewById(R.id.edit_text);
 
@@ -118,6 +110,13 @@ public class RecordLogDialogActivity extends AppCompatActivity {
                                             logLevelText.replace(0, logLevelText.length(), result.getLogLevel());
                                         }
                                     });
+                        }
+                    });
+                    Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                    negative.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            activity.finish();
                         }
                     });
                 }

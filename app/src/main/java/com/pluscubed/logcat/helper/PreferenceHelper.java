@@ -234,7 +234,7 @@ public class PreferenceHelper {
 
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             String colorSchemeName = sharedPrefs.getString(
-                    context.getText(R.string.pref_theme).toString(), context.getText(ColorScheme.Dark.getNameResource()).toString());
+                    context.getText(R.string.pref_theme).toString(), context.getText(ColorScheme.Default.getNameResource()).toString());
 
             colorScheme = ColorScheme.findByPreferenceName(colorSchemeName, context);
         }

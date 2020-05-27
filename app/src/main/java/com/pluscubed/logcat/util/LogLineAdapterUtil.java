@@ -43,7 +43,7 @@ public class LogLineAdapterUtil {
     }
 
     public static int getForegroundColorForLogLevel(Context context, int logLevel) {
-        int result = android.R.color.primary_text_dark;
+        int result = android.R.color.white;
         switch (logLevel) {
             case Log.DEBUG:
                 result = R.color.foreground_debug;

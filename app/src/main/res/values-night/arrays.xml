@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="light_theme_colors">
+        <item>@color/tag_color_01</item>
+        <item>@color/tag_color_02</item>
+        <item>@color/tag_color_03</item>
+        <item>@color/tag_color_04</item>
+        <item>@color/tag_color_05</item>
+        <item>@color/tag_color_06</item>
+        <item>@color/tag_color_07</item>
+        <item>@color/tag_color_08</item>
+        <item>@color/tag_color_09</item>
+        <item>@color/tag_color_10</item>
+        <item>@color/tag_color_11</item>
+        <item>@color/tag_color_12</item>
+        <item>@color/tag_color_13</item>
+        <item>@color/tag_color_14</item>
+        <item>@color/tag_color_15</item>
+        <item>@color/tag_color_16</item>
+        <item>@color/tag_color_17</item>
+    </integer-array>
+</resources>

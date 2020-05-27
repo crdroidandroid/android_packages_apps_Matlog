@@ -32,7 +32,10 @@ public enum ColorScheme {
             R.color.main_bubble_background_dark, false, R.color.yellow1),
     Tmobile(R.string.pref_theme_choice_tmobile_value, R.color.main_background_tmobile,
             R.color.main_foreground_tmobile, R.array.light_theme_colors, R.color.spinner_droptown_tmobile,
-            R.color.main_bubble_background_tmobile, true, R.color.main_bubble_background_light_2),;
+            R.color.main_bubble_background_tmobile, true, R.color.main_bubble_background_light_2),
+    Default(R.string.pref_theme_choice_default_value, R.color.main_background_light,
+         R.color.main_foreground_light, R.array.light_theme_colors, R.color.spinner_droptown_dark,
+         R.color.main_bubble_background_dark_2, false, R.color.accent),;
 
     private static Map<String, ColorScheme> preferenceNameToColorScheme = new HashMap<String, ColorScheme>();
     private int nameResource;
@@ -43,12 +46,7 @@ public enum ColorScheme {
     private int tagColorsResource;
     private boolean useLightProgressBar;
     private int selectedColorResource;
-    private int backgroundColor = -1;
-    private int foregroundColor = -1;
     private int spinnerColor = -1;
-    private int bubbleBackgroundColor = -1;
-    private int selectedColor = -1;
-    private int[] tagColors;
 
     ColorScheme(int nameResource, int backgroundColorResource, int foregroundColorResource,
                 int tagColorsResource, int spinnerColorResource, int bubbleBackgroundColorResource,
@@ -85,32 +83,16 @@ public enum ColorScheme {
         return nameResource;
     }
 
-    public int getSelectedColor(Context context) {
-        if (selectedColor == -1) {
-            selectedColor = ContextCompat.getColor(context,selectedColorResource);
-        }
-        return selectedColor;
-    }
-
     public int getBackgroundColor(Context context) {
-        if (backgroundColor == -1) {
-            backgroundColor = ContextCompat.getColor(context,backgroundColorResource);
-        }
-        return backgroundColor;
+        return ContextCompat.getColor(context,backgroundColorResource);
     }
 
     public int getForegroundColor(Context context) {
-        if (foregroundColor == -1) {
-            foregroundColor = ContextCompat.getColor(context,foregroundColorResource);
-        }
-        return foregroundColor;
+        return ContextCompat.getColor(context,foregroundColorResource);
     }
 
     public int[] getTagColors(Context context) {
-        if (tagColors == null) {
-            tagColors = context.getResources().getIntArray(tagColorsResource);
-        }
-        return tagColors;
+        return context.getResources().getIntArray(tagColorsResource);
     }
 
     public int getSpinnerColor(Context context) {
@@ -118,13 +100,6 @@ public enum ColorScheme {
             spinnerColor = ContextCompat.getColor(context,spinnerColorResource);
         }
         return spinnerColor;
-    }
-
-    public int getBubbleBackgroundColor(Context context) {
-        if (bubbleBackgroundColor == -1) {
-            bubbleBackgroundColor = ContextCompat.getColor(context,bubbleBackgroundColorResource);
-        }
-        return bubbleBackgroundColor;
     }
 
     public boolean isUseLightProgressBar() {

@@ -38,18 +38,14 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(toolbar);
-
-        FragmentManager fm = getFragmentManager();
-        Fragment f = fm.findFragmentById(R.id.content);
-        if (f == null) {
-            fm.beginTransaction()
-                    .replace(R.id.content,
-                            new SettingsFragment())
-                    .commit();
-        }
-        //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(R.string.settings);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        getFragmentManager().beginTransaction().replace(R.id.content, new SettingsFragment()).commit();
     }
 
     private void setResultAndFinish() {
@@ -62,14 +58,9 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            // set result and finish
-            setResultAndFinish();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
+    public void onBackPressed() {
+        setResultAndFinish();
+        super.onBackPressed();
     }
 
     @Override

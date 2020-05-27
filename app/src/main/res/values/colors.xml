@@ -30,14 +30,14 @@
     <color name="main_bubble_background_verizon">#FFEEEEEE</color>
 
     <color name="main_background_dark">#FF000000</color>
-    <color name="main_background_light">#FFFFFFEE</color>
+    <color name="main_background_light">@android:color/white</color>
     <color name="main_background_android">#FFA4C639</color>
     <color name="main_background_verizon">#FF000000</color>
     <color name="main_background_att">#FFFFFFFF</color>
     <color name="main_background_sprint">#FF000000</color>
     <color name="main_background_tmobile">#FFeaeff3</color>
 
-    <color name="main_foreground_dark">@android:color/darker_gray</color>
+    <color name="main_foreground_dark">@android:color/white</color>
     <color name="main_foreground_light">@android:color/black</color>
     <color name="main_foreground_android">@android:color/black</color>
     <color name="main_foreground_verizon">#FFed1f24</color>
@@ -53,12 +53,12 @@
     <color name="spinner_droptown_sprint">#FF333333</color>
     <color name="spinner_droptown_tmobile">#00000000</color>
 
-    <color name="foreground_wtf">#FFFFFFFF</color>
-    <color name="foreground_error">#FFFFFFFF</color>
-    <color name="foreground_verbose">#FFCCCCCC</color>
-    <color name="foreground_debug">#FFCCCCCC</color>
-    <color name="foreground_info">#FF333333</color>
-    <color name="foreground_warn">#FF333333</color>
+    <color name="foreground_wtf">@android:color/white</color>
+    <color name="foreground_error">@android:color/white</color>
+    <color name="foreground_verbose">@android:color/white</color>
+    <color name="foreground_debug">@android:color/white</color>
+    <color name="foreground_info">@android:color/black</color>
+    <color name="foreground_warn">@android:color/black</color>
 
     <!-- Android color FTW -->
     <color name="tag_color_01">#FFA4C639</color>
@@ -115,8 +115,7 @@
     <color name="android_theme_tag_color_16">#FFCC3399</color>
     <color name="android_theme_tag_color_17">#FFFFCC00</color>
 
-    <color name="primary">#F44336</color>
-    <color name="primary_dark">#D32F2F</color>
+    <color name="primary">#448AFF</color>
     <color name="accent">#448AFF</color>
 
 

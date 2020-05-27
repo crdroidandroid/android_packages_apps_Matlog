@@ -86,7 +86,7 @@ public class DialogHelper {
         @SuppressLint("InflateParams") View filterView = inflater.inflate(R.layout.dialog_recording_filter, null, false);
 
         // add suggestions to autocompletetextview
-        final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) filterView.findViewById(android.R.id.text1);
+        final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) filterView.findViewById(R.id.filter_text);
         autoCompleteTextView.setText(queryFilterText);
 
         SortedFilterArrayAdapter<String> suggestionAdapter = new SortedFilterArrayAdapter<String>(
@@ -146,7 +146,9 @@ public class DialogHelper {
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        negativeCallback.run();
+                        if (negativeCallback != null) {
+                            negativeCallback.run();
+                        }
                     }
                 })
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

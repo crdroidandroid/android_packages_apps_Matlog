@@ -20,7 +20,7 @@
         android:paddingEnd="2dp"
         android:paddingRight="2dp"
         android:textSize="12sp"
-        android:typeface="monospace"
+        android:fontFamily="@font/roboto_mono_family"
         tools:ignore="RtlSymmetry"
         tools:text="6177"/>
 
@@ -34,7 +34,7 @@
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:textSize="12sp"
-        android:typeface="monospace"
+        android:fontFamily="@font/roboto_mono_family"
         tools:text="12 June 2011"/>
 
     <TextView
@@ -48,7 +48,7 @@
         android:paddingEnd="2dp"
         android:paddingRight="2dp"
         android:textSize="12sp"
-        android:typeface="monospace"
+        android:fontFamily="@font/roboto_mono_family"
         tools:ignore="RtlSymmetry"
         tools:text="SomeActivity"/>
 
@@ -62,7 +62,7 @@
         android:gravity="center_horizontal"
         android:maxLines="1"
         android:textSize="12sp"
-        android:typeface="monospace"
+        android:fontFamily="@font/roboto_mono_family"
         tools:text="D"/>
 
 
@@ -77,7 +77,7 @@
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:textSize="12sp"
-        android:typeface="monospace"
+        android:fontFamily="@font/roboto_mono_family"
         tools:text="Blah blah blah a bunch of output"/>
 
 
