@@ -291,7 +291,7 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
             timestampText.setText(logLine.getTimestamp());
         }
 
-        //tag.setTextColor(LogLineAdapterUtil.getOrCreateTagColor(context, logLine.getTag()));
+        tag.setTextColor(LogLineAdapterUtil.getOrCreateTagColor(context, logLine.getTag()));
 
         // if this is a "partially selected" log, change the color to orange or whatever
 

@@ -26,14 +26,19 @@ LOCAL_STATIC_ANDROID_LIBRARIES := androidx.core_core \
     com.google.android.material_material
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
+LOCAL_SRC_FILES += $(call all-java-files-under, java)
 
 LOCAL_USE_AAPT2 := true
-
 LOCAL_JAR_EXCLUDE_FILES := none
-LOCAL_PROGUARD_FLAG_FILES := proguard-rules.pro
-LOCAL_SRC_FILES += $(call all-java-files-under, java)
+LOCAL_PROGUARD_ENABLED := disabled
 LOCAL_PACKAGE_NAME := MatLog
-LOCAL_SDK_VERSION := current
 LOCAL_MODULE_TAGS := optional
 LOCAL_PRIVILEGED_MODULE := true
+
+ifneq (,$(wildcard frameworks/base))
+  LOCAL_PRIVATE_PLATFORM_APIS := true
+else
+  LOCAL_SDK_VERSION := system_current
+endif
+
 include $(BUILD_PACKAGE)

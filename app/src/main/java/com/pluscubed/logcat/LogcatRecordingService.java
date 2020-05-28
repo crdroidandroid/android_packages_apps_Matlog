@@ -65,7 +65,6 @@ public class LogcatRecordingService extends IntentService {
     };
 
     private Handler handler;
-    private NotificationChannel mNotificationChannel;
 
     public LogcatRecordingService() {
         super("AppTrackerService");
@@ -148,7 +147,7 @@ public class LogcatRecordingService extends IntentService {
                 0 /* no requestCode */, stopRecordingIntent, PendingIntent.FLAG_ONE_SHOT);
 
         // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification.Builder(getApplicationContext(),NOTIFICATION_CHANNEL_ID)
+        Notification notification = new Notification.Builder(getApplicationContext(), NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker(tickerText)
                 .setWhen(System.currentTimeMillis())
@@ -273,7 +272,7 @@ public class LogcatRecordingService extends IntentService {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         CharSequence name = getString(R.string.channel_name);
         int importance = NotificationManager.IMPORTANCE_LOW;
-        mNotificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-        notificationManager.createNotificationChannel(mNotificationChannel);
+        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+        notificationManager.createNotificationChannel(channel);
     }
 }
