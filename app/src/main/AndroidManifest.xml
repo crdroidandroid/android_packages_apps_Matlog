@@ -40,7 +40,14 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
-        <activity android:name="com.pluscubed.logcat.ui.RecordLogDialogActivity" />
+        <activity
+            android:name="com.pluscubed.logcat.ui.RecordLogDialogActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
 
         <activity android:name="com.pluscubed.logcat.ui.SettingsActivity" />
 
@@ -48,27 +55,16 @@
 
         <service android:name="com.pluscubed.logcat.CrazyLoggerService" />
 
-        <!--<receiver android:name="com.pluscubed.logcat.RecordingWidgetProvider">
-
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <data android:scheme="catlog_widget" />
-            </intent-filter>
-
+        <receiver
+            android:name="com.pluscubed.logcat.RecordingWidgetProvider"
+            android:icon="@mipmap/ic_launcher">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-
-            <intent-filter>
-                <action android:name="com.pluscubed.logcat.action.RECORD_OR_STOP" />
-                <data android:scheme="catlog_widget" />
-            </intent-filter>
-
-
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/recording_widget_info" />
-        </receiver>-->
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"

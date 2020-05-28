@@ -210,7 +210,7 @@ public class LogcatRecordingService extends IntentService {
                 }
             }
         } catch (IOException e) {
-            log.e(e, "unexpected exception");
+            // ignore
         } finally {
             killProcess();
             log.d("CatlogService ended");

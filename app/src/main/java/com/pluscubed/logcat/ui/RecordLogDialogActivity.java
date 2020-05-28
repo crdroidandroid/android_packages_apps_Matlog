@@ -5,15 +5,19 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.pluscubed.logcat.LogcatRecordingService;
+import com.pluscubed.logcat.RecordingWidgetProvider;
 import com.pluscubed.logcat.data.FilterQueryWithLevel;
 import com.pluscubed.logcat.helper.DialogHelper;
 import com.pluscubed.logcat.helper.PreferenceHelper;
+import com.pluscubed.logcat.helper.ServiceHelper;
 import com.pluscubed.logcat.helper.WidgetHelper;
 import com.pluscubed.logcat.util.Callback;
 
@@ -24,6 +28,8 @@ import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import static com.pluscubed.logcat.RecordingWidgetProvider.log;
+
 public class RecordLogDialogActivity extends AppCompatActivity {
 
     public static final String EXTRA_QUERY_SUGGESTIONS = "suggestions";
@@ -32,7 +38,22 @@ public class RecordLogDialogActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        showDialog();
+        Intent intent = getIntent();
+        if (intent != null && intent.getAction() != null &&
+                intent.getAction().equals(RecordingWidgetProvider.ACTION_RECORD_OR_STOP)) {
+            log.i("onCreate(); intent is: %s", intent);
+            WidgetHelper.updateWidgets(getApplicationContext());
+
+            boolean alreadyRunning = ServiceHelper.checkIfServiceIsRunning(this, LogcatRecordingService.class);
+            if (alreadyRunning) {
+                DialogHelper.stopRecordingLog(this);
+                finish();
+            } else {
+                showDialog();
+            }
+        } else {
+            showDialog();
+        }
     }
 
     private void showDialog() {

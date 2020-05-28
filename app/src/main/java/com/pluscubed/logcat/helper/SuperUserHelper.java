@@ -36,7 +36,7 @@ public class SuperUserHelper {
     private static final Pattern PID_PATTERN = Pattern.compile("\\d+");
     private static final Pattern SPACES_PATTERN = Pattern.compile("\\s+");
     private static UtilLogger log = new UtilLogger(SuperUserHelper.class);
-    private static boolean failedToObtainRoot = false;
+    private static boolean failedToObtainRoot = true;
 
     private static void showWarningDialog(final Context context) {
         Handler handler = new Handler(Looper.getMainLooper());
