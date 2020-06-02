@@ -248,7 +248,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         setUpAdapter();
-        runUpdatesIfNecessaryAndShowWelcomeMessage();
+        //runUpdatesIfNecessaryAndShowWelcomeMessage();
+        startLog();
     }
 
     private void handleShortcuts(String action) {
