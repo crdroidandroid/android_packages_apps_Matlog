@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- non-translateable strings-->
+    <string name="pref_hide_partial_select_help">пред-hide_partial_select_help</string>
+    <string name="pref_ran_jellybean_su_update">jellybean_su</string>
+    <string name="pref_theme">тема</string>
+    <string name="pref_theme_choice_android_value">Android</string>
+    <string name="pref_theme_choice_att_value">Ma Bell</string>
+    <string name="pref_theme_choice_dark_value">Тёмная</string>
+    <string name="pref_theme_choice_light_value">Светлая</string>
+    <string name="pref_theme_choice_sprint_value">Big Yellow</string>
+    <string name="pref_theme_choice_tmobile_value">T-Mo</string>
+    <string name="pref_theme_choice_verizon_value">Big Red</string>
+    <!-- translateable strings-->
+    <string name="log_level_debug">Отладка</string>
+    <string name="log_level_error">Ошибка</string>
+    <string name="log_level_info">Информация </string>
+    <string name="log_level_verbose">Подробный</string>
+    <string name="log_level_warn">Предупреждения</string>
+    <string name="log_level_wtf">Какая ужасная ошибка</string>
+    <string name="add_filter">Добавить фильтр</string>
+    <string name="add_filter_ellipsis">Добавить фильтр</string>
+    <plurals name="are_you_sure">
+        <item quantity="one">Будет удален файл <xliff:g example="1" id="files">%1$d</xliff:g></item>
+        <item quantity="few"><xliff:g example="1" id="files">%1$d</xliff:g> файлы будут удалены</item>
+        <item quantity="many"><xliff:g example="1" id="files">%1$d</xliff:g> файлы будут удалены</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> файлы будут удалены</item>
+    </plurals>
+    <string name="checkbox_never_show_partial_select_help">Не показывать снова</string>
+    <string name="copied_to_clipboard">Скопировано в буфер обмена.</string>
+    <string name="copy_to_clipboard">Копировать в буфер обмена</string>
+    <string name="default_in_parens">(По умолчанию)</string>
+    <string name="delete">Удалить</string>
+    <string name="delete_all">Удалить всё</string>
+    <string name="delete_saved_log">Удалить сохраненные журналы</string>
+    <string name="delimiter">,</string>
+    <string name="dialog_compiling_log">Компиляция журнала…</string>
+    <string name="dialog_initializing_recorder">Загрузка записи…</string>
+    <string name="dialog_loading_updates">Загрузка обновлений…</string>
+    <string name="dialog_partial_select_explanation">1. Выберите <b>первую строку</b>\n2. Затем выберите <b>последнюю</b> строку.</string>
+    <string name="dialog_please_wait">Пожалуйста, подождите</string>
+    <string name="enter_filename">Введите имя файла для сохранения:</string>
+    <string name="enter_good_filename">Пожалуйста, введите корректное имя</string>
+    <plurals name="files_deleted">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> файл будет удален</item>
+        <item quantity="few"><xliff:g example="1" id="files">%1$d</xliff:g> файлы будут удалены</item>
+        <item quantity="many"><xliff:g example="1" id="files">%1$d</xliff:g> файлы будут удалены</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> файлы будут удалены</item>
+    </plurals>
+    <string name="filter_choice">Искать по</string>
+    <string name="filter_choice_pid">PID</string>
+    <string name="filter_choice_tag">Тег</string>
+    <string name="filter_text_colon">Текст фильтра:</string>
+    <string name="log_level">Уровень журналирования</string>
+    <string name="log_level_colon">Уровень журналирования</string>
+    <string name="log_recording_started">Запись журнала запущена.</string>
+    <string name="log_saved">Журнал сохранен.</string>
+    <string name="manage_saved_logs">Управление сохраненными журналами</string>
+    <string name="menu_title_partial_select">Сохранить частично</string>
+    <string name="no_saved_logs">Сохраненные журналы не найдены.</string>
+    <string name="notification_subtext">Нажмите, чтобы остановить запись.</string>
+    <string name="notification_ticker">Запись журнала запущена</string>
+    <string name="notification_title">Выполняется запись журнала</string>
+    <string name="open">Открыть</string>
+    <string name="open_log">Открыть журнал</string>
+    <string name="pref_buffer_choice_events">События</string>
+    <string name="pref_buffer_choice_main">Основное</string>
+    <string name="pref_buffer_choice_radio">Модем</string>
+    <string name="pref_buffer_none_checked_error">Пожалуйста, проверьте хотя бы один буфер.</string>
+    <string name="pref_buffer_title">Буфер (ы) журнала</string>
+    <string name="pref_cat_advanced">Расширенные</string>
+    <string name="pref_cat_appearance">Внешний вид</string>
+    <string name="pref_cat_configuration">Конфигурация</string>
+    <string name="pref_default_log_level_summary">Записывать уровень при запуске, при открытии файлов, и при записи (%s)</string>
+    <string name="pref_default_log_level_title">Уровень журнала по умолчанию</string>
+    <string name="pref_display_limit_summary">Показать только последние %1$d журналов, чтобы избежать OutOfMemoryErrors. (По умолчанию: %2$s)</string>
+    <string name="pref_display_limit_title">Лимит отображения журнала</string>
+    <string name="pref_expanded_by_default_summary">По умолчанию показывать полный текст журнала.</string>
+    <string name="pref_expanded_by_default_title">Развернуть по умолчанию</string>
+    <string name="pref_log_line_period_error">Пожалуйста, введите целое число от 1 до 1000.</string>
+    <string name="pref_log_line_period_summary">При записи записывать на SD-карту каждую %1$d строку(и) (по умолчанию: %2$s).</string>
+    <string name="pref_log_line_period_title">Период записи</string>
+    <string name="pref_show_timestamp_summary">Показывать идентификатор процесса и метку времени при его расширении.</string>
+    <string name="pref_show_timestamp_title">Показать Pid &amp; метка времени</string>
+    <string name="pref_text_size_title">Размер текста</string>
+    <string name="pref_theme_choice_android_name">Android</string>
+    <string name="pref_theme_choice_att_name">Ma Bell</string>
+    <string name="pref_theme_choice_dark_name">Тёмная</string>
+    <string name="pref_theme_choice_light_name">Светлая</string>
+    <string name="pref_theme_choice_sprint_name">Big Yellow</string>
+    <string name="pref_theme_choice_tmobile_name">Т-Мо</string>
+    <string name="pref_theme_choice_verizon_name">Big Red</string>
+    <string name="record_log">Запись журнала</string>
+    <string name="save">Сохранить</string>
+    <string name="save_as">Сохранить как…</string>
+    <string name="save_log">Сохранить журнал</string>
+    <string name="sd_card_not_found">SD-карта не найдена.</string>
+    <string name="select_logs_to_delete">Выберите журналы для удаления.</string>
+    <string name="send_log_title">Отправить журнал</string>
+    <string name="settings">Настройки</string>
+    <string name="simultaneous">(Одновременно)</string>
+    <string name="start_recording_log">Запись</string>
+    <string name="subject_log_report">Отчёт журнала</string>
+    <string name="text_filter_ellipsis">Фильтр…</string>
+    <string name="text_filter_text">Текст фильтра</string>
+    <string name="text_include_device_info">Включить информацию об устройстве</string>
+    <string name="text_size_large_name">Большой (14pt)</string>
+    <string name="text_size_medium_name">Средний (12pt)</string>
+    <string name="text_size_small_name">Маленький (10pt)</string>
+    <string name="text_size_xlarge_name">Очень большой (16pt)</string>
+    <string name="text_size_xsmall_name">Очень маленькие (8pt)</string>
+    <string name="title_filter">Фильтр</string>
+    <string name="title_filters">Фильтры</string>
+    <string name="toast_invalid_display_limit">Пожалуйста, введите допустимое число между %1$d и %2$d.</string>
+    <string name="toast_invalid_level">Неверное имя уровня: %s</string>
+    <string name="toast_invalid_selection">Неверный выбор. Пожалуйста, попробуйте еще раз.</string>
+    <plurals name="toast_log_truncated">
+        <item quantity="one">Лог слишком большой; показывается последняя строка <xliff:g example="1" id="lines">%1$d</xliff:g>.</item>
+        <item quantity="few">Лог слишком большой; показываются последние <xliff:g example="1" id="lines">%1$d</xliff:g> строк.</item>
+        <item quantity="many">Лог слишком большой; показываются последние <xliff:g example="1" id="lines">%1$d</xliff:g> строк.</item>
+        <item quantity="other">Лог слишком большой; показываются последние <xliff:g example="1" id="lines">%1$d</xliff:g> строк.</item>
+    </plurals>
+    <string name="toast_pref_changed_restart_required">Настройки обновлены. Перезапустите MatLog для просмотра изменений.</string>
+    <string name="toast_request_root">MatLog требует root (суперпользователь) доступ для чтения журналов.</string>
+    <string name="toast_started_select_partial">Режим частичного выбора включен</string>
+    <string name="unable_to_save_log">Не удалось сохранить журнал. Вы ввели допустимое имя файла?</string>
+    <string name="file">Файл</string>
+    <string name="clear">Очистить</string>
+    <string name="expand_or_collapse_all">Развернуть/свернуть все</string>
+    <string name="no_logs_warning_title">Нет доступа к системным журналам</string>
+    <string name="no_logs_warning">У %1$s нет разрешения, необходимого для доступа к logcat. Вы будете видеть только свои собственные журналы.&lt;br/&gt;&lt;br/&gt;У вас есть два варианта предоставления %1$s разрешения:&lt;br/&gt;- Root вашего устройства&lt;br/&gt;- Подключите ваше устройство к компьютеру с установленным Android SDK и выполните следующую команду (только один раз):&lt;br/&gt;&lt;tt&gt;%2$s&lt;/tt&gt;</string>
+    <string name="copy_command">Копировать команду</string>
+    <string name="adb_command">Команда ADB</string>
+    <string name="permission_not_granted">Эта функция не будет работать без разрешения на запись внешнего накопителя.</string>
+    <string name="search">Поиск</string>
+    <string name="scrubber">Оставить конфиденциальную информацию</string>
+    <string name="scrubber_summary">Не показывать конфиденциальную информацию, такую как веб-адреса, номера телефонов или адреса электронной почты</string>
+    <string name="text_include_dmesg">Включить журнал ядра</string>
+    <string name="save_log_zip">Сохранить zip</string>
+    <string name="share_log">Поделиться</string>
+    <string name="channel_name">Уведомление о записи</string>
+    <string name="message_filters">Нажмите на фильтр для активации</string>
+    <string name="filter_choice_messager">Нажмите на фильтр поиска</string>
+</resources>

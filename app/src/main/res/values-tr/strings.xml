@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- non-translateable strings-->
+    <string name="pref_hide_partial_select_help">pref_hide_partial_select_help</string>
+    <string name="pref_ran_jellybean_su_update">jellybean_su</string>
+    <string name="pref_theme">Tema</string>
+    <string name="pref_theme_choice_android_value">Android</string>
+    <string name="pref_theme_choice_att_value">Ma Bell</string>
+    <string name="pref_theme_choice_dark_value">Koyu</string>
+    <string name="pref_theme_choice_light_value">Açık</string>
+    <string name="pref_theme_choice_sprint_value">Big Yellow</string>
+    <string name="pref_theme_choice_tmobile_value">T-Mo</string>
+    <string name="pref_theme_choice_verizon_value">Big Red</string>
+    <!-- translateable strings-->
+    <string name="log_level_debug">Hatâ Ayıklama</string>
+    <string name="log_level_error">Hatâ</string>
+    <string name="log_level_info">Bilgi</string>
+    <string name="log_level_verbose">Teferruat</string>
+    <string name="log_level_warn">Îkâz</string>
+    <string name="log_level_wtf">Sıra Dışı</string>
+    <string name="add_filter">Filtre İlâve Et</string>
+    <string name="add_filter_ellipsis">Filtre İlâve Et…</string>
+    <plurals name="are_you_sure">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> adet dosya silinecektir</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> adet dosya silinecektir</item>
+    </plurals>
+    <string name="checkbox_never_show_partial_select_help">Tekrar gösterme</string>
+    <string name="copied_to_clipboard">Panoya kopyalandı.</string>
+    <string name="copy_to_clipboard">Panoya kopyala</string>
+    <string name="default_in_parens">(Varsayılan)</string>
+    <string name="delete">Sil</string>
+    <string name="delete_all">Hepsini Sil</string>
+    <string name="delete_saved_log">Kaydedilmiş Günlükleri Sil</string>
+    <string name="delimiter">, </string>
+    <string name="dialog_compiling_log">Günlük derleniyor…</string>
+    <string name="dialog_initializing_recorder">Kaydedici yükleniyor…</string>
+    <string name="dialog_loading_updates">Güncellemeler yükleniyor…</string>
+    <string name="dialog_partial_select_explanation">1. <b>İlk</b> satırı seçin.\n2. Akabinde <b>son</b> satırı seçin.</string>
+    <string name="dialog_please_wait">Lütfen bekleyin</string>
+    <string name="enter_filename">Kaydetmek için dosya adı yazın:</string>
+    <string name="enter_good_filename">Lütfen geçerli bir dosya adı yazın.</string>
+    <plurals name="files_deleted">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> adet dosya silindi</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> adet dosya silindi</item>
+    </plurals>
+    <string name="filter_choice">Arama kıstası</string>
+    <string name="filter_choice_pid">İşlem Kimliği</string>
+    <string name="filter_choice_tag">Etiket</string>
+    <string name="filter_text_colon">Filtre metni:</string>
+    <string name="log_level">Günlük Seviyesi</string>
+    <string name="log_level_colon">Günlük seviyesi:</string>
+    <string name="log_recording_started">Günlük kaydı başlatıldı.</string>
+    <string name="log_saved">Günlük kaydedildi.</string>
+    <string name="manage_saved_logs">Kaydedilmiş Günlükleri Yönet</string>
+    <string name="menu_title_partial_select">Kısmî Kaydet</string>
+    <string name="no_saved_logs">Kaydedilmiş bir günlük bulunmadı.</string>
+    <string name="notification_subtext">Durdurmak için seçin.</string>
+    <string name="notification_ticker">Günlük kaydı başlatıldı</string>
+    <string name="notification_title">Günlük kaydı devam etmekte</string>
+    <string name="open">Aç</string>
+    <string name="open_log">Günlüğü Aç</string>
+    <string name="pref_buffer_choice_events">Olaylar</string>
+    <string name="pref_buffer_choice_main">Ana</string>
+    <string name="pref_buffer_none_checked_error">Lütfen asgari bir tane ara bellek seçin.</string>
+    <string name="pref_buffer_title">Günlük Ara Bellek(ler)i</string>
+    <string name="pref_cat_advanced">İleri Seviye</string>
+    <string name="pref_cat_appearance">Görünüm</string>
+    <string name="pref_cat_configuration">Yapılandırma</string>
+    <string name="pref_default_log_level_summary">Açılış, dosyaları açma ve kayıt esnasındaki günlük seviyesi (%s)</string>
+    <string name="pref_default_log_level_title">Varsayılan Günlük Seviyesi</string>
+    <string name="pref_display_limit_summary">OutOfMemoryError hatâlarını önlemek için sadece son %1$d günlüğü göster. (Varsayılan: %2$s)</string>
+    <string name="pref_display_limit_title">Gösterme Sınırı</string>
+    <string name="pref_expanded_by_default_summary">Varsayılan olarak bütün günlük metnini göster.</string>
+    <string name="pref_expanded_by_default_title">Varsayılan Olarak Genişlet</string>
+    <string name="pref_log_line_period_error">Lütfen 1 ve 1000 aralığında bulunan bir tamsayı yazın</string>
+    <string name="pref_log_line_period_summary">Kayıt esnasında, her %1$d satırda SD karta yaz (varsayılan: %2$s).</string>
+    <string name="pref_log_line_period_title">Yazma Periyodu</string>
+    <string name="pref_show_timestamp_summary">Genişletildiğinde işlem kimliğini ve zaman bilgisini göster</string>
+    <string name="pref_show_timestamp_title">İşlem Kimliğini ve Zaman Bilgisini Göster</string>
+    <string name="pref_text_size_title">Metin Boyutu</string>
+    <string name="pref_theme_choice_android_name">Android</string>
+    <string name="pref_theme_choice_att_name">Ma Bell</string>
+    <string name="pref_theme_choice_dark_name">Koyu</string>
+    <string name="pref_theme_choice_light_name">Açık</string>
+    <string name="pref_theme_choice_sprint_name">Big Yellow</string>
+    <string name="pref_theme_choice_tmobile_name">T-Mo</string>
+    <string name="pref_theme_choice_verizon_name">Big Red</string>
+    <string name="record_log">Günlük Kaydı</string>
+    <string name="save">Kaydet</string>
+    <string name="save_as">Farklı Kaydet…</string>
+    <string name="save_log">Günlüğü Kaydet</string>
+    <string name="sd_card_not_found">SD kart bulunmadı.</string>
+    <string name="select_logs_to_delete">Hangi günlüklerin silineceğini seçin.</string>
+    <string name="send_log_title">Günlüğü Gönder</string>
+    <string name="settings">Ayarlar</string>
+    <string name="simultaneous"> (Eş zamanlı)</string>
+    <string name="start_recording_log">Kaydet</string>
+    <string name="subject_log_report">Günlük raporu</string>
+    <string name="text_filter_ellipsis">Filtre…</string>
+    <string name="text_filter_text">Filtre metni</string>
+    <string name="text_include_device_info">Cihaz bilgisini dâhil et</string>
+    <string name="text_size_large_name">Büyük (14 nk)</string>
+    <string name="text_size_medium_name">Orta (12 nk)</string>
+    <string name="text_size_small_name">Küçük (10 nk)</string>
+    <string name="text_size_xlarge_name">Çok Büyük (16 nk)</string>
+    <string name="text_size_xsmall_name">Çok Küçük (8 nk)</string>
+    <string name="title_filter">Filtre</string>
+    <string name="title_filters">Filtreler</string>
+    <string name="toast_invalid_display_limit">Lütfen %1$d ve %2$d arasında bulunan geçerli bir sayı girin.</string>
+    <string name="toast_invalid_level">Geçersiz seviye ismi: %s</string>
+    <string name="toast_invalid_selection">Geçersiz seçim. Lütfen tekrar deneyin.</string>
+    <plurals name="toast_log_truncated">
+        <item quantity="one">Günlük çok büyük; son <xliff:g example="1" id="lines">%1$d</xliff:g> satır gösteriliyor.</item>
+        <item quantity="other">Günlük çok büyük; son <xliff:g example="1" id="lines">%1$d</xliff:g> satır gösteriliyor.</item>
+    </plurals>
+    <string name="toast_pref_changed_restart_required">Ayarlar değiştirildi. Değişikliklerin gözükmesi için MatLog\'u tekrar başlatın.</string>
+    <string name="toast_request_root">MatLog, günlükleri okumak için root (süper kullanıcı) erişimine ihtiyaç duyuyor.</string>
+    <string name="toast_started_select_partial">Kısmî Seçim modu devrede</string>
+    <string name="unable_to_save_log">Günlük kaydedilemedi. Geçerli bir dosya adı yazdınız mı?</string>
+    <string name="file">Dosya</string>
+    <string name="clear">Temizle</string>
+    <string name="expand_or_collapse_all">Hepsini genişlet/daralt</string>
+    <string name="no_logs_warning_title">Sistem günlüklerine erişilemiyor</string>
+    <string name="no_logs_warning">%1$s, logcat\'e erişmek için lazım olan izne sahip değil. Sadece kendisine ait günlükleri görebilirsiniz.&lt;br/&gt;&lt;br/&gt;%1$s uygulamasına izni vermek için iki seçenek vardır:&lt;br/&gt;- Cihazınızı rootlayın&lt;br/&gt;- Cihazınızı Android SDK kurulu bir bilgisayara bağlayın ve şu komutu çalıştırın (sadece bir defa gerçekleştirmeniz lazım):&lt;br/&gt;&lt;tt&gt;%2$s&lt;/tt&gt;</string>
+    <string name="copy_command">Komutu kopyala</string>
+    <string name="adb_command">ADB Komutu</string>
+    <string name="permission_not_granted">Bu özellik harici depolamaya yazma izni olmadan çalışmayacaktır.</string>
+    <string name="search">Ara</string>
+    <string name="scrubber">Hassas bilgileri çıkar</string>
+    <string name="scrubber_summary">Web url\'leri, telefon numaraları veya e-postalar gibi hassas bilgileri çıkarın</string>
+    <string name="text_include_dmesg">Kernel günlüğünü dâhil et</string>
+    <string name="save_log_zip">Zip olarak kaydet</string>
+    <string name="share_log">Paylaş</string>
+    <string name="channel_name">Kayıt bildirimi</string>
+    <string name="message_filters">Devreye sokmak için filtre üzerine tıklayın</string>
+    <string name="filter_choice_messager">Arama filtresi üzerine tıklayın</string>
+</resources>
