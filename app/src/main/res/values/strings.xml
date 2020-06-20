@@ -61,7 +61,6 @@
     <string name="delete">Delete</string>
     <string name="delete_all">Delete All</string>
     <string name="delete_saved_log">Delete Saved Logs</string>
-    <string name="delimiter">, </string>
     <string name="dialog_compiling_log">Compiling log…</string>
     <string name="dialog_initializing_recorder">Loading recorder…</string>
     <string name="dialog_loading_updates">Loading updates…</string>
