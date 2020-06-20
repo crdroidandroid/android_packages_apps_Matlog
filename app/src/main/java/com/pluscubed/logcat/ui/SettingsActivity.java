@@ -264,7 +264,7 @@ public class SettingsActivity extends AppCompatActivity {
                 checkedEntries.add(bufferPreference.getEntries()[idx]);
             }
 
-            String summary = TextUtils.join(getString(R.string.delimiter), checkedEntries);
+            String summary = TextUtils.join(PreferenceHelper.DELIMITER, checkedEntries);
 
             // add the word "simultaneous" to make it clearer what's going on with 2+ buffers
             if (checkedEntries.size() > 1) {
