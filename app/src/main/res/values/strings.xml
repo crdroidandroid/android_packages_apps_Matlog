@@ -24,15 +24,6 @@
     <string name="pref_ran_jellybean_su_update">jellybean_su</string>
     <string name="pref_show_timestamp" translatable="false">show_timestamp</string>
     <string name="pref_text_size" translatable="false">text_size</string>
-    <string name="pref_theme" translatable="false">theme</string>
-    <string name="pref_theme_choice_android_value" translatable="false">Android</string>
-    <string name="pref_theme_choice_att_value" translatable="false">Ma Bell</string>
-    <string name="pref_theme_choice_dark_value" translatable="false">Dark</string>
-    <string name="pref_theme_choice_light_value" translatable="false">Light</string>
-    <string name="pref_theme_choice_sprint_value" translatable="false">Big Yellow</string>
-    <string name="pref_theme_choice_tmobile_value" translatable="false">T-Mo</string>
-    <string name="pref_theme_choice_verizon_value" translatable="false">Big Red</string>
-    <string name="pref_theme_choice_default_value" translatable="false">Default</string>
     <string name="text_size_large_value" translatable="false">L</string>
     <string name="text_size_medium_value" translatable="false">M</string>
     <string name="text_size_small_value" translatable="false">S</string>
@@ -108,13 +99,6 @@
     <string name="pref_show_timestamp_summary">Show process id and timestamp when expanded.</string>
     <string name="pref_show_timestamp_title">Show Pid &amp; Timestamp</string>
     <string name="pref_text_size_title">Text Size</string>
-    <string name="pref_theme_choice_android_name">Android</string>
-    <string name="pref_theme_choice_att_name">Ma Bell</string>
-    <string name="pref_theme_choice_dark_name">Dark</string>
-    <string name="pref_theme_choice_light_name">Light</string>
-    <string name="pref_theme_choice_sprint_name">Big Yellow</string>
-    <string name="pref_theme_choice_tmobile_name">T-Mo</string>
-    <string name="pref_theme_choice_verizon_name">Big Red</string>
     <string name="record_log">Record Log</string>
     <string name="save">Save</string>
     <string name="save_as">Save As…</string>

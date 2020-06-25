@@ -247,8 +247,10 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 new int[]{android.R.id.text1},
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
+        updateBackgroundColor();
+
         setUpAdapter();
-        //runUpdatesIfNecessaryAndShowWelcomeMessage();
+
         startLog();
     }
 

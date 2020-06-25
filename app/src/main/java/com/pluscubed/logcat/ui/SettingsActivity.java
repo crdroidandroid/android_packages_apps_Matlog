@@ -199,14 +199,6 @@ public class SettingsActivity extends AppCompatActivity {
 
                 Toast.makeText(getActivity(), R.string.pref_log_line_period_error, Toast.LENGTH_LONG).show();
                 return false;
-
-            } else if (preference.getKey().equals(getString(R.string.pref_theme))) {
-                // update summary
-                /*int index = ArrayUtil.indexOf(mThemePreference.getEntryValues(), newValue.toString());
-                CharSequence newEntry = mThemePreference.getEntries()[index];
-                mThemePreference.setSummary(newEntry);*/
-
-                return true;
             } else if (preference.getKey().equals(getString(R.string.pref_buffer))) {
                 // buffers pref
 
