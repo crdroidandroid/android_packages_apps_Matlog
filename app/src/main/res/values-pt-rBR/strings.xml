@@ -3,14 +3,6 @@
     <!-- non-translateable strings-->
     <string name="pref_hide_partial_select_help">pref_hide_partial_selecione_ajuda</string>
     <string name="pref_ran_jellybean_su_update">jellybean_su</string>
-    <string name="pref_theme"> tema</string>
-    <string name="pref_theme_choice_android_value">Android</string>
-    <string name="pref_theme_choice_att_value">Ma Bell</string>
-    <string name="pref_theme_choice_dark_value">Escuro</string>
-    <string name="pref_theme_choice_light_value">Claro</string>
-    <string name="pref_theme_choice_sprint_value">Amarelo Grande</string>
-    <string name="pref_theme_choice_tmobile_value">T-Mo</string>
-    <string name="pref_theme_choice_verizon_value">Vermelho grande</string>
     <!-- translateable strings-->
     <string name="log_level_debug">Depurar</string>
     <string name="log_level_error">Erro</string>
@@ -32,7 +24,6 @@
     <string name="delete">Apagar</string>
     <string name="delete_all">Excluir Tudo</string>
     <string name="delete_saved_log">Excluir Registros Salvos</string>
-    <string name="delimiter">,</string>
     <string name="dialog_compiling_log">Compilando log…</string>
     <string name="dialog_initializing_recorder">Carregando o gravador…</string>
     <string name="dialog_loading_updates">Carregando atualizações...</string>
@@ -40,6 +31,10 @@
     <string name="dialog_please_wait">Por favor aguarde</string>
     <string name="enter_filename">Digite o nome do arquivo para salvar:</string>
     <string name="enter_good_filename">Por favor, insira um nome de usuário válido.</string>
+    <plurals name="files_deleted">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> arquivos serão excluídos</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> arquivos excluídos</item>
+    </plurals>
     <string name="filter_choice">Procurar por </string>
     <string name="filter_choice_pid">PID</string>
     <string name="filter_choice_tag">Tag</string>
@@ -76,13 +71,6 @@
     <string name="pref_show_timestamp_summary">Mostrar identificação do processo e carimbo de data e hora quando expandido</string>
     <string name="pref_show_timestamp_title">Mostrar Pid &amp; Timestamp</string>
     <string name="pref_text_size_title">Tamanho do texto</string>
-    <string name="pref_theme_choice_android_name">Android</string>
-    <string name="pref_theme_choice_att_name">Ma Bell</string>
-    <string name="pref_theme_choice_dark_name">Escuro</string>
-    <string name="pref_theme_choice_light_name">Claro</string>
-    <string name="pref_theme_choice_sprint_name">Amarelo Grande</string>
-    <string name="pref_theme_choice_tmobile_name">T-Mo</string>
-    <string name="pref_theme_choice_verizon_name">Vermelho grande</string>
     <string name="record_log">Registro de registro</string>
     <string name="save">Salvar</string>
     <string name="save_as">Salvar como…</string>
@@ -107,6 +95,10 @@
     <string name="toast_invalid_display_limit">Digite um número válido entre% 1 $ d e% 2 $ d. </string>
     <string name="toast_invalid_level">Nome de nível inválido: %s</string>
     <string name="toast_invalid_selection">Seleção inválida. Por favor, tente novamente.</string>
+    <plurals name="toast_log_truncated">
+        <item quantity="one"> Log muito grande; mostrando por último <xliff:g example="1" id="lines">%1$d</xliff:g> linha.</item>
+        <item quantity="other">Log muito grande; mostrando por último <xliff:g example="1" id="lines">%1$d</xliff:g> linhas.</item>
+    </plurals>
     <string name="toast_pref_changed_restart_required">Configuração atualizada. Reinicie o MatLog para ver as alterações.</string>
     <string name="toast_request_root">O MatLog requer acesso root (superusuário) para ler logs.</string>
     <string name="toast_started_select_partial">Selecione o modo Parcial ativado</string>

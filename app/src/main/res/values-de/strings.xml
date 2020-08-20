@@ -1,5 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- non-translateable strings-->
+    <string name="pref_hide_partial_select_help">pref_hide_partial_select_help</string>
+    <string name="pref_ran_jellybean_su_update">jellybean_su</string>
     <!-- translateable strings-->
+    <string name="log_level_debug">Debug</string>
+    <string name="log_level_error">Error</string>
+    <string name="log_level_info">Info</string>
+    <string name="log_level_verbose">Verbose</string>
+    <string name="log_level_warn">Warn</string>
+    <string name="log_level_wtf">Was für ein schrecklicher Fehler</string>
+    <string name="add_filter">Filter hinzufügen</string>
+    <string name="add_filter_ellipsis">Filter hinzufügen… </string>
+    <plurals name="are_you_sure">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> Datei wird gelöscht</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> Dateien werden gelöscht</item>
+    </plurals>
+    <string name="checkbox_never_show_partial_select_help">Nicht wieder anzeigen</string>
+    <string name="copied_to_clipboard">In die Zwischenablage kopiert</string>
+    <string name="copy_to_clipboard">In die Zwischenablage kopieren</string>
+    <string name="default_in_parens">(Standard)</string>
+    <string name="delete">Löschen</string>
+    <string name="delete_all">Alles löschen</string>
+    <string name="delete_saved_log">Gespeicherte Logs löschen</string>
+    <string name="dialog_compiling_log">Kompiliere Log…</string>
+    <string name="dialog_initializing_recorder">Rekorder wird geladen…</string>
+    <string name="dialog_loading_updates">Lade Updates…</string>
+    <string name="dialog_partial_select_explanation">1. Wähle die <b>erste</b> Zeile.\n2. Wähle dann die <b>letzte</b> Zeile.</string>
+    <string name="dialog_please_wait">Bitte warten</string>
+    <string name="enter_filename">Dateiname zum Speichern eingeben:</string>
+    <string name="enter_good_filename">Bitte geben Sie einen gültigen Namen ein.</string>
+    <plurals name="files_deleted">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> Datei wird gelöscht</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> Dateien gelöscht</item>
+    </plurals>
+    <string name="filter_choice">Suche nach</string>
+    <string name="filter_choice_pid">PID</string>
+    <string name="filter_choice_tag">Tag</string>
+    <string name="filter_text_colon">Text filtern:</string>
+    <string name="log_level">Log-Level</string>
+    <string name="log_level_colon">Log-Level:</string>
+    <string name="log_recording_started">Log-Aufnahme gestartet.</string>
+    <string name="log_saved">Log gespeichert.</string>
+    <string name="manage_saved_logs">Gespeicherte Logs verwalten</string>
+    <string name="menu_title_partial_select">Teilweise speichern</string>
+    <string name="no_saved_logs">Keine gespeicherten Logs gefunden.</string>
+    <string name="notification_subtext">Auswählen, um die Aufnahme zu stoppen.</string>
+    <string name="notification_ticker">Log-Aufnahme gestartet</string>
+    <string name="notification_title">Log-Aufnahme läuft</string>
+    <string name="open">Öffnen</string>
+    <string name="open_log">Log öffnen</string>
+    <string name="pref_buffer_choice_events">Events</string>
+    <string name="pref_buffer_choice_main">Main</string>
+    <string name="pref_buffer_choice_radio">Radio</string>
+    <string name="pref_buffer_none_checked_error">Bitte wählen Sie mindestens einen Puffer aus.</string>
+    <string name="pref_buffer_title">Logpuffer(s)</string>
+    <string name="pref_cat_advanced">Erweitert</string>
+    <string name="pref_cat_appearance">Aussehen</string>
+    <string name="pref_cat_configuration">Konfiguration</string>
+    <string name="pref_default_log_level_summary">Log Level beim Start, beim Öffnen von Dateien und beim Aufzeichnen (%s)</string>
+    <string name="pref_default_log_level_title">Standard Log-Level</string>
+    <string name="pref_display_limit_summary">Nur die letzten %1$d Logs anzeigen, um OutOfMemoryErrors zu vermeiden. (Standard: %2$s)</string>
+    <string name="pref_display_limit_title">Loganzeige-Limit</string>
+    <string name="pref_expanded_by_default_summary">Standardmäßig den vollständigen Logtext anzeigen.</string>
+    <string name="pref_expanded_by_default_title">Standardmäßig erweitern</string>
+    <string name="pref_log_line_period_error">Bitte geben Sie eine Zahl zwischen 1 und 1000 ein.</string>
+    <string name="pref_log_line_period_summary">Bei der Aufnahme schreiben Sie alle %1$d Zeile(n) auf die SD-Karte (Standard: %2$s).</string>
+    <string name="pref_log_line_period_title">Schreibzeit</string>
+    <string name="pref_show_timestamp_summary">Prozess-Id und Zeitstempel bei Erweiterung anzeigen.</string>
+    <string name="pref_show_timestamp_title">Pid &amp; Zeitstempel anzeigen</string>
+    <string name="pref_text_size_title">Textgröße</string>
+    <string name="record_log">Log starten</string>
+    <string name="save">Speichern</string>
+    <string name="save_as">Speichern als…</string>
+    <string name="save_log">Log speichern</string>
+    <string name="sd_card_not_found">SD-Karte nicht gefunden.</string>
+    <string name="select_logs_to_delete">Wählen Sie die zu löschenden Logs aus.</string>
+    <string name="send_log_title">Log senden</string>
+    <string name="settings">Einstellungen</string>
+    <string name="simultaneous">(Simultan)</string>
+    <string name="start_recording_log">Aufnehmen</string>
+    <string name="subject_log_report">Log Bericht</string>
+    <string name="text_filter_ellipsis">Filter…</string>
+    <string name="text_filter_text">Text filtern</string>
+    <string name="text_include_device_info">Geräteinformationen einbeziehen</string>
+    <string name="text_size_large_name">Groß (14pt)</string>
+    <string name="text_size_medium_name">Mittel (12pt)</string>
+    <string name="text_size_small_name">Klein (10pt)</string>
+    <string name="text_size_xlarge_name">Extra groß (16pt)</string>
+    <string name="text_size_xsmall_name">Extra klein (8pt)</string>
+    <string name="title_filter">Filter</string>
+    <string name="title_filters">Filter</string>
+    <string name="toast_invalid_display_limit">Bitte geben Sie eine gültige Zahl zwischen %1$d und %2$d ein.</string>
+    <string name="toast_invalid_level">Ungültiger Level Name: %s</string>
+    <string name="toast_invalid_selection">Ungültige Auswahl. Bitte versuchen Sie es erneut.</string>
+    <plurals name="toast_log_truncated">
+        <item quantity="one">Log zu groß; zeigt die letzte <xliff:g example="1" id="lines">%1$d</xliff:g> Zeile.</item>
+        <item quantity="other">Log zu groß. Zeige die letzten <xliff:g example="1" id="lines">%1$d</xliff:g> Zeilen.</item>
+    </plurals>
+    <string name="toast_pref_changed_restart_required">Einstellung aktualisiert. MatLog neu starten, um die Änderungen zu sehen.</string>
+    <string name="toast_request_root">MatLog benötigt Root-(Superuser) Rechte um Logs lesen zu können.</string>
+    <string name="toast_started_select_partial">Teilmodus auswählen aktiviert</string>
+    <string name="unable_to_save_log">Log konnte nicht gespeichert werden. Haben Sie einen gültigen Dateinamen eingegeben?</string>
+    <string name="file">Datei</string>
+    <string name="clear">Löschen</string>
+    <string name="expand_or_collapse_all">Alle erweitern/ausblenden</string>
+    <string name="no_logs_warning_title">Zugriff auf Systemlogs nicht möglich</string>
+    <string name="no_logs_warning">%1$s verfügt nicht über die erforderliche Berechtigung, um auf Logcat zuzugreifen. Du wirst nur seine eigenen Logs sehen.&lt;br/&gt;&lt;br/&gt;Sie haben zwei Optionen, um %1$s die Berechtigung zu gewähren:&lt;br/&gt;- Rooten Sie Ihr Gerät&lt;br/&gt;- Verbinden Sie Ihr Gerät mit einem Computer mit installiertem Android-SDK und führen Sie folgenden Befehl aus (nur einmal durchzuführen):&lt;br/&gt;&lt;tt&gt;%2$s&lt;/tt&gt;</string>
+    <string name="copy_command">Befehl kopieren</string>
+    <string name="adb_command">ADB-Befehl</string>
+    <string name="permission_not_granted">Diese Funktion funktioniert ohne die Berechtigung zum Schreiben des externen Speichers nicht.</string>
+    <string name="search">Suche</string>
+    <string name="scrubber">Empfindliche Informationen weglassen</string>
+    <string name="scrubber_summary">Vertrauliche Informationen wie Weburls, Telefonnummern oder E-Mails auslassen</string>
+    <string name="text_include_dmesg">Kernellog einbeziehen</string>
+    <string name="save_log_zip">Zip speichern</string>
+    <string name="share_log">Teilen</string>
+    <string name="channel_name">Benachrichtigung aufnehmen</string>
+    <string name="message_filters">Zum Aktivieren auf Filter klicken</string>
+    <string name="filter_choice_messager">Suchfilter anklicken</string>
 </resources>

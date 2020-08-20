@@ -3,14 +3,6 @@
     <!-- non-translateable strings-->
     <string name="pref_hide_partial_select_help">pref_hide_partial_select_help</string>
     <string name="pref_ran_jellybean_su_update">jellybean_su</string>
-    <string name="pref_theme">motiv</string>
-    <string name="pref_theme_choice_android_value">Android</string>
-    <string name="pref_theme_choice_att_value">Ma Bell</string>
-    <string name="pref_theme_choice_dark_value">Tmavý</string>
-    <string name="pref_theme_choice_light_value">Světlý</string>
-    <string name="pref_theme_choice_sprint_value">Big Yellow</string>
-    <string name="pref_theme_choice_tmobile_value">T-Mo</string>
-    <string name="pref_theme_choice_verizon_value">Big Red</string>
     <!-- translateable strings-->
     <string name="log_level_debug">Ladění</string>
     <string name="log_level_error">Chyba</string>
@@ -33,7 +25,6 @@
     <string name="delete">Smazat</string>
     <string name="delete_all">Smazat vše</string>
     <string name="delete_saved_log">Smazat uložené protokoly</string>
-    <string name="delimiter">, </string>
     <string name="dialog_compiling_log">Kompilace protokolu…</string>
     <string name="dialog_initializing_recorder">Načítání rekordéru…</string>
     <string name="dialog_loading_updates">Načítání aktualizací…</string>
@@ -83,13 +74,6 @@
     <string name="pref_show_timestamp_summary">Zobrazit ID a časové razítko procesu při rozbalení.</string>
     <string name="pref_show_timestamp_title">Zobrazit Pid a časové razítko</string>
     <string name="pref_text_size_title">Velikost textu</string>
-    <string name="pref_theme_choice_android_name">Android</string>
-    <string name="pref_theme_choice_att_name">Ma Bell</string>
-    <string name="pref_theme_choice_dark_name">Tmavý</string>
-    <string name="pref_theme_choice_light_name">Světlý</string>
-    <string name="pref_theme_choice_sprint_name">Big Yellow</string>
-    <string name="pref_theme_choice_tmobile_name">T-Mo</string>
-    <string name="pref_theme_choice_verizon_name">Big Red</string>
     <string name="record_log">Protokolování</string>
     <string name="save">Uložit</string>
     <string name="save_as">Uložit jako…</string>

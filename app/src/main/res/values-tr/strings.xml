@@ -3,14 +3,6 @@
     <!-- non-translateable strings-->
     <string name="pref_hide_partial_select_help">pref_hide_partial_select_help</string>
     <string name="pref_ran_jellybean_su_update">jellybean_su</string>
-    <string name="pref_theme">Tema</string>
-    <string name="pref_theme_choice_android_value">Android</string>
-    <string name="pref_theme_choice_att_value">Ma Bell</string>
-    <string name="pref_theme_choice_dark_value">Koyu</string>
-    <string name="pref_theme_choice_light_value">Açık</string>
-    <string name="pref_theme_choice_sprint_value">Big Yellow</string>
-    <string name="pref_theme_choice_tmobile_value">T-Mo</string>
-    <string name="pref_theme_choice_verizon_value">Big Red</string>
     <!-- translateable strings-->
     <string name="log_level_debug">Hatâ Ayıklama</string>
     <string name="log_level_error">Hatâ</string>
@@ -31,7 +23,6 @@
     <string name="delete">Sil</string>
     <string name="delete_all">Hepsini Sil</string>
     <string name="delete_saved_log">Kaydedilmiş Günlükleri Sil</string>
-    <string name="delimiter">, </string>
     <string name="dialog_compiling_log">Günlük derleniyor…</string>
     <string name="dialog_initializing_recorder">Kaydedici yükleniyor…</string>
     <string name="dialog_loading_updates">Güncellemeler yükleniyor…</string>
@@ -61,6 +52,7 @@
     <string name="open_log">Günlüğü Aç</string>
     <string name="pref_buffer_choice_events">Olaylar</string>
     <string name="pref_buffer_choice_main">Ana</string>
+    <string name="pref_buffer_choice_radio">Radyo</string>
     <string name="pref_buffer_none_checked_error">Lütfen asgari bir tane ara bellek seçin.</string>
     <string name="pref_buffer_title">Günlük Ara Bellek(ler)i</string>
     <string name="pref_cat_advanced">İleri Seviye</string>
@@ -78,13 +70,6 @@
     <string name="pref_show_timestamp_summary">Genişletildiğinde işlem kimliğini ve zaman bilgisini göster</string>
     <string name="pref_show_timestamp_title">İşlem Kimliğini ve Zaman Bilgisini Göster</string>
     <string name="pref_text_size_title">Metin Boyutu</string>
-    <string name="pref_theme_choice_android_name">Android</string>
-    <string name="pref_theme_choice_att_name">Ma Bell</string>
-    <string name="pref_theme_choice_dark_name">Koyu</string>
-    <string name="pref_theme_choice_light_name">Açık</string>
-    <string name="pref_theme_choice_sprint_name">Big Yellow</string>
-    <string name="pref_theme_choice_tmobile_name">T-Mo</string>
-    <string name="pref_theme_choice_verizon_name">Big Red</string>
     <string name="record_log">Günlük Kaydı</string>
     <string name="save">Kaydet</string>
     <string name="save_as">Farklı Kaydet…</string>

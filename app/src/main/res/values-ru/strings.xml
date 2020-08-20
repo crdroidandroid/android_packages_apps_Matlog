@@ -3,14 +3,6 @@
     <!-- non-translateable strings-->
     <string name="pref_hide_partial_select_help">пред-hide_partial_select_help</string>
     <string name="pref_ran_jellybean_su_update">jellybean_su</string>
-    <string name="pref_theme">тема</string>
-    <string name="pref_theme_choice_android_value">Android</string>
-    <string name="pref_theme_choice_att_value">Ma Bell</string>
-    <string name="pref_theme_choice_dark_value">Тёмная</string>
-    <string name="pref_theme_choice_light_value">Светлая</string>
-    <string name="pref_theme_choice_sprint_value">Big Yellow</string>
-    <string name="pref_theme_choice_tmobile_value">T-Mo</string>
-    <string name="pref_theme_choice_verizon_value">Big Red</string>
     <!-- translateable strings-->
     <string name="log_level_debug">Отладка</string>
     <string name="log_level_error">Ошибка</string>
@@ -33,7 +25,6 @@
     <string name="delete">Удалить</string>
     <string name="delete_all">Удалить всё</string>
     <string name="delete_saved_log">Удалить сохраненные журналы</string>
-    <string name="delimiter">,</string>
     <string name="dialog_compiling_log">Компиляция журнала…</string>
     <string name="dialog_initializing_recorder">Загрузка записи…</string>
     <string name="dialog_loading_updates">Загрузка обновлений…</string>
@@ -83,13 +74,6 @@
     <string name="pref_show_timestamp_summary">Показывать идентификатор процесса и метку времени при его расширении.</string>
     <string name="pref_show_timestamp_title">Показать Pid &amp; метка времени</string>
     <string name="pref_text_size_title">Размер текста</string>
-    <string name="pref_theme_choice_android_name">Android</string>
-    <string name="pref_theme_choice_att_name">Ma Bell</string>
-    <string name="pref_theme_choice_dark_name">Тёмная</string>
-    <string name="pref_theme_choice_light_name">Светлая</string>
-    <string name="pref_theme_choice_sprint_name">Big Yellow</string>
-    <string name="pref_theme_choice_tmobile_name">Т-Мо</string>
-    <string name="pref_theme_choice_verizon_name">Big Red</string>
     <string name="record_log">Запись журнала</string>
     <string name="save">Сохранить</string>
     <string name="save_as">Сохранить как…</string>

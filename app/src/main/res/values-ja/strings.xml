@@ -2,4 +2,16 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- non-translateable strings-->
     <!-- translateable strings-->
+    <string name="text_size_large_name">大 (14pt)</string>
+    <string name="text_size_medium_name">中 (12pt)</string>
+    <string name="text_size_small_name">小 (10pt)</string>
+    <string name="text_size_xlarge_name">特大 (16pt)</string>
+    <string name="text_size_xsmall_name">特小 (8pt)</string>
+    <string name="file">ファイル</string>
+    <string name="clear">消去</string>
+    <string name="expand_or_collapse_all">すべて展開/折りたたむ</string>
+    <string name="no_logs_warning_title">システムログにアクセスできません</string>
+    <string name="copy_command">コピーコマンド</string>
+    <string name="adb_command">ADB コマンド</string>
+    <string name="search">検索</string>
 </resources>
