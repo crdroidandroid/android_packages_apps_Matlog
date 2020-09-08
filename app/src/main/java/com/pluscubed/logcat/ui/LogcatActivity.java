@@ -125,6 +125,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private static final int COMPLETE_PARTIAL_SELECT_REQUEST = 5;
     private static final int SHOW_RECORD_LOG_REQUEST = 6;
     private static final int SHOW_RECORD_LOG_REQUEST_SHORTCUT = 7;
+    private static final int SAVE_LOG_ZIP_REQUEST = 8;
 
     private static UtilLogger log = new UtilLogger(LogcatActivity.class);
 
@@ -185,6 +186,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 break;
             case SAVE_LOG_REQUEST:
                 showSaveLogDialog();
+                break;
+            case SAVE_LOG_ZIP_REQUEST:
+                showSaveLogZipDialog();
                 break;
             case OPEN_LOG_REQUEST:
                 showOpenLogFileDialog();
@@ -1191,7 +1195,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    SAVE_LOG_REQUEST);
+                    SAVE_LOG_ZIP_REQUEST);
             return;
         }
 
