@@ -52,10 +52,13 @@ public class WidgetHelper {
 
     private static void updateWidget(Context context, AppWidgetManager manager, int appWidgetId, boolean serviceRunning) {
         RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_recording);
-        updateViews.setImageViewResource(R.id.record_badge_image_view, serviceRunning ? R.drawable.ic_widget_stop_record :R.drawable.ic_widget_start_record);
+        updateViews.setImageViewResource(R.id.record_badge_image_view, serviceRunning ? R.drawable.ic_widget_stop_record : R.drawable.ic_widget_start_record);
+        updateViews.setTextViewText(R.id.record_badge_image_text, serviceRunning ?
+                context.getResources().getString(R.string.widget_status_recording) :
+                context.getResources().getString(R.string.widget_status_stopped));
 
         PendingIntent pendingIntent = getPendingIntent(context, appWidgetId);
-        updateViews.setOnClickPendingIntent(R.id.record_badge_image_view, pendingIntent);
+        updateViews.setOnClickPendingIntent(R.id.record_badge_view, pendingIntent);
         manager.updateAppWidget(appWidgetId, updateViews);
     }
 
