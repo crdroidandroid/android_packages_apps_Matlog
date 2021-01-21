@@ -148,4 +148,6 @@
     <string name="channel_name">Record notification</string>
     <string name="message_filters">Click on filter to activate</string>
     <string name="filter_choice_messager">Click on search filter</string>
+    <string name="widget_status_stopped">Stopped</string>
+    <string name="widget_status_recording">Recording</string>
 </resources>

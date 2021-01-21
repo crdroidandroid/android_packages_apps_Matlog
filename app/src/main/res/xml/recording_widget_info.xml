@@ -5,6 +5,6 @@
     android:minHeight="40dp"
     android:minResizeHeight="40dp"
     android:minResizeWidth="40dp"
-    android:previewImage="@drawable/ic_widget_start_record_preview"
+    android:previewImage="@drawable/ic_widget_start_record"
     android:resizeMode="vertical|horizontal"
     android:updatePeriodMillis="0" />

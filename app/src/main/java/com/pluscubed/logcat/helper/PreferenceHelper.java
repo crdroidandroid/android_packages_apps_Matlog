@@ -80,8 +80,17 @@ public class PreferenceHelper {
         }
 
         editor.commit();
+    }
 
+    public static void clearWidgetExistsPreference(Context context, int appWidgetId) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().remove(WIDGET_EXISTS_PREFIX.concat(Integer.toString(appWidgetId))).commit();
+    }
 
+    public static void remapWidgetExistsPreference(Context context, int oldId, int newId) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putBoolean(WIDGET_EXISTS_PREFIX.concat(Integer.toString(newId)), true);
+        prefs.edit().remove(WIDGET_EXISTS_PREFIX.concat(Integer.toString(oldId))).commit();
     }
 
     public static int getDisplayLimitPreference(Context context) {
