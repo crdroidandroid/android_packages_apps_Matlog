@@ -26,9 +26,9 @@
     <string name="dialog_initializing_recorder">レコーダーを読み込み中…</string>
     <string name="dialog_loading_updates">アップデートを読み込み中…</string>
     <string name="dialog_partial_select_explanation">1. <b>最初</b>の行を選択して下さい。\n2. 次に<b>最後</b>の行を選択して下さい。</string>
-    <string name="dialog_please_wait">お待ちください</string>
+    <string name="dialog_please_wait">お待ち下さい</string>
     <string name="enter_filename">保存するファイル名を入力:</string>
-    <string name="enter_good_filename">有効なファイル名を入力してください</string>
+    <string name="enter_good_filename">有効なファイル名を入力して下さい。</string>
     <plurals name="files_deleted">
         <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g>ファイルが削除されます</item>
     </plurals>
@@ -51,19 +51,19 @@
     <string name="pref_buffer_choice_events">イベント</string>
     <string name="pref_buffer_choice_main">メイン</string>
     <string name="pref_buffer_choice_radio">無線</string>
-    <string name="pref_buffer_none_checked_error">少なくとも1つのバッファを選択してください</string>
+    <string name="pref_buffer_none_checked_error">少なくとも1つのバッファを選択して下さい。</string>
     <string name="pref_buffer_title">ログバッファ</string>
     <string name="pref_cat_advanced">高度な設定</string>
     <string name="pref_cat_appearance">表示設定</string>
     <string name="pref_cat_configuration">編集</string>
     <string name="pref_default_log_level_summary">ファイルを開く時と録音時の起動時のログレベル (%s)</string>
-    <string name="pref_default_log_level_title">デフォルトのログレベル</string>
-    <string name="pref_display_limit_summary">OutOfMemoryError を回避するために最後の %1$d ログのみを表示します (デフォルト: %2$s)</string>
+    <string name="pref_default_log_level_title">既定のログレベル</string>
+    <string name="pref_display_limit_summary">OutOfMemoryError を回避するために最後の %1$d ログのみを表示する (既定: %2$s)</string>
     <string name="pref_display_limit_title">ログ表示の制限</string>
-    <string name="pref_expanded_by_default_summary">デフォルトで全てのログテキストを表示します</string>
-    <string name="pref_expanded_by_default_title">デフォルトで展開</string>
-    <string name="pref_log_line_period_error">1から1000の間の整数を入力してください</string>
-    <string name="pref_log_line_period_summary">録音時は  %1$d 行ごとにSDカードに書き込みます (デフォルト: %2$s)</string>
+    <string name="pref_expanded_by_default_summary">既定で全てのログテキストを表示する</string>
+    <string name="pref_expanded_by_default_title">既定で展開</string>
+    <string name="pref_log_line_period_error">1から1000の間の整数を入力して下さい。</string>
+    <string name="pref_log_line_period_summary">録音時は  %1$d 行ごとに SD カードに書き込みます (既定: %2$s)</string>
     <string name="pref_log_line_period_title">書き込み時間</string>
     <string name="pref_show_timestamp_summary">拡張時にプロセス ID とタイムスタンプを表示する</string>
     <string name="pref_show_timestamp_title">PID とタイムスタンプを表示</string>
@@ -89,19 +89,19 @@
     <string name="text_size_xsmall_name">特小 (8pt)</string>
     <string name="title_filter">フィルター</string>
     <string name="title_filters">フィルター</string>
-    <string name="toast_invalid_display_limit">%1$d から %2$d までの有効な値を入力してください</string>
+    <string name="toast_invalid_display_limit">%1$d から %2$d までの有効な値を入力して下さい。</string>
     <string name="toast_invalid_level">無効なレベル名: %s</string>
     <string name="toast_invalid_selection">無効な選択です。もう一度お願いします。</string>
     <plurals name="toast_log_truncated">
         <item quantity="other">ログが大きすぎます。最後の<xliff:g example="1" id="lines">%1$d</xliff:g>行を表示します。</item>
     </plurals>
-    <string name="toast_pref_changed_restart_required">設定が更新されました。MatLog を再起動して変更を確認してください。</string>
+    <string name="toast_pref_changed_restart_required">設定が更新されました。MatLog を再起動して変更を確認して下さい。</string>
     <string name="toast_request_root">MatLog はログを読み取るために Root (Superuser) アクセス権を必要とします。</string>
     <string name="toast_started_select_partial">部分モードを有効化</string>
     <string name="unable_to_save_log">ログを保存できません。有効なファイル名を入力しましたか?</string>
     <string name="file">ファイル</string>
     <string name="clear">消去</string>
-    <string name="expand_or_collapse_all">すべて展開/折りたたむ</string>
+    <string name="expand_or_collapse_all">全て展開/折り畳む</string>
     <string name="no_logs_warning_title">システムログにアクセスできません</string>
     <string name="no_logs_warning">%1$s は Logcat にアクセスするために必要な権限を持っていません。独自のログのみ表示されます。&lt;br/&gt;&lt;br/&gt;%1$sに権限を付与する2つのオプションがあります:&lt;br/&gt;- 端末を Root 化する&lt;br/&gt;- 端末を Android SDK がインストールされた PC に接続し以下のコマンドを実行する (一度だけ実行の必要があります):&lt;br/&gt;&lt;tt&gt;%2$s&lt;/tt&gt;</string>
     <string name="copy_command">コピーコマンド</string>
