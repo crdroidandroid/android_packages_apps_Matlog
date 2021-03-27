@@ -1,5 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- non-translateable strings-->
+    <string name="pref_hide_partial_select_help">pref_hide_partial_select_help</string>
+    <string name="pref_ran_jellybean_su_update">jellybean_su</string>
     <!-- translateable strings-->
+    <string name="log_level_debug">Ladenie</string>
+    <string name="log_level_error">Chyba</string>
+    <string name="log_level_info">Info</string>
+    <string name="log_level_verbose">Podrobný</string>
+    <string name="log_level_warn">Varovanie</string>
+    <string name="log_level_wtf">Aké strašné zlyhanie</string>
+    <string name="add_filter">Pridať filter</string>
+    <string name="add_filter_ellipsis">Pridať filter…</string>
+    <plurals name="are_you_sure">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> súbor bude vymazaný</item>
+        <item quantity="few"><xliff:g example="1" id="files">%1$d</xliff:g> súbory budú vymazané</item>
+        <item quantity="many"><xliff:g example="1" id="files">%1$d</xliff:g> súborov bude vymazaných</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> súborov bude vymazaných</item>
+    </plurals>
+    <string name="checkbox_never_show_partial_select_help">Znovu nezobrazovať</string>
+    <string name="copied_to_clipboard">Skopírované do schránky.</string>
+    <string name="copy_to_clipboard">Skopírovať do schránky</string>
+    <string name="default_in_parens">(Predvolené)</string>
+    <string name="delete">Vymazať</string>
+    <string name="delete_all">Vymazať všetko</string>
+    <string name="delete_saved_log">Vymazať uložené protokoly</string>
+    <string name="dialog_compiling_log">Kompilácia protokolu ...</string>
+    <string name="dialog_initializing_recorder">Načítanie rekordéra…</string>
+    <string name="dialog_loading_updates">Načítavajú sa aktualizácie...</string>
+    <string name="dialog_partial_select_explanation">1. Vyberte <b>prvý</b> riadok.\n2. Potom vyberte <b>poslední</b> riadok.</string>
+    <string name="dialog_please_wait">Prosím, čakajte</string>
+    <string name="enter_filename">Pre uloženie zadajte názov súboru:</string>
+    <string name="enter_good_filename">Zadajte platný názov súboru</string>
+    <plurals name="files_deleted">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> súbor bude vymazaný</item>
+        <item quantity="few"><xliff:g example="1" id="files">%1$d</xliff:g> súbory budú vymazané</item>
+        <item quantity="many"><xliff:g example="1" id="files">%1$d</xliff:g> súborov bude vymazaných</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> súborov bude vymazaných</item>
+    </plurals>
+    <string name="filter_choice">Hľadať podľa</string>
+    <string name="filter_choice_pid">PID</string>
+    <string name="filter_choice_tag">Tag</string>
+    <string name="filter_text_colon">Filtrovať text:</string>
+    <string name="log_level">Úroveň protokolu</string>
+    <string name="log_level_colon">Úroveň protokolu:</string>
+    <string name="log_recording_started">Záznam protokolu sa začal.</string>
+    <string name="log_saved">Protokol uložený.</string>
+    <string name="manage_saved_logs">Spravovať uložené protokoly</string>
+    <string name="menu_title_partial_select">Čiastočné uloženie</string>
+    <string name="no_saved_logs">Neboli nájdené žiadne uložené protokoly.</string>
+    <string name="notification_subtext">Vyberte pre zastavenie záznamu.</string>
+    <string name="notification_ticker">Záznam protokolu sa začal</string>
+    <string name="notification_title">Záznam protokolu prebieha</string>
+    <string name="open">Otvoriť</string>
+    <string name="open_log">Otvoriť protokol</string>
+    <string name="pref_buffer_choice_events">Udalosti</string>
+    <string name="pref_buffer_choice_main">Hlavné</string>
+    <string name="pref_buffer_choice_radio">Rádio</string>
+    <string name="pref_buffer_none_checked_error">Skontrolujte prosím aspoň jednu vyrovnávaciu pamäť.</string>
+    <string name="pref_buffer_title">Protokol vyrovnávacej pamäte</string>
+    <string name="pref_cat_advanced">Rozšírené</string>
+    <string name="pref_cat_appearance">Vzhľad</string>
+    <string name="pref_cat_configuration">Konfigurácia</string>
+    <string name="pref_default_log_level_summary">Zaznamenať úroveň protokolu pri spustení, pri otváraní súborov a pri zaznamenávaní (%s)</string>
+    <string name="pref_default_log_level_title">Predvolená úroveň protokolu</string>
+    <string name="pref_display_limit_summary">Zobraziť iba posledných %1$d protokolov, aby ste sa vyhli OutOfMemoryErs. (Výchozí: %2$s)</string>
+    <string name="pref_display_limit_title">Limit zobrazenia protokolov</string>
+    <string name="pref_expanded_by_default_summary">V predvolenom nastavení zobraziť celý text protokolu</string>
+    <string name="pref_expanded_by_default_title">Rozbaliť v predvolenom nastavení</string>
+    <string name="pref_log_line_period_error">Zadajte celé číslo medzi 1 a 1000.</string>
+    <string name="pref_log_line_period_summary">Pri zaznamenávaní zapísať na SD kartu každých %1$d riadkov (predvolené: %2$s).</string>
+    <string name="pref_log_line_period_title">Perioda zápisu</string>
+    <string name="pref_show_timestamp_summary">Zobraziť ID a časovú pečiatku procesu pri rozbalení.</string>
+    <string name="pref_show_timestamp_title">Zobraziť Pid a časové razítko</string>
+    <string name="pref_text_size_title">Veľkosť textu</string>
+    <string name="record_log">Protokolovanie</string>
+    <string name="save">Uložiť</string>
+    <string name="save_as">Uložiť ako…</string>
+    <string name="save_log">Uložiť protokol</string>
+    <string name="sd_card_not_found">Nenašla sa žiadna SD karta.</string>
+    <string name="select_logs_to_delete">Vyberte protokoly, ktoré chcete zmazať.</string>
+    <string name="send_log_title">Odoslať protokol</string>
+    <string name="settings">Nastavenia</string>
+    <string name="simultaneous">(Súčasne)</string>
+    <string name="start_recording_log">Záznam</string>
+    <string name="subject_log_report">Hlásenie protokolu</string>
+    <string name="text_filter_ellipsis">Filter…</string>
+    <string name="text_filter_text">Filtrovať text</string>
+    <string name="text_include_device_info">Zahrnúť informácie o zariadení</string>
+    <string name="text_size_large_name">Veľký (14 bodov)</string>
+    <string name="text_size_medium_name">Stredný (12 bodov)</string>
+    <string name="text_size_small_name">Malý (10 bodov)</string>
+    <string name="text_size_xlarge_name">Extra veľký (16 bodov)</string>
+    <string name="text_size_xsmall_name">Extra malý (8 bodov)</string>
+    <string name="title_filter">Filter</string>
+    <string name="title_filters">Filtre</string>
+    <string name="toast_invalid_display_limit">Prosím zadajte platný dátum medzi %1$d a %2$d.</string>
+    <string name="toast_invalid_level">Neplatný názov úrovne: %s</string>
+    <string name="toast_invalid_selection">Neplatný výber. Skúste to znovu.</string>
+    <plurals name="toast_log_truncated">
+        <item quantity="one">Protokol je příliš veľký; zobrazuje posledný <xliff:g example="1" id="lines">%1$d</xliff:g> riadok.</item>
+        <item quantity="few">Protokol je příliš veľký; zobrazuje posledné <xliff:g example="1" id="lines">%1$d</xliff:g> riadky.</item>
+        <item quantity="many">Protokol je příliš veľký; zobrazuje posledných <xliff:g example="1" id="lines">%1$d</xliff:g> riadkov.</item>
+        <item quantity="other">Protokol je příliš veľký; zobrazuje posledných <xliff:g example="1" id="lines">%1$d</xliff:g> riadkov.</item>
+    </plurals>
+    <string name="toast_pref_changed_restart_required">Nastavenie aktualizované. Pre zobrazenie zmien reštartujte MatLog.</string>
+    <string name="toast_request_root">MatLog vyžaduje root prístup (superuser) pre čítanie protokolov.</string>
+    <string name="toast_started_select_partial">Vyberte \"Čiastočný režim povolený\"</string>
+    <string name="unable_to_save_log">Nemožno uložiť protokol. Zadali ste platný názov súboru?</string>
+    <string name="file">Súbor</string>
+    <string name="clear">Vyčistiť</string>
+    <string name="expand_or_collapse_all">Rozbaliť/zbaliť všetko</string>
+    <string name="no_logs_warning_title">Nemožno získať prístup k systémovým protokolom</string>
+    <string name="no_logs_warning">%1$s nemá potrebné oprávnenia pre prístup k logcat. Uvidíte iba jeho vlastné protokoly.&lt;br/&gt;&lt;br/&gt;Máte dve možnosti, ako udeliť %1$s oprávnenia:&lt;br/&gt;- Rootnite vaše zariadenie&lt;br/&gt;- Pripojte svoje zariadenie k počítaču s nainštalovaným Android SDK a spustite nasledujúci príkaz (je potrebné vykonať iba raz):&lt;br/&gt;&lt;tt&gt;%2$s&lt;/tt&gt;</string>
+    <string name="copy_command">Príkaz kopírovať</string>
+    <string name="adb_command">Príkaz ADB</string>
+    <string name="permission_not_granted">Táto funkcia nebude fungovať bez oprávnenia na zápis na externé úložisko.</string>
+    <string name="search">Vyhľadať</string>
+    <string name="scrubber">Vynechať citlivé informácie</string>
+    <string name="scrubber_summary">Vymazať citlivé informácie ako webové URL, telefónne čísla alebo e-maily</string>
+    <string name="text_include_dmesg">Zahrnúť protokoly jadra</string>
+    <string name="save_log_zip">Uložiť zip</string>
+    <string name="share_log">Zdieľať</string>
+    <string name="channel_name">Záznam upozornenia</string>
+    <string name="message_filters">Kliknite na filter pre aktiváciu</string>
+    <string name="filter_choice_messager">Kliknite na \"Vyhľadať filter\"</string>
 </resources>

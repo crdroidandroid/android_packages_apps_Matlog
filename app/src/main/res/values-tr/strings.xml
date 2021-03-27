@@ -119,4 +119,6 @@
     <string name="channel_name">Kayıt bildirimi</string>
     <string name="message_filters">Devreye sokmak için filtre üzerine tıklayın</string>
     <string name="filter_choice_messager">Arama filtresi üzerine tıklayın</string>
+    <string name="widget_status_stopped">Durduruldu</string>
+    <string name="widget_status_recording">Kaydediliyor</string>
 </resources>

@@ -125,4 +125,6 @@
     <string name="channel_name">Záznam oznámení</string>
     <string name="message_filters">Klikněte na filtr pro aktivaci</string>
     <string name="filter_choice_messager">Klikněte na \"vyhledat filtr\"</string>
+    <string name="widget_status_stopped">Zastaveno</string>
+    <string name="widget_status_recording">Nahrávání</string>
 </resources>
