@@ -119,4 +119,6 @@
     <string name="channel_name">Benachrichtigung aufnehmen</string>
     <string name="message_filters">Zum Aktivieren auf Filter klicken</string>
     <string name="filter_choice_messager">Suchfilter anklicken</string>
+    <string name="widget_status_stopped">Angehalten</string>
+    <string name="widget_status_recording">Aufzeichnung</string>
 </resources>

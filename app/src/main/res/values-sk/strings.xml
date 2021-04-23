@@ -125,4 +125,6 @@
     <string name="channel_name">Záznam upozornenia</string>
     <string name="message_filters">Kliknite na filter pre aktiváciu</string>
     <string name="filter_choice_messager">Kliknite na \"Vyhľadať filter\"</string>
+    <string name="widget_status_stopped">Zastavené</string>
+    <string name="widget_status_recording">Nahrávanie</string>
 </resources>
