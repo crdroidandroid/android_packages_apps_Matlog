@@ -116,4 +116,6 @@
     <string name="channel_name">通知を記録</string>
     <string name="message_filters">フィルターをクリックして有効化</string>
     <string name="filter_choice_messager">検索フィルターをクリック</string>
+    <string name="widget_status_stopped">停止しました</string>
+    <string name="widget_status_recording">記録中です</string>
 </resources>
