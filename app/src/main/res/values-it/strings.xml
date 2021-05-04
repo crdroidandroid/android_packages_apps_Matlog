@@ -9,12 +9,12 @@
     <string name="log_level_info">Info</string>
     <string name="log_level_verbose">Verbose</string>
     <string name="log_level_warn">Avviso</string>
-    <string name="log_level_wtf">Che errore terribile</string>
-    <string name="add_filter">Aggiungi filtro</string>
-    <string name="add_filter_ellipsis">Aggiungi filtro…</string>
+    <string name="log_level_wtf">Che Terribile Errore</string>
+    <string name="add_filter">Aggiungi Filtro</string>
+    <string name="add_filter_ellipsis">Aggiungi Filtro…</string>
     <plurals name="are_you_sure">
-        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> file verrà eliminato</item>
-        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> file verranno eliminati</item>
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> file sarà eliminato</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> file saranno eliminati</item>
     </plurals>
     <string name="checkbox_never_show_partial_select_help">Non mostrare più</string>
     <string name="copied_to_clipboard">Copiato negli appunti.</string>
@@ -22,103 +22,103 @@
     <string name="default_in_parens">(Predefinito)</string>
     <string name="delete">Elimina</string>
     <string name="delete_all">Elimina Tutto</string>
-    <string name="delete_saved_log">Elimina Log Salvati</string>
-    <string name="dialog_compiling_log">Compilazione log in corso…</string>
-    <string name="dialog_initializing_recorder">Caricamento registratore in corso…</string>
-    <string name="dialog_loading_updates">Caricamento aggiornamenti in corso…</string>
-    <string name="dialog_partial_select_explanation">1. Seleziona la <b>prima</b> riga.\n2. Quindi seleziona la <b>ultima</b> riga.</string>
-    <string name="dialog_please_wait">Attendere prego</string>
+    <string name="delete_saved_log">Elimina Registri Salvati</string>
+    <string name="dialog_compiling_log">Compilando il registro…</string>
+    <string name="dialog_initializing_recorder">Caricamento registratore…</string>
+    <string name="dialog_loading_updates">Caricamento aggiornamenti…</string>
+    <string name="dialog_partial_select_explanation">1. Seleziona la &lt;b&gt;prima&lt;/b&gt; riga.\n2. Poi seleziona l\'&lt;B&gt;ultima&lt;/b&gt; riga.</string>
+    <string name="dialog_please_wait">Si prega di attendere</string>
     <string name="enter_filename">Inserisci il nome del file da salvare:</string>
-    <string name="enter_good_filename">Inserisci un nome file valido.</string>
+    <string name="enter_good_filename">Sei pregato di inserire un nome del file valido.</string>
     <plurals name="files_deleted">
-        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> file da eliminare</item>
-        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> file eliminati</item>
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> file sarà eliminato</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> file saranno eliminati</item>
     </plurals>
     <string name="filter_choice">Cerca per</string>
     <string name="filter_choice_pid">PID</string>
     <string name="filter_choice_tag">Etichetta</string>
     <string name="filter_text_colon">Testo del filtro:</string>
-    <string name="log_level">Livello di registrazione</string>
-    <string name="log_level_colon">Livello di registrazione:</string>
-    <string name="log_recording_started">Registrazione del registro iniziata.</string>
+    <string name="log_level">Livello del Registro</string>
+    <string name="log_level_colon">Livello del registro:</string>
+    <string name="log_recording_started">Registrazione del registro avviata.</string>
     <string name="log_saved">Registro salvato.</string>
-    <string name="manage_saved_logs">Gestisci registri salvati</string>
-    <string name="menu_title_partial_select">Salva parziale</string>
+    <string name="manage_saved_logs">Gestisci Registri Salvati</string>
+    <string name="menu_title_partial_select">Salva Parziale</string>
     <string name="no_saved_logs">Nessun registro salvato trovato.</string>
     <string name="notification_subtext">Seleziona per interrompere la registrazione.</string>
-    <string name="notification_ticker">Registrazione del registro iniziata</string>
+    <string name="notification_ticker">Registrazione del registro avviata</string>
     <string name="notification_title">Registrazione del registro in corso</string>
     <string name="open">Apri</string>
-    <string name="open_log">Apri registro</string>
+    <string name="open_log">Apri Registro</string>
     <string name="pref_buffer_choice_events">Eventi</string>
     <string name="pref_buffer_choice_main">Principale</string>
     <string name="pref_buffer_choice_radio">Radio</string>
-    <string name="pref_buffer_none_checked_error">Si prega di selezionare almeno un buffer.</string>
-    <string name="pref_buffer_title">Buffer dei registri</string>
-    <string name="pref_cat_advanced">Avanzato</string>
+    <string name="pref_buffer_none_checked_error">Sei pregato di selezionare almeno un buffer.</string>
+    <string name="pref_buffer_title">Buffer del Registro</string>
+    <string name="pref_cat_advanced">Avanzate</string>
     <string name="pref_cat_appearance">Aspetto</string>
     <string name="pref_cat_configuration">Configurazione</string>
-    <string name="pref_default_log_level_summary">Livello di log all\'avvio, all\'apertura dei file e alla registrazione (%s)</string>
-    <string name="pref_default_log_level_title">Livello di log predefinito</string>
-    <string name="pref_display_limit_summary">Mostra solo gli ultimi %1$d log, per evitare errori del tipo OutOfMemoryErrors. (Predefinito: %2$s)</string>
-    <string name="pref_display_limit_title">Limite visualizzazione log</string>
-    <string name="pref_expanded_by_default_summary">Mostra il testo del log completo per impostazione predefinita.</string>
-    <string name="pref_expanded_by_default_title">Espandi per impostazione predefinita</string>
-    <string name="pref_log_line_period_error">Inserisci un numero intero compreso tra 1 e 1000.</string>
-    <string name="pref_log_line_period_summary">Durante la registrazione, scrivi sulla scheda SD ogni %1$d riga(e) (predefinito: %2$s).</string>
-    <string name="pref_log_line_period_title">Periodo di scrittura</string>
-    <string name="pref_show_timestamp_summary">Mostra id processo e timestamp quando ampliato.</string>
-    <string name="pref_show_timestamp_title">Mostra timestamp del pid &amp;</string>
-    <string name="pref_text_size_title">Dimensione testo</string>
-    <string name="record_log">Registra log</string>
+    <string name="pref_default_log_level_summary">Livello del registro all\'avvio, aprendo i file e registrando (%s)</string>
+    <string name="pref_default_log_level_title">Livello Predefinito del Registro</string>
+    <string name="pref_display_limit_summary">Mostra solo gli ultimi %1$d registri, per evitare OutOfMemoryErrors. (Predefinito: %2$s)</string>
+    <string name="pref_display_limit_title">Limite di Visualizzazione del Registro</string>
+    <string name="pref_expanded_by_default_summary">Mostra il testo completo del registro di default.</string>
+    <string name="pref_expanded_by_default_title">Espandi di Default</string>
+    <string name="pref_log_line_period_error">Sei pregato di inserire un intero tra 1 e 1000.</string>
+    <string name="pref_log_line_period_summary">Registrando, scrivi sulla scheda SD ogni %1$d righe (predefinito: %2$s).</string>
+    <string name="pref_log_line_period_title">Periodo di Scrittura</string>
+    <string name="pref_show_timestamp_summary">Mostra id e ora/data del processo all\'espansione.</string>
+    <string name="pref_show_timestamp_title">Mostra Pid e ora/data</string>
+    <string name="pref_text_size_title">Dimensione del Testo</string>
+    <string name="record_log">Registra Registro</string>
     <string name="save">Salva</string>
-    <string name="save_as">Salva come…</string>
-    <string name="save_log">Salva registro</string>
+    <string name="save_as">Salva Come…</string>
+    <string name="save_log">Salva Registro</string>
     <string name="sd_card_not_found">Scheda SD non trovata.</string>
-    <string name="select_logs_to_delete">Selezionare quali registri eliminare.</string>
-    <string name="send_log_title">Invia registro</string>
+    <string name="select_logs_to_delete">Seleziona quali registri eliminare.</string>
+    <string name="send_log_title">Invia Registro</string>
     <string name="settings">Impostazioni</string>
-    <string name="simultaneous">(Contemporaneo)</string>
+    <string name="simultaneous"> (Simultaneo)</string>
     <string name="start_recording_log">Registra</string>
-    <string name="subject_log_report">Segnalazione log</string>
+    <string name="subject_log_report">Rapporto del Registro</string>
     <string name="text_filter_ellipsis">Filtro…</string>
-    <string name="text_filter_text">Filtra testo</string>
+    <string name="text_filter_text">Testo del filtro</string>
     <string name="text_include_device_info">Includi informazioni sul dispositivo</string>
     <string name="text_size_large_name">Grande (14pt)</string>
     <string name="text_size_medium_name">Medio (12pt)</string>
     <string name="text_size_small_name">Piccolo (10pt)</string>
-    <string name="text_size_xlarge_name">Extra Large (16pt)</string>
-    <string name="text_size_xsmall_name">Extra piccolo (8pt)</string>
+    <string name="text_size_xlarge_name">Molto Grande (16pt)</string>
+    <string name="text_size_xsmall_name">Molto Piccolo (8pt)</string>
     <string name="title_filter">Filtro</string>
     <string name="title_filters">Filtri</string>
-    <string name="toast_invalid_display_limit">Inserisci un numero valido tra %1$d e %2$d.</string>
-    <string name="toast_invalid_level">Nome livello non valido: %s</string>
-    <string name="toast_invalid_selection">Selezione non valida. Riprova.</string>
+    <string name="toast_invalid_display_limit">Sei pregato di inserire un numero valido tra %1$d e %2$d.</string>
+    <string name="toast_invalid_level">Nome non valido del livello: %s</string>
+    <string name="toast_invalid_selection">Selezione non valida. Sei pregato di riprovare.</string>
     <plurals name="toast_log_truncated">
-        <item quantity="one">Registro troppo grande; mostra l\'ultima riga <xliff:g example="1" id="lines">%1$d</xliff:g>.</item>
-        <item quantity="other">Registro troppo grande; mostra le ultime <xliff:g example="1" id="lines">%1$d</xliff:g> righe.</item>
+        <item quantity="one">Registro troppo grande; mostrando l\'ultima <xliff:g example="1" id="lines">%1$d</xliff:g> riga.</item>
+        <item quantity="other">Registro troppo grande; mostrando le ultime <xliff:g example="1" id="lines">%1$d</xliff:g> righe.</item>
     </plurals>
     <string name="toast_pref_changed_restart_required">Impostazione aggiornata. Riavvia MatLog per vedere le modifiche.</string>
-    <string name="toast_request_root">MatLog richiede l\'accesso root (superuser) ai log di lettura.</string>
-    <string name="toast_started_select_partial">Seleziona modalità parziale abilitata</string>
-    <string name="unable_to_save_log">Impossibile salvare il registro. Hai inserito un nome di file valido?</string>
+    <string name="toast_request_root">MetLog richiede l\'accesso al root (superuser) per leggere i registri.</string>
+    <string name="toast_started_select_partial">Seleziona la modalità Parziale abilitata</string>
+    <string name="unable_to_save_log">Impossibile salvare il registro. Hai inserito un nome del file valido?</string>
     <string name="file">File</string>
     <string name="clear">Svuota</string>
     <string name="expand_or_collapse_all">Espandi/Comprimi tutto</string>
     <string name="no_logs_warning_title">Impossibile accedere ai registri di sistema</string>
-    <string name="no_logs_warning">%1$s non ha i permessi necessari per accedere a logcat. Vedrai solo i suoi registri.&lt;br/&gt;&lt;br/&gt;Hai due opzioni per concedere %1$s il permesso:&lt;br/&gt;- Ottenere i permessi di root sul tuo dispositivo&lt;br/&gt;- Connetti il tuo dispositivo a un computer con Android SDK installato ed esegui il seguente comando (solo una volta):&lt;br/&gt;&lt;tt&gt;%2$s&lt;/tt&gt;</string>
+    <string name="no_logs_warning">%1$s non ha le autorizzazioni necessarie per accedere al logcat. Vedrai solo i suoi registri.&lt;br/&gt;&lt;br/&gt;Hai due opzioni per concedere le autorizzazioni a %1$s.&lt;br/&gt;- Rootare il tuo dispositivo&lt;br/&gt;- Connettere il tuo dispositivo a un computer con Android SDK installato ed eseguire il seguente comando (serve farlo solo una volta):&lt;br/&gt;&lt;tt&gt;%2$s&lt;/tt&gt;</string>
     <string name="copy_command">Copia comando</string>
     <string name="adb_command">Comando ADB</string>
-    <string name="permission_not_granted">Questa funzione non funzionerà senza il permesso di scrittura sulla memoria esterna.</string>
+    <string name="permission_not_granted">Questa funzionalità non funzionerà senza l\'autorizzazione a scrivere la memoria esterna.</string>
     <string name="search">Cerca</string>
     <string name="scrubber">Ometti informazioni sensibili</string>
-    <string name="scrubber_summary">Ometti informazioni sensibili come indirizzi URL dei siti web, numeri di telefono o email</string>
+    <string name="scrubber_summary">Ometti le informazioni sensibili come url web, numeri telefonici o email</string>
     <string name="text_include_dmesg">Includi il registro del kernel</string>
     <string name="save_log_zip">Salva zip</string>
     <string name="share_log">Condividi</string>
     <string name="channel_name">Registra notifica</string>
-    <string name="message_filters">Fare clic sul filtro per attivare</string>
-    <string name="filter_choice_messager">Fare clic sul filtro di ricerca</string>
+    <string name="message_filters">Clicca sul filtro per attivarlo</string>
+    <string name="filter_choice_messager">Clicca sul filtro di ricerca</string>
     <string name="widget_status_stopped">Interrotto</string>
-    <string name="widget_status_recording">Registrazione in corso</string>
+    <string name="widget_status_recording">Registrando</string>
 </resources>
