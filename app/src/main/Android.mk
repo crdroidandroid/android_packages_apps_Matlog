@@ -40,7 +40,7 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_PRIVILEGED_MODULE := true
 
 ifneq (,$(wildcard frameworks/base))
-  LOCAL_PRIVATE_PLATFORM_APIS := true
+  LOCAL_SDK_VERSION := current
 else
   LOCAL_SDK_VERSION := system_current
 endif
