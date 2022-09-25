@@ -36,7 +36,7 @@ android_app {
 
     platform_apis: true,
     privileged: true,
-    product_specific: true,
+    system_ext_specific: true,
 
     required: [
         "privapp_whitelist_org.omnirom.logcat"
@@ -45,7 +45,7 @@ android_app {
 
 prebuilt_etc {
     name: "privapp_whitelist_org.omnirom.logcat",
-    product_specific: true,
+    system_ext_specific: true,
     sub_dir: "permissions",
     src: "app/src/main/privapp_whitelist_org.omnirom.logcat.xml",
     filename_from_src: true,
