@@ -21,7 +21,6 @@
             android:ellipsize="marquee"
             android:paddingBottom="8dp"
             android:text="@string/filter_choice_tag"
-            android:textAppearance="@android:style/TextAppearance.Material.Menu"
             android:singleLine="true" />
 
         <TextView
@@ -30,8 +29,6 @@
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:padding="8dp"
-            android:textAppearance="@android:style/TextAppearance.Material.Menu"
-            android:fontFamily="@font/roboto_mono_family"
             tools:text="text"
             android:singleLine="true" />
 
@@ -51,7 +48,6 @@
             android:ellipsize="marquee"
             android:paddingBottom="8dp"
             android:text="@string/filter_choice_pid"
-            android:textAppearance="@android:style/TextAppearance.Material.Menu"
             android:singleLine="true" />
 
         <TextView
@@ -60,8 +56,6 @@
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:padding="8dp"
-            android:textAppearance="@android:style/TextAppearance.Material.Menu"
-            android:fontFamily="@font/roboto_mono_family"
             tools:text="text"
             android:singleLine="true" />
 

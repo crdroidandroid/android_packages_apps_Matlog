@@ -27,6 +27,7 @@ import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
 import com.pluscubed.logcat.util.UtilLogger;
 
+import org.omnirom.logcat.OmniApp;
 import org.omnirom.logcat.R;
 
 import java.io.IOException;
@@ -47,7 +48,6 @@ public class LogcatRecordingService extends IntentService {
     public static final String EXTRA_QUERY_FILTER = "filter";
     public static final String EXTRA_LEVEL = "level";
     private static final String ACTION_STOP_RECORDING = "com.pluscubed.catlog.action.STOP_RECORDING";
-    private static final String NOTIFICATION_CHANNEL_ID = "com.pluscubed.logcat.notification";
 
     private static UtilLogger log = new UtilLogger(LogcatRecordingService.class);
     private final Object lock = new Object();
@@ -75,8 +75,6 @@ public class LogcatRecordingService extends IntentService {
     public void onCreate() {
         super.onCreate();
         log.d("onCreate()");
-
-        createNotificationChannel();
 
         IntentFilter intentFilter = new IntentFilter(ACTION_STOP_RECORDING);
         intentFilter.addDataScheme(URI_SCHEME);
@@ -144,10 +142,11 @@ public class LogcatRecordingService extends IntentService {
                 Long.toHexString(new Random().nextLong())));
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
-                0 /* no requestCode */, stopRecordingIntent, PendingIntent.FLAG_ONE_SHOT);
+                0 /* no requestCode */, stopRecordingIntent,
+                PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
 
         // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification.Builder(getApplicationContext(), NOTIFICATION_CHANNEL_ID)
+        Notification notification = new Notification.Builder(getApplicationContext(), OmniApp.NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker(tickerText)
                 .setWhen(System.currentTimeMillis())
@@ -266,13 +265,5 @@ public class LogcatRecordingService extends IntentService {
                 }
             }
         }
-    }
-
-    private void createNotificationChannel() {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        CharSequence name = getString(R.string.channel_name);
-        int importance = NotificationManager.IMPORTANCE_LOW;
-        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-        notificationManager.createNotificationChannel(channel);
     }
 }

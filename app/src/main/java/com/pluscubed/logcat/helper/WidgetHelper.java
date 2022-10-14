@@ -71,7 +71,8 @@ public class WidgetHelper {
         intent.setAction(RecordingWidgetProvider.ACTION_RECORD_OR_STOP);
 
         return PendingIntent.getActivity(context,
-                0 /* no requestCode */, intent, PendingIntent.FLAG_ONE_SHOT);
+                0 /* no requestCode */, intent,
+                PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
     }
 
     private static int[] findAppWidgetIds(Context context) {

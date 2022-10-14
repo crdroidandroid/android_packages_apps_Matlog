@@ -1,23 +1,16 @@
 <resources>
 
-    <style name="Theme.MatLog" parent="@style/Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.MatLog" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:windowLightNavigationBar">true</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
-        <item name="android:windowBackground">@color/main_background_light</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+        <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/omni_logo_color</item>
     </style>
 
-    <style name="Theme.MatLog.Toolbar" parent="@style/ThemeOverlay.AppCompat.ActionBar">
-        <item name="titleTextColor">@android:color/white</item>
-        <item name="colorControlNormal">@android:color/white</item>
-        <item name="android:textColorHint">@android:color/white</item>
-        <item name="android:editTextColor">@android:color/white</item>
+    <style name="LogcatListItem" parent="@style/TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="fontFamily">monospace</item>
     </style>
-    
-    <style name="Theme.MatLog.Toolbar.Menu" parent="@style/ThemeOverlay.AppCompat.ActionBar">
-    </style>
-
 </resources>

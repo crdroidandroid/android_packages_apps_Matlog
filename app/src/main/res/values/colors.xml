@@ -1,5 +1,5 @@
 <resources>
-
+    <color name="omni_logo_color">#a1c729</color>
     <color name="yellow1">#FFfbad00</color>
     <color name="background_wtf">#FF999900</color>
     <color name="background_error">#FFCC0000</color>
@@ -95,6 +95,5 @@
     <color name="android_theme_tag_color_16">#FFCC3399</color>
     <color name="android_theme_tag_color_17">#FFFFCC00</color>
     <color name="primary">#448AFF</color>
-    <color name="accent">#448AFF</color>
 
 </resources>

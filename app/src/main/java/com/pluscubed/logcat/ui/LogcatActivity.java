@@ -64,7 +64,6 @@ import com.pluscubed.logcat.helper.DmesgHelper;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
 import com.pluscubed.logcat.helper.ServiceHelper;
-import com.pluscubed.logcat.helper.UpdateHelper;
 import com.pluscubed.logcat.intents.Intents;
 import com.pluscubed.logcat.reader.LogcatReader;
 import com.pluscubed.logcat.reader.LogcatReaderLoader;
@@ -238,7 +237,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         ((RecyclerView) findViewById(R.id.list)).setItemAnimator(null);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_actionbar));
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         mCollapsedMode = !PreferenceHelper.getExpandedByDefaultPreference(this);
 
@@ -251,8 +250,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 new int[]{android.R.id.text1},
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-        updateBackgroundColor();
-
         setUpAdapter();
 
         startLog();
@@ -263,14 +260,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         switch (action) {
             case "record":
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            SHOW_RECORD_LOG_REQUEST_SHORTCUT);
-                    return;
-                }
-
                 String logFilename = DialogHelper.createLogFilename();
                 String defaultLogLevel = Character.toString(PreferenceHelper.getDefaultLogLevelPreference(this));
 
@@ -283,40 +272,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
                 break;
         }
-    }
-
-    private void runUpdatesIfNecessaryAndShowWelcomeMessage() {
-
-        if (UpdateHelper.areUpdatesNecessary(this)) {
-            // show progress dialog while updates are running
-
-            final ProgressDialog dialog = ProgressDialog.show(this, getResources().getString(R.string.dialog_please_wait),
-                    getResources().getString(R.string.dialog_loading_updates), true, false);
-
-            new AsyncTask<Void, Void, Void>() {
-
-                @Override
-                protected Void doInBackground(Void... params) {
-                    UpdateHelper.runUpdatesIfNecessary(LogcatActivity.this);
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void result) {
-                    super.onPostExecute(result);
-                    if (dialog.isShowing()) {
-                        dialog.dismiss();
-                    }
-                    startLog();
-                }
-
-
-            }.execute((Void) null);
-
-        } else {
-            startLog();
-        }
-
     }
 
     private void addFiltersToSuggestions() {
@@ -789,14 +744,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showRecordLogDialog() {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    SHOW_RECORD_LOG_REQUEST);
-            return;
-        }
         // start up the dialog-like activity
         String[] suggestions = ArrayUtil.toArray(new ArrayList<>(mSearchSuggestionsSet), String.class);
 
@@ -1024,18 +971,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void startDeleteSavedLogsDialog() {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    DELETE_SAVED_LOG_REQUEST);
-            return;
-        }
-        if (!SaveLogHelper.checkSdCard(this)) {
-            return;
-        }
-
         List<CharSequence> filenames = new ArrayList<CharSequence>(SaveLogHelper.getLogFilenames(false));
 
         if (filenames.isEmpty()) {
@@ -1142,15 +1077,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showSendLogDialog() {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    SEND_LOG_ID_REQUEST);
-            return;
-        }
-
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         @SuppressLint("InflateParams") View includeDeviceInfoView = inflater.inflate(R.layout.dialog_send_log, null, false);
         final CheckBox includeDeviceInfoCheckBox = (CheckBox) includeDeviceInfoView.findViewById(android.R.id.checkbox);
@@ -1190,15 +1116,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showSaveLogZipDialog() {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    SAVE_LOG_ZIP_REQUEST);
-            return;
-        }
-
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         @SuppressLint("InflateParams") View includeDeviceInfoView = inflater.inflate(R.layout.dialog_send_log, null, false);
         final CheckBox includeDeviceInfoCheckBox = (CheckBox) includeDeviceInfoView.findViewById(android.R.id.checkbox);
@@ -1238,11 +1155,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     protected void sendLogToTargetApp(final boolean includeDeviceInfo, final boolean includeDmesg) {
-
-        if (!SaveLogHelper.checkSdCard(this)) {
-            return;
-        }
-
         final Handler ui = new Handler(Looper.getMainLooper());
         new Thread(new Runnable() {
             private ProgressDialog mDialog;
@@ -1277,11 +1189,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     protected void saveLogToTargetApp(final boolean includeDeviceInfo, final boolean includeDmesg) {
-
-        if (!SaveLogHelper.checkSdCard(this)) {
-            return;
-        }
-
         final Handler ui = new Handler(Looper.getMainLooper());
         new Thread(new Runnable() {
             private ProgressDialog mDialog;
@@ -1423,18 +1330,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showSaveLogDialog() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    SAVE_LOG_REQUEST);
-            return;
-        }
-
-        if (!SaveLogHelper.checkSdCard(this)) {
-            return;
-        }
-
         class InputCallback implements DialogHelper.InputTextCallback {
             @Override
             public void setInputText(String text) {
@@ -1529,18 +1424,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showOpenLogFileDialog() {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    OPEN_LOG_REQUEST);
-            return;
-        }
-        if (!SaveLogHelper.checkSdCard(this)) {
-            return;
-        }
-
         final List<CharSequence> filenames = new ArrayList<CharSequence>(SaveLogHelper.getLogFilenames(true));
 
         if (filenames.isEmpty()) {
@@ -1751,19 +1634,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void completePartialSelect() {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    COMPLETE_PARTIAL_SELECT_REQUEST);
-            return;
-        }
-        if (!SaveLogHelper.checkSdCard(this)) {
-            cancelPartialSelect();
-            return;
-        }
-
         class InputCallback implements DialogHelper.InputTextCallback {
             @Override
             public void setInputText(String text) {
@@ -1860,18 +1730,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     private void logLevelChanged() {
         search(mSearchingString);
-    }
-
-    private void updateBackgroundColor() {
-        ColorScheme colorScheme = PreferenceHelper.getColorScheme(this);
-
-        final int color = colorScheme.getBackgroundColor(LogcatActivity.this);
-
-        mHandler.post(new Runnable() {
-            public void run() {
-                findViewById(R.id.main_background).setBackgroundColor(color);
-            }
-        });
     }
 
 

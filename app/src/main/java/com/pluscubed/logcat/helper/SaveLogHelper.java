@@ -79,24 +79,6 @@ public class SaveLogHelper {
         }
     }
 
-    public static boolean checkSdCard(Context context) {
-
-        boolean result = SaveLogHelper.checkIfSdCardExists();
-
-        if (!result) {
-            Toast.makeText(context, R.string.sd_card_not_found, Toast.LENGTH_LONG).show();
-        }
-        return result;
-    }
-
-    public static boolean checkIfSdCardExists() {
-
-        File sdcardDir = Environment.getExternalStorageDirectory();
-
-        return sdcardDir != null && sdcardDir.listFiles() != null;
-
-    }
-
     public static File getFile(String filename) {
 
         File catlogDir = getSavedLogsDirectory();

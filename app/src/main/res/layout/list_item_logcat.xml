@@ -19,8 +19,7 @@
         android:maxLines="1"
         android:paddingEnd="2dp"
         android:paddingRight="2dp"
-        android:textSize="12sp"
-        android:fontFamily="@font/roboto_mono_family"
+        style="@style/LogcatListItem"
         tools:ignore="RtlSymmetry"
         tools:text="6177"/>
 
@@ -33,8 +32,7 @@
         android:maxLines="1"
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
-        android:textSize="12sp"
-        android:fontFamily="@font/roboto_mono_family"
+        style="@style/LogcatListItem"
         tools:text="12 June 2011"/>
 
     <TextView
@@ -47,8 +45,7 @@
         android:ellipsize="end"
         android:paddingEnd="2dp"
         android:paddingRight="2dp"
-        android:textSize="12sp"
-        android:fontFamily="@font/roboto_mono_family"
+        style="@style/LogcatListItem"
         tools:ignore="RtlSymmetry"
         tools:text="SomeActivity"/>
 
@@ -61,8 +58,7 @@
         android:layout_toRightOf="@+id/tag_text"
         android:gravity="center_horizontal"
         android:maxLines="1"
-        android:textSize="12sp"
-        android:fontFamily="@font/roboto_mono_family"
+        style="@style/LogcatListItem"
         tools:text="D"/>
 
 
@@ -76,8 +72,7 @@
         android:ellipsize="end"
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
-        android:textSize="12sp"
-        android:fontFamily="@font/roboto_mono_family"
+        style="@style/LogcatListItem"
         tools:text="Blah blah blah a bunch of output"/>
 
 
