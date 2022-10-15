@@ -8,7 +8,9 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@+id/list" >
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
@@ -38,16 +40,25 @@
             android:clipToPadding="false"
             android:dividerHeight="0dp"
             android:scrollbars="vertical" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_compat_margin"
-            app:backgroundTint="?android:attr/colorPrimary"
-            app:srcCompat="@drawable/ic_pause_white_24dp"
-            app:tint="@android:color/white" />
-
     </FrameLayout>
+
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/menu_bottom_app_bar"
+        app:fabAlignmentMode="end"
+        app:backgroundTint="?attr/colorSurface"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/bottomAppBar"
+        app:backgroundTint="?android:attr/colorPrimary"
+        app:srcCompat="@drawable/ic_pause_white_24dp"
+        app:tint="@android:color/white" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

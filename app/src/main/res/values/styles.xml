@@ -1,16 +1,23 @@
 <resources>
 
     <style name="Theme.MatLog" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimary">@android:color/system_accent1_500</item>
+        <item name="colorAccent">@android:color/system_accent1_500</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/omni_logo_color</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListViewStyle</item>
     </style>
 
     <style name="LogcatListItem" parent="@style/TextAppearance.Material3.LabelSmall">
         <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="fontFamily">monospace</item>
     </style>
+
+    <style name="DropDownListViewStyle" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:scrollbars">none</item>
+    </style>
+
 </resources>

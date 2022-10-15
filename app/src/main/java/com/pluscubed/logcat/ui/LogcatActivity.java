@@ -44,6 +44,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pluscubed.logcat.LogcatRecordingService;
 import com.pluscubed.logcat.data.ColorScheme;
@@ -100,6 +101,7 @@ import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static android.provider.DocumentsContract.EXTRA_INITIAL_URI;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_CLEAR;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_COPY_ID;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_EXPAND_ALL;
@@ -239,6 +241,49 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
+
+        ((BottomAppBar) findViewById(R.id.bottomAppBar)).setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_log_level:
+                        showLogLevelDialog();
+                        return true;
+                    case R.id.menu_open_log:
+                        showOpenLogFileDialog();
+                        return true;
+                    case R.id.menu_save_log:
+                        showSaveLogDialog();
+                        return true;
+                    case R.id.menu_record_log:
+                        showRecordLogDialog();
+                        return true;
+                    case R.id.menu_send_log_zip:
+                        showSendLogDialog();
+                        return true;
+                    case R.id.menu_save_log_zip:
+                        showSaveLogZipDialog();
+                        return true;
+                    case android.R.id.home:
+                        onBackPressed();
+                        return true;
+                    case R.id.menu_delete_saved_log:
+                        startDeleteSavedLogsDialog();
+                        return true;
+                    case R.id.menu_settings:
+                        startSettingsActivity();
+                        return true;
+                    case R.id.menu_partial_select:
+                        startPartialSelectMode();
+                        return true;
+                    case R.id.menu_filters:
+                        showFiltersDialog();
+                        return true;
+                }
+                return false;
+            }
+        });
+
         mCollapsedMode = !PreferenceHelper.getExpandedByDefaultPreference(this);
 
         log.d("initial collapsed mode is %s", mCollapsedMode);
@@ -348,9 +393,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         }
 
         updateFabStatus();
-
-        //boolean recordingInProgress = ServiceHelper.checkIfServiceIsRunning(getApplicationContext(), LogcatRecordingService.class);
-        //findViewById(R.id.fab).setVisibility(recordingInProgress ? View.VISIBLE : View.GONE);
     }
 
     private void restartMainLog() {
@@ -491,29 +533,10 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean showingMainLog = (mTask != null);
-
-        /*MenuItem item = menu.findItem(R.id.menu_expand_all);
-        if (mCollapsedMode) {
-            item.setIcon(R.drawable.ic_expand_more_white_24dp);
-            item.setTitle(R.string.expand_all);
-        } else {
-            item.setIcon(R.drawable.ic_expand_less_white_24dp);
-            item.setTitle(R.string.collapse_all);
-        }*/
-
-        //MenuItem clear = menu.findItem(R.id.menu_clear);
-        //MenuItem pause = menu.findItem(R.id.menu_play_pause);
-        //clear.setVisible(mCurrentlyOpenLog == null);
-        //pause.setVisible(mCurrentlyOpenLog == null);
-
-        MenuItem saveLogMenuItem = menu.findItem(R.id.menu_save_log);
-        MenuItem saveAsLogMenuItem = menu.findItem(R.id.menu_save_as_log);
+        /*MenuItem saveLogMenuItem = menu.findItem(R.id.menu_save_log);
 
         saveLogMenuItem.setEnabled(showingMainLog);
         saveLogMenuItem.setVisible(showingMainLog);
-
-        saveAsLogMenuItem.setEnabled(!showingMainLog);
-        saveAsLogMenuItem.setVisible(!showingMainLog);
 
         boolean recordingInProgress = ServiceHelper.checkIfServiceIsRunning(getApplicationContext(), LogcatRecordingService.class);
 
@@ -522,13 +545,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         recordMenuItem.setEnabled(!recordingInProgress);
         recordMenuItem.setVisible(!recordingInProgress);
 
-        MenuItem crazyLoggerMenuItem = menu.findItem(R.id.menu_crazy_logger_service);
-        crazyLoggerMenuItem.setEnabled(UtilLogger.DEBUG_MODE);
-        crazyLoggerMenuItem.setVisible(UtilLogger.DEBUG_MODE);
-
         MenuItem partialSelectMenuItem = menu.findItem(R.id.menu_partial_select);
         partialSelectMenuItem.setEnabled(!partialSelectMode);
-        partialSelectMenuItem.setVisible(!partialSelectMode);
+        partialSelectMenuItem.setVisible(!partialSelectMode);*/
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -586,16 +605,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            /*case R.id.menu_play_pause:
-                pauseOrUnpause(item);
-                return true;*/
-            /*case R.id.menu_expand_all:
-                expandOrCollapseAll(true);
-                return true;*/
-            /*case R.id.menu_clear:
-                clearLog();
-                return true;*/
-
             case R.id.menu_log_level:
                 showLogLevelDialog();
                 return true;
@@ -603,7 +612,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 showOpenLogFileDialog();
                 return true;
             case R.id.menu_save_log:
-            case R.id.menu_save_as_log:
                 showSaveLogDialog();
                 return true;
             case R.id.menu_record_log:
@@ -623,9 +631,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 return true;
             case R.id.menu_settings:
                 startSettingsActivity();
-                return true;
-            case R.id.menu_crazy_logger_service:
-                ServiceHelper.startOrStopCrazyLogger(this);
                 return true;
             case R.id.menu_partial_select:
                 startPartialSelectMode();

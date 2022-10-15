@@ -11,14 +11,14 @@
             android:persistent="true"
             android:title="@string/pref_text_size_title" />
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="@string/pref_expanded_by_default"
             android:persistent="true"
             android:summary="@string/pref_expanded_by_default_summary"
             android:title="@string/pref_expanded_by_default_title" />
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_show_timestamp"
             android:persistent="true"
@@ -65,7 +65,7 @@
             android:summary="@string/pref_display_limit_summary"
             android:title="@string/pref_display_limit_title" />
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="scrubber"
             android:title="@string/scrubber"
             android:summary="@string/scrubber_summary"

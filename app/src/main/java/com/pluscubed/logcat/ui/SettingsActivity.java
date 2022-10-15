@@ -28,7 +28,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragment;
-import androidx.preference.SwitchPreference;
+import androidx.preference.TwoStatePreference;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -83,7 +83,7 @@ public class SettingsActivity extends AppCompatActivity {
         private EditTextPreference logLinePeriodPreference, displayLimitPreference;
         private ListPreference textSizePreference, defaultLevelPreference;
         private MultiSelectListPreference bufferPreference;
-        private SwitchPreference scrubberPreference;
+        private TwoStatePreference scrubberPreference;
 
         private boolean bufferChanged = false;
 
@@ -130,7 +130,7 @@ public class SettingsActivity extends AppCompatActivity {
             bufferPreference.setOnPreferenceChangeListener(this);
             setBufferPreferenceSummary(TextUtils.join(PreferenceHelper.DELIMITER, bufferPreference.getValues()));
 
-            scrubberPreference = (SwitchPreference) getPreferenceScreen().findPreference("scrubber");
+            scrubberPreference = (TwoStatePreference) getPreferenceScreen().findPreference("scrubber");
             scrubberPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {

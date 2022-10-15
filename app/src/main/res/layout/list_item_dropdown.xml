@@ -27,5 +27,4 @@
     android:paddingRight="16dp"
     tools:text="TESTSDFSDFD"
     android:singleLine="true"
-    android:background="@color/main_background_light"
     android:textAppearance="@android:style/TextAppearance.Material.Menu"/>

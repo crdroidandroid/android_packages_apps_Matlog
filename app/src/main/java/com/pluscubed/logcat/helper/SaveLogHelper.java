@@ -44,7 +44,7 @@ public class SaveLogHelper {
     private static final int BUFFER = 0x1000; // 4K
     private static final String LEGACY_SAVED_LOGS_DIR = "catlog_saved_logs";
     private static final String CATLOG_DIR = "matlog";
-    private static final String SAVED_LOGS_DIR = "saved_logs";
+    public static final String SAVED_LOGS_DIR = "saved_logs";
     private static final String TMP_DIR = "tmp";
 
     private static UtilLogger log = new UtilLogger(SaveLogHelper.class);
@@ -279,31 +279,6 @@ public class SaveLogHelper {
             catlogDir.mkdir();
         }
         return catlogDir;
-    }
-
-    /**
-     * I used to save logs to /sdcard/catlog_saved_logs.  Now it's /sdcard/matlog/saved_logs.  Move any files that
-     * need to be moved to the new directory.
-     */
-    public static synchronized void moveLogsFromLegacyDirIfNecessary() {
-        File sdcardDir = Environment.getExternalStorageDirectory();
-        File legacyDir = new File(sdcardDir, LEGACY_SAVED_LOGS_DIR);
-
-
-        if (legacyDir.exists() && legacyDir.isDirectory()) {
-            File savedLogsDir = getSavedLogsDirectory();
-            for (File file : legacyDir.listFiles()) {
-                file.renameTo(new File(savedLogsDir, file.getName()));
-            }
-            legacyDir.delete();
-        }
-    }
-
-    public static boolean legacySavedLogsDirExists() {
-        File sdcardDir = Environment.getExternalStorageDirectory();
-        File legacyDir = new File(sdcardDir, LEGACY_SAVED_LOGS_DIR);
-
-        return legacyDir.exists() && legacyDir.isDirectory();
     }
 
     public static File saveTemporaryZipFile(String filename, List<File> files) {
