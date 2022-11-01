@@ -57,8 +57,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_anchor="@id/bottomAppBar"
-        app:backgroundTint="?android:attr/colorPrimary"
+        app:backgroundTint="?attr/colorPrimary"
         app:srcCompat="@drawable/ic_pause_white_24dp"
-        app:tint="@android:color/white" />
+        app:tint="?attr/colorOnPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

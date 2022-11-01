@@ -1,8 +1,8 @@
 <resources>
 
     <style name="Theme.MatLog" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@android:color/system_accent1_500</item>
-        <item name="colorAccent">@android:color/system_accent1_500</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">?attr/colorPrimary</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>

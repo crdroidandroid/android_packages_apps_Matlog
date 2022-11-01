@@ -1,4 +1,5 @@
 <resources>
+    <color name="colorPrimary">@android:color/system_accent1_600</color>
     <color name="omni_logo_color">#a1c729</color>
     <color name="yellow1">#FFfbad00</color>
     <color name="background_wtf">#FF999900</color>
