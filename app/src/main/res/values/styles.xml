@@ -9,6 +9,10 @@
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/omni_logo_color</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListViewStyle</item>
+        <item name="preferenceTheme">@style/Omni.PreferenceTheme</item>
+        <item name="android:switchStyle">@style/Omni.SwitchStyle</item>
+        <item name="android:textAppearanceListItem">@style/Omni.PreferenceTitle</item>
+        <item name="dialogCornerRadius">8dp</item>
     </style>
 
     <style name="LogcatListItem" parent="@style/TextAppearance.Material3.LabelSmall">
@@ -19,5 +23,5 @@
     <style name="DropDownListViewStyle" parent="Widget.AppCompat.ListView.DropDown">
         <item name="android:scrollbars">none</item>
     </style>
-
+    
 </resources>

@@ -1,6 +1,5 @@
 package com.pluscubed.logcat.helper;
 
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -10,6 +9,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Html;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import org.omnirom.logcat.R;
 import com.pluscubed.logcat.util.UtilLogger;

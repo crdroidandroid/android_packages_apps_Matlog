@@ -8,4 +8,5 @@
     <dimen name="tag_width">70dp</dimen>
     <dimen name="pid_width">85dp</dimen>
     <dimen name="fab_compat_margin">24dp</dimen>
+    <dimen name="content_side_margin">6dp</dimen>
 </resources>

@@ -1,12 +1,8 @@
 package com.pluscubed.logcat.ui;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -23,11 +19,12 @@ import java.util.Set;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.WindowCompat;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragment;
+import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.TwoStatePreference;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -35,6 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_settings);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -44,13 +42,12 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        getFragmentManager().beginTransaction().replace(R.id.content, new SettingsFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content, new SettingsFragment()).commit();
     }
 
     private void setResultAndFinish() {
         Intent data = new Intent();
-        FragmentManager fm = getFragmentManager();
-        SettingsFragment f = (SettingsFragment) fm.findFragmentById(R.id.content);
+        SettingsFragment f = (SettingsFragment) getSupportFragmentManager().findFragmentById(R.id.content);
         data.putExtra("bufferChanged", f.getBufferChanged());
         setResult(RESULT_OK, data);
         finish();
@@ -73,7 +70,7 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
+    public static class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
 
         private static final int MAX_LOG_LINE_PERIOD = 1000;
         private static final int MIN_LOG_LINE_PERIOD = 1;
@@ -212,7 +209,7 @@ public class SettingsActivity extends AppCompatActivity {
                     bufferChanged = true;
                 }
 
-                Set<String> newValueSet = (Set<String>)newValue;
+                Set<String> newValueSet = (Set<String>) newValue;
                 setBufferPreferenceSummary(TextUtils.join(PreferenceHelper.DELIMITER, newValueSet));
                 return true;
             } else if (preference.getKey().equals(getString(R.string.pref_default_log_level))) {
