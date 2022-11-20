@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> implements Filterable {
@@ -183,6 +182,25 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         notifyDataSetChanged();
         stopWatch.log(log);
     }
+
+    public void removeLast(int n) {
+        if (mOriginalValues != null) {
+            synchronized (mLock) {
+                List<LogLine> subList = mOriginalValues.subList(0, mOriginalValues.size() - n);
+                for (int i = mOriginalValues.size() - n; i < mOriginalValues.size(); i++) {
+                    // value to delete - delete it from the mObjects as well
+                    mObjects.remove(mOriginalValues.get(i));
+                }
+                mOriginalValues = new ArrayList<>(subList);
+            }
+        } else {
+            synchronized (mLock) {
+                mObjects = new ArrayList<>(mObjects.subList(0, mObjects.size() - n));
+            }
+        }
+        notifyDataSetChanged();
+    }
+
 
     /**
      * Remove all elements from the list.
