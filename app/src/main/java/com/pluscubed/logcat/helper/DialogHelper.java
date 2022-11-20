@@ -1,7 +1,6 @@
 package com.pluscubed.logcat.helper;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
@@ -37,14 +36,8 @@ public class DialogHelper {
         void setInputText(String text);
     }
 
-    public static void startRecordingWithProgressDialog(final String filename,
-                                                        final String filterQuery, final String logLevel, final Runnable onPostExecute, final Context context) {
-
-        final ProgressDialog progressDialog = ProgressDialog.show(context,
-                context.getResources().getString(R.string.dialog_please_wait),
-                context.getResources().getString(R.string.dialog_initializing_recorder),
-                true, false);
-
+    public static void startRecording(final String filename,
+                                      final String filterQuery, final String logLevel, final Runnable onPostExecute, final Context context) {
 
         final Handler handler = new Handler(Looper.getMainLooper());
         new Thread(new Runnable() {
@@ -54,9 +47,6 @@ public class DialogHelper {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (progressDialog.isShowing()) {
-                            progressDialog.dismiss();
-                        }
                         if (onPostExecute != null) {
                             onPostExecute.run();
                         }

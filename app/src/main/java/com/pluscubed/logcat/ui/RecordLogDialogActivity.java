@@ -108,7 +108,7 @@ public class RecordLogDialogActivity extends AppCompatActivity {
                                         activity.finish();
                                     }
                                 };
-                                DialogHelper.startRecordingWithProgressDialog(filename,
+                                DialogHelper.startRecording(filename,
                                         queryFilterText.toString(), logLevelText.toString(), runnable, getActivity());
                             }
                         }
