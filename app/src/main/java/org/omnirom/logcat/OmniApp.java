@@ -5,12 +5,16 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 
+import com.google.android.material.color.DynamicColors;
+
 public class OmniApp extends Application {
     public static final String NOTIFICATION_CHANNEL_ID = "com.pluscubed.logcat.notification";
 
     @Override
     public void onCreate() {
         super.onCreate();
+        DynamicColors.applyToActivitiesIfAvailable(
+                this, R.style.Theme_MatLog_Overlay);
         createNotificationChannel();
     }
 

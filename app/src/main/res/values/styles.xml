@@ -15,6 +15,9 @@
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
     </style>
 
+    <style name="Theme.MatLog.Overlay" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
+    </style>
+
     <style name="AlertDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">
         <item name="colorAccent">?attr/colorPrimary</item>
         <item name="colorPrimary">@color/colorPrimary</item>
