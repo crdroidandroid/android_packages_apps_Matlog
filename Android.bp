@@ -36,7 +36,7 @@ android_app {
         "androidx.appcompat_appcompat",
         "androidx.recyclerview_recyclerview",
         "androidx.preference_preference",
-        "com.google.android.material_material",
+        "com.google.android.material_material_matlog",
         "OmniPreferenceTheme"
     ],
 
@@ -45,4 +45,62 @@ android_app {
     optimize: {
         proguard_flags_files: ["app/proguard-rules.pro"],
     },
+}
+
+android_library_import {
+    name: "com.google.android.material_material_matlog-nodeps",
+    aars: ["app/libs/com.google.android.material_material/material-1.7.0.aar"],
+    sdk_version: "31",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    min_sdk_version: "14",
+    static_libs: [
+        "androidx.annotation_annotation",
+        "androidx.appcompat_appcompat",
+        "androidx.cardview_cardview",
+        "androidx.coordinatorlayout_coordinatorlayout",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx.core_core",
+        "androidx.drawerlayout_drawerlayout",
+        "androidx.dynamicanimation_dynamicanimation",
+        "androidx.annotation_annotation-experimental",
+        "androidx.fragment_fragment",
+        "androidx.lifecycle_lifecycle-runtime",
+        "androidx.recyclerview_recyclerview",
+        "androidx.transition_transition",
+        "androidx.vectordrawable_vectordrawable",
+        "androidx.viewpager2_viewpager2",
+    ],
+}
+
+android_library {
+    name: "com.google.android.material_material_matlog",
+    sdk_version: "31",
+    apex_available: [
+        "//apex_available:platform",
+        "//apex_available:anyapex",
+    ],
+    min_sdk_version: "14",
+    manifest: "app/libs/com.google.android.material_material/AndroidManifest.xml",
+    static_libs: [
+        "com.google.android.material_material_matlog-nodeps",
+        "androidx.annotation_annotation",
+        "androidx.appcompat_appcompat",
+        "androidx.cardview_cardview",
+        "androidx.coordinatorlayout_coordinatorlayout",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx.core_core",
+        "androidx.drawerlayout_drawerlayout",
+        "androidx.dynamicanimation_dynamicanimation",
+        "androidx.annotation_annotation-experimental",
+        "androidx.fragment_fragment",
+        "androidx.lifecycle_lifecycle-runtime",
+        "androidx.recyclerview_recyclerview",
+        "androidx.transition_transition",
+        "androidx.vectordrawable_vectordrawable",
+        "androidx.viewpager2_viewpager2",
+    ],
+    java_version: "1.7",
 }
