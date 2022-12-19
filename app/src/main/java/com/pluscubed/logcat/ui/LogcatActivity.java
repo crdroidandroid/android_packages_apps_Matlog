@@ -220,7 +220,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         currentTask.unpause();
                     } else {
                         currentTask.pause();
-                        addFillerLines();
                     }
                 }
                 updateFabStatus();
@@ -1680,20 +1679,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         mSearchingString = filterText;
     }
 
-    /*private void pauseOrUnpause(MenuItem item) {
-        LogReaderAsyncTask currentTask = mTask;
-
-        if (currentTask != null) {
-            if (currentTask.isPaused()) {
-                currentTask.unpause();
-                item.setIcon(R.drawable.ic_pause_white_24dp);
-            } else {
-                currentTask.pause();
-                item.setIcon(R.drawable.ic_play_arrow_white_24dp);
-            }
-        }
-    }*/
-
     private void updateFabStatus() {
         LogReaderAsyncTask currentTask = mTask;
 
@@ -1777,6 +1762,11 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 LinkedList<LogLine> initialLines = new LinkedList<>();
                 while ((line = mReader.readLine()) != null) {
                     if (mPaused) {
+                        List<LogLine> filerLines = new ArrayList<>();
+                        for (int i = 0; i < NUM_FILLER_ITEMS; i++) {
+                            filerLines.add(LogLine.newLogLine("", PreferenceHelper.getExpandedByDefaultPreference(LogcatActivity.this)));
+                        }
+                        publishProgress(ArrayUtil.toArray(filerLines, LogLine.class));
                         synchronized (mLock) {
                             if (mPaused) {
                                 mLock.wait();
@@ -1902,15 +1892,5 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         if (mLogListAdapter != null) {
             mLogListAdapter.clear();
         }
-    }
-
-    private void addFillerLines() {
-        for (int i = 0; i < NUM_FILLER_ITEMS; i++) {
-            mLogListAdapter.add(LogLine.newLogLine("", PreferenceHelper.getExpandedByDefaultPreference(this)), false);
-        }
-        mLogListAdapter.notifyDataSetChanged();
-
-        // scroll to bottom
-        scrollToBottom();
     }
 }
