@@ -1764,7 +1764,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                     if (mPaused) {
                         List<LogLine> filerLines = new ArrayList<>();
                         for (int i = 0; i < NUM_FILLER_ITEMS; i++) {
-                            filerLines.add(LogLine.newLogLine("", PreferenceHelper.getExpandedByDefaultPreference(LogcatActivity.this)));
+                            filerLines.add(LogLine.newFillerLine());
                         }
                         publishProgress(ArrayUtil.toArray(filerLines, LogLine.class));
                         synchronized (mLock) {

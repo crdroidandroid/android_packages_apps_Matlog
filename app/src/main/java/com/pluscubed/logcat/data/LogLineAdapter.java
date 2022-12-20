@@ -419,7 +419,8 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
                 for (int i = 0; i < count; i++) {
                     final LogLine value = values.get(i);
                     // search the logline based on the criteria
-                    if (searchCriteria.matches(value)) {
+                    // always add filler items
+                    if (value.isFillerLine() || searchCriteria.matches(value)) {
                         newValues.add(value);
                     }
                 }
