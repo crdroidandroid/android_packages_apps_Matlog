@@ -24,9 +24,10 @@
         <item name="dialogCornerRadius">8dp</item>
     </style>
 
-    <style name="LogcatListItem" parent="@style/TextAppearance.Material3.LabelSmall">
+    <style name="LogcatListItem" parent="@style/TextAppearance.Material3.BodySmall">
         <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="fontFamily">monospace</item>
+        <item name="lineHeight">@dimen/text_size_medium</item>
     </style>
 
     <style name="DropDownListViewStyle" parent="Widget.AppCompat.ListView.DropDown">
