@@ -109,7 +109,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private static final int SEND_LOG_ID_REQUEST = 2;
     private static final int SAVE_LOG_REQUEST = 3;
     private static final int OPEN_LOG_REQUEST = 4;
-    private static final int COMPLETE_PARTIAL_SELECT_REQUEST = 5;
     private static final int SHOW_RECORD_LOG_REQUEST = 6;
     private static final int SHOW_RECORD_LOG_REQUEST_SHORTCUT = 7;
     private static final int SAVE_LOG_ZIP_REQUEST = 8;
@@ -127,8 +126,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private boolean mCollapsedMode;
 
     private boolean mDynamicallyEnteringSearchText;
-    private boolean partialSelectMode;
-    private List<LogLine> partiallySelectedLogLines = new ArrayList<>(2);
 
     private Set<String> mSearchSuggestionsSet = new HashSet<>();
     private CursorAdapter mSearchSuggestionsAdapter;
@@ -181,9 +178,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 break;
             case OPEN_LOG_REQUEST:
                 showOpenLogFileDialog();
-                break;
-            case COMPLETE_PARTIAL_SELECT_REQUEST:
-                completePartialSelect();
                 break;
             case SHOW_RECORD_LOG_REQUEST:
                 showRecordLogDialog();
@@ -264,9 +258,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         return true;
                     case R.id.menu_settings:
                         startSettingsActivity();
-                        return true;
-                    case R.id.menu_partial_select:
-                        startPartialSelectMode();
                         return true;
                     case R.id.menu_filters:
                         showFiltersDialog();
@@ -472,8 +463,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     public void onPause() {
         super.onPause();
         log.d("onPause() called");
-
-        cancelPartialSelect();
     }
 
     @Override
@@ -536,11 +525,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         MenuItem recordMenuItem = menu.findItem(R.id.menu_record_log);
 
         recordMenuItem.setEnabled(!recordingInProgress);
-        recordMenuItem.setVisible(!recordingInProgress);
-
-        MenuItem partialSelectMenuItem = menu.findItem(R.id.menu_partial_select);
-        partialSelectMenuItem.setEnabled(!partialSelectMode);
-        partialSelectMenuItem.setVisible(!partialSelectMode);*/
+        recordMenuItem.setVisible(!recordingInProgress);*/
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -625,9 +610,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             case R.id.menu_settings:
                 startSettingsActivity();
                 return true;
-            case R.id.menu_partial_select:
-                startPartialSelectMode();
-                return true;
             case R.id.menu_filters:
                 showFiltersDialog();
                 return true;
@@ -667,25 +649,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     @Override
     public void onClick(final View itemView, final LogLine logLine) {
-        if (partialSelectMode) {
-            logLine.setHighlighted(true);
-            partiallySelectedLogLines.add(logLine);
-
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mLogListAdapter.notifyItemChanged(((RecyclerView) findViewById(R.id.list)).getChildAdapterPosition(itemView));
-                }
-            });
-
-            if (partiallySelectedLogLines.size() == 2) {
-                // last line
-                completePartialSelect();
-            }
-        } else {
-            logLine.setExpanded(!logLine.isExpanded());
-            mLogListAdapter.notifyItemChanged(((RecyclerView) findViewById(R.id.list)).getChildAdapterPosition(itemView));
-        }
+        logLine.setExpanded(!logLine.isExpanded());
+        mLogListAdapter.notifyItemChanged(((RecyclerView) findViewById(R.id.list)).getChildAdapterPosition(itemView));
     }
 
     private void showSearchByDialog(final LogLine logLine) {
@@ -891,44 +856,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
                 }
             }).start();
-        }
-    }
-
-    private void startPartialSelectMode() {
-
-        boolean hideHelp = PreferenceHelper.getHidePartialSelectHelpPreference(this);
-
-        if (hideHelp) {
-            partialSelectMode = true;
-            partiallySelectedLogLines.clear();
-            Toast.makeText(this, R.string.toast_started_select_partial, Toast.LENGTH_SHORT).show();
-        } else {
-
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            @SuppressLint("InflateParams") View helpView = inflater.inflate(R.layout.dialog_partial_save_help, null);
-            // don't show the scroll bar
-            helpView.setVerticalScrollBarEnabled(false);
-            helpView.setHorizontalScrollBarEnabled(false);
-            final CheckBox checkBox = (CheckBox) helpView.findViewById(android.R.id.checkbox);
-
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.menu_title_partial_select)
-                    .setView(helpView)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            partialSelectMode = true;
-                            partiallySelectedLogLines.clear();
-                            Toast.makeText(LogcatActivity.this, R.string.toast_started_select_partial, Toast.LENGTH_SHORT).show();
-
-                            if (checkBox.isChecked()) {
-                                // hide this help dialog in the future
-                                PreferenceHelper.setHidePartialSelectHelpPreference(LogcatActivity.this, true);
-                            }
-                        }
-                    })
-                    .show();
         }
     }
 
@@ -1331,55 +1258,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         DialogHelper.showFilenameSuggestingDialog(this, null, new InputCallback(), R.string.save_log);
     }
 
-    private void savePartialLog(final String filename, LogLine first, LogLine last) {
-
-        final List<CharSequence> logLines = new ArrayList<>(mLogListAdapter.getItemCount());
-
-        // filter based on first and last
-        boolean started = false;
-        boolean foundLast = false;
-        for (int i = 0; i < mLogListAdapter.getItemCount(); i++) {
-            LogLine logLine = mLogListAdapter.getItem(i);
-            if (logLine == first) {
-                started = true;
-            }
-            if (started) {
-                logLines.add(logLine.getOriginalLine());
-            }
-            if (logLine == last) {
-                foundLast = true;
-                break;
-            }
-        }
-
-        if (!foundLast || logLines.isEmpty()) {
-            Toast.makeText(this, R.string.toast_invalid_selection, Toast.LENGTH_LONG).show();
-            cancelPartialSelect();
-            return;
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SaveLogHelper.deleteLogIfExists(filename);
-                final boolean saved = SaveLogHelper.saveLog(logLines, filename);
-
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (saved) {
-                            Toast.makeText(getApplicationContext(), R.string.log_saved, Toast.LENGTH_SHORT).show();
-                            openLogFile(filename);
-                        } else {
-                            Toast.makeText(getApplicationContext(), R.string.unable_to_save_log, Toast.LENGTH_LONG).show();
-                        }
-                        cancelPartialSelect();
-                    }
-                });
-            }
-        }).start();
-    }
-
     private void saveLog(final String filename) {
 
         // do in background to avoid jankiness
@@ -1616,54 +1494,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         });
 
         ((RecyclerView) findViewById(R.id.list)).setHasFixedSize(true);
-    }
-
-    private void completePartialSelect() {
-        class InputCallback implements DialogHelper.InputTextCallback {
-            @Override
-            public void setInputText(String text) {
-                if (DialogHelper.isInvalidFilename(text)) {
-                    cancelPartialSelect();
-                    Toast.makeText(LogcatActivity.this, R.string.enter_good_filename, Toast.LENGTH_SHORT).show();
-                } else {
-                    String filename = text;
-                    savePartialLog(filename, partiallySelectedLogLines.get(0), partiallySelectedLogLines.get(1));
-                }
-            }
-        }
-        ;
-
-        Runnable negativeCallback = new Runnable() {
-            @Override
-            public void run() {
-                cancelPartialSelect();
-            }
-        };
-
-        DialogHelper.showFilenameSuggestingDialog(this, negativeCallback, new InputCallback(), R.string.save_log);
-
-    }
-
-    private void cancelPartialSelect() {
-        partialSelectMode = false;
-
-        boolean changed = false;
-        for (LogLine logLine : partiallySelectedLogLines) {
-            if (logLine.isHighlighted()) {
-                logLine.setHighlighted(false);
-                changed = true;
-            }
-        }
-        partiallySelectedLogLines.clear();
-        if (changed) {
-            mHandler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    mLogListAdapter.notifyDataSetChanged();
-                }
-            });
-        }
     }
 
     private void setSearchText(String text) {
