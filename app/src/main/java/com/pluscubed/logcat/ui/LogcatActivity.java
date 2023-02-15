@@ -1,15 +1,18 @@
 package com.pluscubed.logcat.ui;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -193,6 +196,12 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         super.onCreate(savedInstanceState);
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityManager.TaskDescription td = new ActivityManager.TaskDescription.Builder()
+                    .setPrimaryColor(getAttrColor(android.R.attr.colorBackground)).build();
+            setTaskDescription(td);
+        }
 
         setContentView(R.layout.activity_logcat);
 
@@ -1722,5 +1731,12 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         if (mLogListAdapter != null) {
             mLogListAdapter.clear();
         }
+    }
+
+    private int getAttrColor(int attr) {
+        TypedArray ta = obtainStyledAttributes(new int[]{attr});
+        int color = ta.getColor(0, 0);
+        ta.recycle();
+        return color;
     }
 }

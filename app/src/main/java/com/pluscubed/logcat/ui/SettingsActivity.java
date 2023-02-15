@@ -1,6 +1,9 @@
 package com.pluscubed.logcat.ui;
 
+import android.app.ActivityManager;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -32,6 +35,12 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityManager.TaskDescription td = new ActivityManager.TaskDescription.Builder()
+                    .setPrimaryColor(getAttrColor(android.R.attr.colorBackground)).build();
+            setTaskDescription(td);
+        }
 
         setContentView(R.layout.activity_settings);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
@@ -70,6 +79,13 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private int getAttrColor(int attr) {
+        TypedArray ta = obtainStyledAttributes(new int[]{attr});
+        int color = ta.getColor(0, 0);
+        ta.recycle();
+        return color;
+    }
+    
     public static class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
 
         private static final int MAX_LOG_LINE_PERIOD = 1000;
