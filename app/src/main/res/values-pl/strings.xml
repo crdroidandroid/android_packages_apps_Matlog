@@ -2,4 +2,120 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- non-translateable strings-->
     <!-- translateable strings-->
+
+    <string name="log_level_debug">Debugowanie</string>
+    <string name="log_level_error">Błędy</string>
+    <string name="log_level_info">Informacje</string>
+    <string name="log_level_verbose">Szczegółowy</string>
+    <string name="log_level_warn">Ostrzeżenia</string>
+    <string name="log_level_wtf">Poważne awarje</string>
+    <string name="add_filter">Dodaj filtr</string>
+    <string name="add_filter_ellipsis">Dodaj filtr…</string>
+    <plurals name="are_you_sure">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> plik zostanie usunięty</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> pliki zostaną usunięte</item>
+    </plurals>
+    <string name="checkbox_never_show_partial_select_help">Nie pokazuj ponownie</string>
+    <string name="copied_to_clipboard">Skopiowano do schowka.</string>
+    <string name="copy_to_clipboard">Kopiuj do schowka</string>
+    <string name="default_in_parens">(Domyślnie)</string>
+    <string name="delete">Usuń</string>
+    <string name="delete_all">Usuń wszystko</string>
+    <string name="delete_saved_log">Usuń zachowane logi</string>
+    <string name="dialog_compiling_log">Kompilowanie logu…</string>
+    <string name="dialog_initializing_recorder">Wczytywanie rejestratora…</string>
+    <string name="dialog_loading_updates">Wczytywanie aktualizacji…</string>
+    <string name="dialog_partial_select_explanation">1. Wybierz <b>pierwszą</b> linię.\n2. Następnie zaznacz <b>ostatnią</b> linię.</string>
+    <string name="dialog_please_wait">Czekaj</string>
+    <string name="enter_filename">Podaj nazwę pliku do zapisu:</string>
+    <string name="enter_good_filename">Wprowadź prawidłową nazwę pliku.</string>
+    <plurals name="files_deleted">
+        <item quantity="one"><xliff:g example="1" id="files">%1$d</xliff:g> plik usunięty</item>
+        <item quantity="other"><xliff:g example="1" id="files">%1$d</xliff:g> pliki usunięte</item>
+    </plurals>
+    <string name="filter_choice">Wyszukaj po</string>
+    <string name="filter_choice_pid">PIDzie</string>
+    <string name="filter_choice_tag">Tagu</string>
+    <string name="filter_text_colon">Filtruj tekst:</string>
+    <string name="log_level">Poziom logów</string>
+    <string name="log_level_colon">Poziom logów:</string>
+    <string name="log_recording_started">Rozpoczęto nagrywanie logów.</string>
+    <string name="log_saved">Zapisano log.</string>
+    <string name="manage_saved_logs">Zarządzaj zapisanymi logami</string>
+    <string name="menu_title_partial_select">Zapisz częściowo</string>
+    <string name="no_saved_logs">Nie znaleziono zapisanych logów.</string>
+    <string name="notification_subtext">Zaznacz, aby zatrzymać nagrywanie.</string>
+    <string name="notification_ticker">Nagrywanie logów ropoczęte</string>
+    <string name="notification_title">Trwa nagrywanie logów</string>
+    <string name="open">Otwórz</string>
+    <string name="open_log">Otwórz Log</string>
+    <string name="pref_buffer_choice_events">Zdarzenia</string>
+    <string name="pref_buffer_choice_main">Główne</string>
+    <string name="pref_buffer_choice_radio">Radio</string>
+    <string name="pref_buffer_none_checked_error">Zaznacz przynajmniej jeden bufor</string>
+    <string name="pref_buffer_title">Bufor logów</string>
+    <string name="pref_cat_advanced">Zaawansowane</string>
+    <string name="pref_cat_appearance">Wygląd</string>
+    <string name="pref_cat_configuration">Konfiguracja</string>
+    <string name="pref_default_log_level_summary">Poziom logów podczas uruchamiania, otwierania plików i nagrywania (%s)</string>
+    <string name="pref_default_log_level_title">Domyślny poziom logów</string>
+    <string name="pref_display_limit_summary">Pokaż tylko ostatnie %1$d logi, aby nie wywoływać błędów typu OutOfMemoryErrors. (Domyślnie: %2$s)</string>
+    <string name="pref_display_limit_title">Limit wyświetlanych logów</string>
+    <string name="pref_expanded_by_default_summary">Domyślnie wyświetla pełny tekst logu</string>
+    <string name="pref_expanded_by_default_title">Rozwiń domyślnie</string>
+    <string name="pref_log_line_period_error">Wprowadź liczbę całkowitą z przedziału od 1 do 1000</string>
+    <string name="pref_log_line_period_summary">Podczas nagrywania zapisz na kartę SD każdą %1$d linię (domyślnie: %2$s)</string>
+    <string name="pref_log_line_period_title">Okres zapisu</string>
+    <string name="pref_show_timestamp_summary">Pokaż identyfikator procesu i znacznik czasu po rozwinięciu</string>
+    <string name="pref_show_timestamp_title">Pokaż PID i znacznik czasu</string>
+    <string name="pref_text_size_title">Rozmiar tekstu</string>
+    <string name="record_log">Nagraj log</string>
+    <string name="save">Zapisz</string>
+    <string name="save_as">Zapisz jako…</string>
+    <string name="save_log">Zapisz log</string>
+    <string name="sd_card_not_found">Nie znaleziono SD karty</string>
+    <string name="select_logs_to_delete">Zaznacz logi do usunięcia</string>
+    <string name="send_log_title">Wyślij Log</string>
+    <string name="settings">Ustawienia</string>
+    <string name="simultaneous"> (Równocześnie)</string>
+    <string name="start_recording_log">Nagraj</string>
+    <string name="subject_log_report">Raport logu</string>
+    <string name="text_filter_ellipsis">Filtruj…</string>
+    <string name="text_filter_text">Filtruj tekst</string>
+    <string name="text_include_device_info">Załącz informacje o urządzeniu</string>
+    <string name="text_size_large_name">Duży (14pkt)</string>
+    <string name="text_size_medium_name">Średni (12pkt)</string>
+    <string name="text_size_small_name">Małe (10pkt)</string>
+    <string name="text_size_xlarge_name">Bardzo duży (16pkt)</string>
+    <string name="text_size_xsmall_name">Bardzo mały (8pkt)</string>
+    <string name="title_filter">Filtruj</string>
+    <string name="title_filters">Filtry</string>
+    <string name="toast_invalid_display_limit">Wprowadź prawidłowy numer pomiędzy %1$d a %2$d.</string>
+    <string name="toast_invalid_level">Niewłaściwa nazwa poziomu: %s</string>
+    <string name="toast_invalid_selection">Niewłaściwy wybór. Spróbuj ponownie.</string>
+    <plurals name="toast_log_truncated">
+        <item quantity="one">Zbyt duży log; pokazano ostatnią <xliff:g example="1" id="lines">%1$d</xliff:g> linię.</item>
+        <item quantity="other">Zbyt duży log; pokazano ostatnich <xliff:g example="1" id="lines">%1$d</xliff:g> linii.</item>
+    </plurals>
+    <string name="toast_pref_changed_restart_required">Ustawienie zostało zaktualizowane. Uruchom ponownie MatLog, aby zobaczyć zmiany.</string>
+    <string name="toast_request_root">MatLog wymaga dostępu roota (superużytkownika) do odczytu logów.</string>
+    <string name="toast_started_select_partial">Włączono tryb częściowego wyboru</string>
+    <string name="unable_to_save_log">Nie można zapisać dziennika. Czy wprowadzono prawidłową nazwę pliku?</string>
+    <string name="file">Plik</string>
+    <string name="clear">Wyczyść</string>
+    <string name="expand_or_collapse_all">Rozwiń/Zwiń wszystko</string>
+    <string name="no_logs_warning_title">Nie można uzyskać dostępu do logów systemowych</string>
+    <string name="no_logs_warning">%1$s nie ma uprawnień niezbędnych do uzyskania dostępu do logcat. Będziesz widzieć tylko własne logi.&lt;br/>&lt;br/>Masz dwie możliwości, aby przyznać %1$s wymagane uprawnienia:&lt;br/>- Zrootuj swoje urządzenie&lt;br/>- Podłącz urządzenie do komputera z zainstalowanym pakietem Android SDK i uruchom następujące polecenie (wystarczy wykonać je tylko raz):&lt;br/>&lt;tt>%2$s&lt;/tt></string>
+    <string name="copy_command">Skopiuj komendę</string>
+    <string name="adb_command">Komenda ADB</string>
+    <string name="permission_not_granted">Ta funkcja nie będzie działać bez uprawnień do zapisu w pamięci zewnętrznej.</string>
+    <string name="search">Szukaj</string>
+    <string name="scrubber">Pomijaj wrażliwe dane</string>
+    <string name="scrubber_summary">Pomiń poufne informacje, takie jak adresy URL, numery telefonów lub adresy e-mail.</string>
+    <string name="text_include_dmesg">Dołącz logi Kernela</string>
+    <string name="save_log_zip">Zapisz zip</string>
+    <string name="share_log">Udostępnij</string>
+    <string name="channel_name">Nagraj powiadomienie</string>
+    <string name="message_filters">Dotknij filtr, aby go aktywować</string>
+    <string name="filter_choice_messager">Dotknij filtru wyszukiwania</string>
 </resources>
