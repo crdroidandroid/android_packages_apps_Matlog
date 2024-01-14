@@ -33,5 +33,7 @@
     <style name="DropDownListViewStyle" parent="Widget.AppCompat.ListView.DropDown">
         <item name="android:scrollbars">none</item>
     </style>
-    
+
+    <style name="SecondaryFloatingActionButtonStyle" parent="Widget.Material3.FloatingActionButton.Secondary">
+    </style>
 </resources>
