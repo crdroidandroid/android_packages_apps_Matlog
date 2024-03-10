@@ -37,7 +37,6 @@ android_app {
         "androidx.recyclerview_recyclerview",
         "androidx.preference_preference",
         "com.google.android.material_material_matlog",
-        "OmniPreferenceTheme"
     ],
 
     kotlincflags: ["-Xjvm-default=enable"],

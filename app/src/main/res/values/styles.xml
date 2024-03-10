@@ -9,9 +9,6 @@
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/omni_logo_color</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListViewStyle</item>
-        <item name="preferenceTheme">@style/Omni.PreferenceTheme</item>
-        <item name="android:switchStyle">@style/Omni.SwitchStyle</item>
-        <item name="android:textAppearanceListItem">@style/Omni.PreferenceTitle</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
     </style>
 
