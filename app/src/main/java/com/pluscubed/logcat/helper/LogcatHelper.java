@@ -20,6 +20,12 @@ public class LogcatHelper {
     public static Process getLogcatProcess(String buffer) throws IOException {
 
         List<String> args = getLogcatArgs(buffer);
+        // Android 16 may leave a non-root reader waiting for the next logd
+        // notification when the command starts without an explicit tail.  A
+        // single initial line both wakes the reader and preserves the full
+        // dump used by getLastLogLine() for the recording-mode boundary.
+        args.add("-T");
+        args.add("1");
         Process process = RuntimeHelper.exec(args);
 
         return process;
