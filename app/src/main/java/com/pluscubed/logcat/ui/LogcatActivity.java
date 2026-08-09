@@ -1599,7 +1599,16 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
                 String line;
                 LinkedList<LogLine> initialLines = new LinkedList<>();
+                boolean initialLineReceived = false;
                 while ((line = mReader.readLine()) != null) {
+                    // Android 16 may provide the seeded boundary line and then wait
+                    // for the next logd event. Signal that the reader is alive now;
+                    // otherwise the progress indicator remains visible indefinitely
+                    // even though the child logcat process is working correctly.
+                    if (!initialLineReceived) {
+                        initialLineReceived = true;
+                        publishProgress(new LogLine[0]);
+                    }
                     if (mPaused) {
                         List<LogLine> filerLines = new ArrayList<>();
                         for (int i = 0; i < NUM_FILLER_ITEMS; i++) {
