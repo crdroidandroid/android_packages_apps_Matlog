@@ -31,7 +31,7 @@ public class SingleLogcatReader extends AbsLogcatReader {
 
     private void init() throws IOException {
         // use the "time" log so we can see what time the logs were logged at
-        logcatProcess = LogcatHelper.getLogcatProcess(logBuffer);
+        logcatProcess = LogcatHelper.getLogcatProcess(logBuffer, lastLine);
 
         bufferedReader = new BufferedReader(new InputStreamReader(logcatProcess
                 .getInputStream()), 8192);
@@ -67,7 +67,7 @@ public class SingleLogcatReader extends AbsLogcatReader {
         String line = bufferedReader.readLine();
 
         if (recordingMode && lastLine != null) { // still skipping past the 'last line'
-            if (lastLine.equals(line) /*|| isAfterLastTime(line)*/) {
+            if (lastLine.equals(line) || isAfterLastTime(line)) {
                 lastLine = null; // indicates we've passed the last line
             }
         }
