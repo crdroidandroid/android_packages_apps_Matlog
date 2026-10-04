@@ -17,9 +17,14 @@ public class LogcatHelper {
 
     private static UtilLogger log = new UtilLogger(LogcatHelper.class);
 
-    public static Process getLogcatProcess(String buffer) throws IOException {
+    public static Process getLogcatProcess(String buffer, String lastLine) throws IOException {
 
         List<String> args = getLogcatArgs(buffer);
+        // Android 16 can start a non-root reader at the live tail. Start at the
+        // recording boundary instead, so SingleLogcatReader can flush the
+        // initial batch before switching to live updates.
+        args.add("-T");
+        args.add(getLogcatStart(lastLine));
         Process process = RuntimeHelper.exec(args);
 
         return process;
@@ -36,6 +41,17 @@ public class LogcatHelper {
         }
 
         return args;
+    }
+
+    private static String getLogcatStart(String lastLine) {
+        // The "time" format starts with "MM-DD HH:MM:SS.mmm" (18 chars),
+        // which logcat accepts as a -T start time. Fall back to one line when
+        // there is no valid recording boundary.
+        if (lastLine != null && lastLine.length() >= 18
+                && Character.isDigit(lastLine.charAt(0))) {
+            return lastLine.substring(0, 18);
+        }
+        return "1";
     }
 
     public static String getLastLogLine(String buffer) {
