@@ -219,7 +219,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
                 if (currentTask != null) {
                     if (currentTask.isPaused()) {
-                        mLogListAdapter.removeLast(NUM_FILLER_ITEMS);
+                        mLogListAdapter.removeFillerLines();
                         currentTask.unpause();
                     } else {
                         currentTask.pause();
@@ -1669,6 +1669,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 hideProgressBar();
             }
             for (LogLine logLine : values) {
+                if (!mPaused && logLine.isFillerLine()) continue;
                 mLogListAdapter.addWithFilter(logLine, mSearchingString, false);
 
                 addToAutocompleteSuggestions(logLine);

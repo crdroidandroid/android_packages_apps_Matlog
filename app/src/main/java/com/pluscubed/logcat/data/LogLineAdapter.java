@@ -183,22 +183,17 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         stopWatch.log(log);
     }
 
-    public void removeLast(int n) {
-        if (mOriginalValues != null) {
-            synchronized (mLock) {
-                List<LogLine> subList = mOriginalValues.subList(0, mOriginalValues.size() - n);
-                for (int i = mOriginalValues.size() - n; i < mOriginalValues.size(); i++) {
-                    // value to delete - delete it from the mObjects as well
-                    mObjects.remove(mOriginalValues.get(i));
-                }
-                mOriginalValues = new ArrayList<>(subList);
-            }
-        } else {
-            synchronized (mLock) {
-                mObjects = new ArrayList<>(mObjects.subList(0, mObjects.size() - n));
+    public void removeFillerLines() {
+        boolean removed;
+        synchronized (mLock) {
+            removed = mObjects.removeIf(LogLine::isFillerLine);
+            if (mOriginalValues != null) {
+                removed |= mOriginalValues.removeIf(LogLine::isFillerLine);
             }
         }
-        notifyDataSetChanged();
+        if (removed) {
+            notifyDataSetChanged();
+        }
     }
 
 
