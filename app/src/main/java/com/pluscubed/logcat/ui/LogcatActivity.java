@@ -152,6 +152,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             Uri uri = FileProvider.getUriForFile(context, "org.omnirom.logcat.provider", attachment);
             log.d("uri is: %s", uri);
             actionSendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            actionSendIntent.setClipData(ClipData.newUri(context.getContentResolver(), attachment.getName(), uri));
+            actionSendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
 
         context.startActivity(Intent.createChooser(actionSendIntent, context.getResources().getText(R.string.send_log_title)));
@@ -1148,13 +1150,14 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         StringBuilder body = new StringBuilder();
 
         List<File> files = new ArrayList<>();
-        SaveLogHelper.cleanTemp();
+        SaveLogHelper.cleanTemp(this);
+        String logBasename = SaveLogHelper.createLogBasename();
 
         if (mCurrentlyOpenLog != null) { // use saved log file
             files.add(SaveLogHelper.getFile(mCurrentlyOpenLog));
         } else { // create a temp file to hold the current, unsaved log
             File tempLogFile = SaveLogHelper.saveTemporaryFile(this,
-                    SaveLogHelper.TEMP_LOG_FILENAME, null, getCurrentLogAsListOfStrings());
+                    logBasename + ".txt", null, getCurrentLogAsListOfStrings());
             files.add(tempLogFile);
         }
 
@@ -1186,7 +1189,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 sendLogDetails.setAttachment(files.get(0));
                 break;
             default: // 2 files - need to zip them up
-                File zipFile = SaveLogHelper.saveTemporaryZipFile(SaveLogHelper.createLogFilename(true), files);
+                File zipFile = SaveLogHelper.saveTemporaryZipFile(this, logBasename + ".zip", files);
 
                 sendLogDetails.setSubject(zipFile.getName());
                 sendLogDetails.setAttachmentType(SendLogDetails.AttachmentType.Zip);
@@ -1199,13 +1202,14 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     private File saveLogAsZip(boolean includeDeviceInfo, boolean includeDmesg) {
         List<File> files = new ArrayList<>();
-        SaveLogHelper.cleanTemp();
+        SaveLogHelper.cleanTemp(this);
+        String logBasename = SaveLogHelper.createLogBasename();
 
         if (mCurrentlyOpenLog != null) { // use saved log file
             files.add(SaveLogHelper.getFile(mCurrentlyOpenLog));
         } else { // create a temp file to hold the current, unsaved log
             File tempLogFile = SaveLogHelper.saveTemporaryFile(this,
-                    SaveLogHelper.TEMP_LOG_FILENAME, null, getCurrentLogAsListOfStrings());
+                    logBasename + ".txt", null, getCurrentLogAsListOfStrings());
             files.add(tempLogFile);
         }
 
@@ -1224,7 +1228,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             files.add(tempDmsgFile);
         }
 
-        File zipFile = SaveLogHelper.saveZipFile(SaveLogHelper.createLogFilename(true), files);
+        File zipFile = SaveLogHelper.saveZipFile(logBasename + ".zip", files);
 
         return zipFile;
     }

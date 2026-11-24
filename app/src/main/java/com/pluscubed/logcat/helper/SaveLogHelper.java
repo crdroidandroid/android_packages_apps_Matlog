@@ -22,30 +22,28 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class SaveLogHelper {
 
     public static final String TEMP_DEVICE_INFO_FILENAME = "device_info.txt";
-    public static final String TEMP_LOG_FILENAME = "logcat.txt";
     public static final String TEMP_DMESG_FILENAME = "dmesg.txt";
-    private static final String TEMP_ZIP_FILENAME = "logs";
+    private static final String LOG_FILENAME_PREFIX = "logcat-";
     private static final int BUFFER = 0x1000; // 4K
     private static final String LEGACY_SAVED_LOGS_DIR = "catlog_saved_logs";
     private static final String CATLOG_DIR = "matlog";
     public static final String SAVED_LOGS_DIR = "saved_logs";
-    private static final String TMP_DIR = "tmp";
+    private static final String SHARE_DIR = "share";
 
     private static UtilLogger log = new UtilLogger(SaveLogHelper.class);
 
@@ -53,7 +51,7 @@ public class SaveLogHelper {
         PrintStream out = null;
         try {
 
-            File tempFile = new File(getTempDirectory(), filename);
+            File tempFile = new File(getTempDirectory(context), filename);
 
             // specifying BUFFER gets rid of an annoying warning message
             out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tempFile, false), BUFFER));
@@ -245,13 +243,11 @@ public class SaveLogHelper {
 
     }
 
-    public static File getTempDirectory() {
-        File catlogDir = getCatlogDirectory();
-
-        File tmpDir = new File(catlogDir, TMP_DIR);
+    public static File getTempDirectory(Context context) {
+        File tmpDir = new File(context.getCacheDir(), SHARE_DIR);
 
         if (!tmpDir.exists()) {
-            tmpDir.mkdir();
+            tmpDir.mkdirs();
         }
 
         return tmpDir;
@@ -281,9 +277,9 @@ public class SaveLogHelper {
         return catlogDir;
     }
 
-    public static File saveTemporaryZipFile(String filename, List<File> files) {
+    public static File saveTemporaryZipFile(Context context, String filename, List<File> files) {
         try {
-            return saveZipFileAndThrow(getTempDirectory(), filename, files);
+            return saveZipFileAndThrow(getTempDirectory(context), filename, files);
         } catch (IOException e) {
             log.e(e, "unexpected error");
         }
@@ -355,30 +351,20 @@ public class SaveLogHelper {
         return total;
     }
 
-    public static String createLogFilename(boolean withDate) {
-        if (withDate) {
-            Date date = new Date();
-            GregorianCalendar calendar = new GregorianCalendar();
-            calendar.setTime(date);
-
-            DecimalFormat twoDigitDecimalFormat = new DecimalFormat("00");
-            DecimalFormat fourDigitDecimalFormat = new DecimalFormat("0000");
-
-            String year = fourDigitDecimalFormat.format(calendar.get(Calendar.YEAR));
-            String month = twoDigitDecimalFormat.format(calendar.get(Calendar.MONTH) + 1);
-            String day = twoDigitDecimalFormat.format(calendar.get(Calendar.DAY_OF_MONTH));
-            String hour = twoDigitDecimalFormat.format(calendar.get(Calendar.HOUR_OF_DAY));
-            String minute = twoDigitDecimalFormat.format(calendar.get(Calendar.MINUTE));
-            String second = twoDigitDecimalFormat.format(calendar.get(Calendar.SECOND));
-
-            return TEMP_ZIP_FILENAME + "-" + year + "-" + month + "-" + day + "-" + hour + "-" + minute + "-" + second + ".zip";
-        } else {
-            return TEMP_ZIP_FILENAME + ".zip";
-        }
+    public static String createLogBasename() {
+        return LOG_FILENAME_PREFIX + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US).format(new Date());
     }
 
-    public static void cleanTemp() {
-        for (File file : getTempDirectory().listFiles()) {
+    public static String createLogFilename() {
+        return createLogBasename() + ".txt";
+    }
+
+    public static void cleanTemp(Context context) {
+        File[] files = getTempDirectory(context).listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
             file.delete();
         }
     }

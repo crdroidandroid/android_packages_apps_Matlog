@@ -44,7 +44,7 @@ public class SendLogDetails {
     public enum AttachmentType {
         None("text/plain"),
         Zip("application/zip"),
-        Text("application/*");
+        Text("text/plain");
 
         private String mimeType;
 

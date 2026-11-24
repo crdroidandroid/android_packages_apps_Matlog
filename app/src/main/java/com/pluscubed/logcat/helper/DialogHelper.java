@@ -24,10 +24,6 @@ import com.pluscubed.logcat.util.Callback;
 
 import org.omnirom.logcat.R;
 
-import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class DialogHelper {
@@ -172,21 +168,7 @@ public class DialogHelper {
     }
 
     public static String createLogFilename() {
-        Date date = new Date();
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
-
-        DecimalFormat twoDigitDecimalFormat = new DecimalFormat("00");
-        DecimalFormat fourDigitDecimalFormat = new DecimalFormat("0000");
-
-        String year = fourDigitDecimalFormat.format(calendar.get(Calendar.YEAR));
-        String month = twoDigitDecimalFormat.format(calendar.get(Calendar.MONTH) + 1);
-        String day = twoDigitDecimalFormat.format(calendar.get(Calendar.DAY_OF_MONTH));
-        String hour = twoDigitDecimalFormat.format(calendar.get(Calendar.HOUR_OF_DAY));
-        String minute = twoDigitDecimalFormat.format(calendar.get(Calendar.MINUTE));
-        String second = twoDigitDecimalFormat.format(calendar.get(Calendar.SECOND));
-
-        return year + "-" + month + "-" + day + "-" + hour + "-" + minute + "-" + second + ".txt";
+        return SaveLogHelper.createLogFilename();
     }
 
 }
