@@ -115,8 +115,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private static final int SHOW_RECORD_LOG_REQUEST_SHORTCUT = 7;
     private static final int SAVE_LOG_ZIP_REQUEST = 8;
 
-    private static final int NUM_FILLER_ITEMS = 7;
-
     private static UtilLogger log = new UtilLogger(LogcatActivity.class);
 
     private LogLineAdapter mLogListAdapter;
@@ -220,7 +218,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
                 if (currentTask != null) {
                     if (currentTask.isPaused()) {
-                        mLogListAdapter.removeFillerLines();
                         currentTask.unpause();
                     } else {
                         currentTask.pause();
@@ -1600,30 +1597,15 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 String line;
                 LinkedList<LogLine> pendingLines = new LinkedList<>();
                 while ((line = mReader.readLine()) != null) {
-                    if (mPaused) {
-                        flushLines(pendingLines);
-                        List<LogLine> filerLines = new ArrayList<>();
-                        for (int i = 0; i < NUM_FILLER_ITEMS; i++) {
-                            filerLines.add(LogLine.newFillerLine());
-                        }
-                        publishProgress(ArrayUtil.toArray(filerLines, LogLine.class));
-                        synchronized (mLock) {
-                            if (mPaused) {
-                                mLock.wait();
-                            }
-                        }
-                    }
                     pendingLines.add(LogLine.newLogLine(line, !mCollapsedMode));
                     if (pendingLines.size() > maxLines) {
                         pendingLines.removeFirst();
                     }
-                    // publish in chunks while the backlog is still buffered
-                    if (!mReader.ready()) {
+                    // keep reading while paused, publish in chunks otherwise
+                    if (!mPaused && !mReader.ready()) {
                         flushLines(pendingLines);
                     }
                 }
-            } catch (InterruptedException e) {
-                log.d(e, "expected error");
             } catch (Exception e) {
                 log.d(e, "unexpected error");
             } finally {
@@ -1669,7 +1651,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 hideProgressBar();
             }
             for (LogLine logLine : values) {
-                if (!mPaused && logLine.isFillerLine()) continue;
                 mLogListAdapter.addWithFilter(logLine, mSearchingString, false);
 
                 addToAutocompleteSuggestions(logLine);
@@ -1703,16 +1684,11 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         }
 
         public void pause() {
-            synchronized (mLock) {
-                mPaused = true;
-            }
+            mPaused = true;
         }
 
         public void unpause() {
-            synchronized (mLock) {
-                mPaused = false;
-                mLock.notify();
-            }
+            mPaused = false;
         }
 
         public boolean isPaused() {

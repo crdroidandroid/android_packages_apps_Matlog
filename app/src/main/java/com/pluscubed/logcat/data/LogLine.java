@@ -78,13 +78,6 @@ public class LogLine {
 
     }
 
-    public static LogLine newFillerLine() {
-        LogLine logLine = new LogLine();
-        logLine.setLogOutput("");
-        logLine.setLogLevel(-1);
-        return logLine;
-    }
-
     private static int convertCharToLogLevel(char logLevelChar) {
 
         switch (logLevelChar) {
@@ -208,9 +201,5 @@ public class LogLine {
 
     public void setHighlighted(boolean highlighted) {
         this.highlighted = highlighted;
-    }
-
-    public boolean isFillerLine() {
-        return getOriginalLine().length() == 0 && logLevel == -1;
     }
 }

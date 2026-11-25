@@ -183,20 +183,6 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         stopWatch.log(log);
     }
 
-    public void removeFillerLines() {
-        boolean removed;
-        synchronized (mLock) {
-            removed = mObjects.removeIf(LogLine::isFillerLine);
-            if (mOriginalValues != null) {
-                removed |= mOriginalValues.removeIf(LogLine::isFillerLine);
-            }
-        }
-        if (removed) {
-            notifyDataSetChanged();
-        }
-    }
-
-
     /**
      * Remove all elements from the list.
      */
@@ -414,8 +400,7 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
                 for (int i = 0; i < count; i++) {
                     final LogLine value = values.get(i);
                     // search the logline based on the criteria
-                    // always add filler items
-                    if (value.isFillerLine() || searchCriteria.matches(value)) {
+                    if (searchCriteria.matches(value)) {
                         newValues.add(value);
                     }
                 }
