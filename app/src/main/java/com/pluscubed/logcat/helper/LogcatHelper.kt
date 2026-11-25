@@ -18,7 +18,7 @@ object LogcatHelper {
 
     @JvmStatic
     fun buildArgs(buffers: Collection<String>, since: String? = null): List<String> {
-        val args = mutableListOf("logcat", "-v", "time")
+        val args = mutableListOf("logcat", "-v", "time", "-v", "uid")
         if (buffers.isNotEmpty() && !(buffers.size == 1 && buffers.contains(BUFFER_MAIN))) {
             buffers.flatMap { if (it == BUFFER_MAIN) MAIN_BUFFERS else listOf(it) }
                 .distinct()

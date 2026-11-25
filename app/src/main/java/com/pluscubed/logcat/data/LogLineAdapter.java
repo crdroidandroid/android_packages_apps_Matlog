@@ -287,7 +287,10 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
             timestampText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 
             pidText.setText(logLine.getProcessId() != -1 ? Integer.toString(logLine.getProcessId()) : null);
-            timestampText.setText(logLine.getTimestamp());
+            String packageName = logLine.getPackageName();
+            timestampText.setText(packageName != null
+                    ? logLine.getTimestamp() + "  " + packageName
+                    : logLine.getTimestamp());
         }
 
         tag.setTextColor(LogLineAdapterUtil.getOrCreateTagColor(context, logLine.getTag()));

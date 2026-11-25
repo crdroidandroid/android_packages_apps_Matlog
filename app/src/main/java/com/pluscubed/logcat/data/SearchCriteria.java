@@ -81,6 +81,7 @@ public class SearchCriteria {
         return TextUtils.isEmpty(searchText)
                 || (searchTextAsInt != -1 && searchTextAsInt == logLine.getProcessId())
                 || (logLine.getTag() != null && StringUtil.containsIgnoreCase(logLine.getTag(), searchText))
+                || (logLine.getPackageName() != null && StringUtil.containsIgnoreCase(logLine.getPackageName(), searchText))
                 || (logLine.getLogOutput() != null && StringUtil.containsIgnoreCase(logLine.getLogOutput(), searchText));
     }
 

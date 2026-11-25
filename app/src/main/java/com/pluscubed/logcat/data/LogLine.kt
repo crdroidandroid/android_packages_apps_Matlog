@@ -6,6 +6,7 @@
 package com.pluscubed.logcat.data
 
 import android.util.Log
+import com.pluscubed.logcat.helper.PackageNameResolver
 import com.pluscubed.logcat.reader.ScrubberUtils
 import com.pluscubed.logcat.util.LogLineAdapterUtil
 import com.pluscubed.logcat.util.UtilLogger
@@ -16,6 +17,7 @@ class LogLine {
     var logLevel: Int = 0
     var tag: String? = null
     var processId: Int = -1
+    var uid: String? = null
     var timestamp: String? = null
     var isExpanded: Boolean = false
     var isHighlighted: Boolean = false
@@ -36,11 +38,14 @@ class LogLine {
                     .append('/')
                     .append(tag)
                     .append('(')
-                    .append(processId)
+                uid?.let { append(it).append(':') }
+                append(processId)
                     .append("): ")
                     .append(logOutput)
             }
         }
+
+    val packageName: String? by lazy { PackageNameResolver.resolve(uid) }
 
     val processIdText: String
         get() = convertLogLevelToChar(logLevel).toString()
@@ -48,9 +53,9 @@ class LogLine {
     companion object {
         private const val TIMESTAMP_LENGTH = 19
 
-        // level/tag(pid), with an optional extra number seen on some ZTE devices
+        // level/tag(uid:pid), uid is optional, plus an extra number seen on some ZTE devices
         private val LOG_PATTERN: Pattern =
-            Pattern.compile("(\\w)/([^(]+)\\(\\s*(\\d+)(?:\\*\\s*\\d+)?\\): ")
+            Pattern.compile("(\\w)/([^(]+)\\(\\s*(?:([^\\s:()]+):)?\\s*(\\d+)(?:\\*\\s*\\d+)?\\): ")
 
         private val log = UtilLogger(LogLine::class.java)
 
@@ -72,7 +77,8 @@ class LogLine {
             if (matcher.find(startIdx)) {
                 logLine.logLevel = convertCharToLogLevel(matcher.group(1)!![0])
                 logLine.tag = matcher.group(2)
-                logLine.processId = matcher.group(3)!!.toInt()
+                logLine.uid = matcher.group(3)
+                logLine.processId = matcher.group(4)!!.toInt()
                 logLine.logOutput = originalLine.substring(matcher.end())
             } else {
                 log.d("Line doesn't match pattern: %s", originalLine)

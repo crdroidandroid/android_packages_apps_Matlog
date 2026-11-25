@@ -8,6 +8,8 @@ import android.content.Context;
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
 
+import com.pluscubed.logcat.helper.PackageNameResolver;
+
 public class OmniApp extends Application {
     public static final String NOTIFICATION_CHANNEL_ID = "com.pluscubed.logcat.notification";
 
@@ -19,6 +21,7 @@ public class OmniApp extends Application {
                 new DynamicColorsOptions.Builder().setThemeOverlay(R.style.Theme_MatLog_Overlay).build()
         );
         createNotificationChannel();
+        PackageNameResolver.init(this);
     }
 
     private void createNotificationChannel() {
