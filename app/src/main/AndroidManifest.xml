@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-sdk
         android:minSdkVersion="31"
@@ -63,6 +64,19 @@
         <receiver
             android:name="com.pluscubed.logcat.crash.CrashActionReceiver"
             android:exported="false" />
+
+        <service
+            android:name="com.pluscubed.logcat.crash.CrashMonitorService"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.pluscubed.logcat.crash.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
         <service android:name="com.pluscubed.logcat.LogcatRecordingService"
             android:exported="false"/>

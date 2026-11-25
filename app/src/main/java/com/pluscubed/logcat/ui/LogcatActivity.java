@@ -60,6 +60,7 @@ import com.pluscubed.logcat.helper.DmesgHelper;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
 import com.pluscubed.logcat.intents.Intents;
+import com.pluscubed.logcat.crash.CrashMonitorService;
 import com.pluscubed.logcat.crash.CrashesActivity;
 import com.pluscubed.logcat.reader.LogcatSession;
 import com.pluscubed.logcat.util.ArrayUtil;
@@ -211,6 +212,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         mHandler = new Handler(Looper.getMainLooper());
         mLogcatSession = new LogcatSession(this, LifecycleOwnerKt.getLifecycleScope(this), this);
+        CrashMonitorService.update(this);
 
         mFab = findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {

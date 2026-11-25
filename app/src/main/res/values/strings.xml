@@ -153,11 +153,17 @@
 
     <string name="matlog_pref_crash_detection" translatable="false">matlog_crash_detection</string>
     <string name="matlog_pref_crash_notifications" translatable="false">matlog_crash_notifications</string>
+    <string name="matlog_pref_crash_monitor_service" translatable="false">matlog_crash_monitor_service</string>
     <string name="matlog_pref_cat_crashes">Crash detection</string>
     <string name="matlog_pref_crash_detection_title">Detect crashes</string>
     <string name="matlog_pref_crash_detection_summary">Watch the log for app crashes, native crashes and ANRs</string>
     <string name="matlog_pref_crash_notifications_title">Crash notifications</string>
     <string name="matlog_pref_crash_notifications_summary">Notify when a new crash is detected</string>
+    <string name="matlog_pref_crash_monitor_service_title">Monitor in background</string>
+    <string name="matlog_pref_crash_monitor_service_summary">Keep detecting crashes when the app is closed, starting at boot</string>
+    <string name="matlog_crash_monitor_channel_name">Crash monitor</string>
+    <string name="matlog_crash_monitor_notification_title">Monitoring for crashes</string>
+    <string name="matlog_crash_monitor_notification_text">Crashes are recorded in the background</string>
     <string name="matlog_crashes">Crashes</string>
     <string name="matlog_crashes_empty">No crashes detected</string>
     <string name="matlog_crash_type_java">App crash</string>

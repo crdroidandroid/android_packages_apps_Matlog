@@ -46,9 +46,14 @@ class LogcatReader private constructor(private val process: Process) : Closeable
             open(PreferenceHelper.getBuffers(context), since)
 
         @JvmStatic
+        @JvmOverloads
         @Throws(IOException::class)
-        fun open(buffers: Collection<String>, since: String?): LogcatReader {
-            val process = ProcessBuilder(LogcatHelper.buildArgs(buffers, since))
+        fun open(
+            buffers: Collection<String>,
+            since: String?,
+            filterSpecs: List<String> = emptyList(),
+        ): LogcatReader {
+            val process = ProcessBuilder(LogcatHelper.buildArgs(buffers, since, filterSpecs))
                 .redirectError(ProcessBuilder.Redirect.to(File("/dev/null")))
                 .start()
             return LogcatReader(process)

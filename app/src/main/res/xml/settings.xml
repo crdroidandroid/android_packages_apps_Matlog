@@ -64,6 +64,14 @@
             android:summary="@string/matlog_pref_crash_notifications_summary"
             android:title="@string/matlog_pref_crash_notifications_title" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dependency="@string/matlog_pref_crash_detection"
+            android:key="@string/matlog_pref_crash_monitor_service"
+            android:persistent="true"
+            android:summary="@string/matlog_pref_crash_monitor_service_summary"
+            android:title="@string/matlog_pref_crash_monitor_service_title" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cat_advanced">

@@ -2,6 +2,7 @@ package com.pluscubed.logcat.ui;
 
 import android.app.ActivityManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.pluscubed.logcat.crash.CrashMonitorService;
 import com.pluscubed.logcat.data.LogLine;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.util.ArrayUtil;
@@ -99,6 +101,31 @@ public class SettingsActivity extends AppCompatActivity {
         private TwoStatePreference scrubberPreference;
 
         private boolean bufferChanged = false;
+
+        private final SharedPreferences.OnSharedPreferenceChangeListener mCrashPrefsListener =
+                new SharedPreferences.OnSharedPreferenceChangeListener() {
+                    @Override
+                    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                        if (getString(R.string.matlog_pref_crash_detection).equals(key)
+                                || getString(R.string.matlog_pref_crash_monitor_service).equals(key)) {
+                            CrashMonitorService.update(requireContext());
+                        }
+                    }
+                };
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences()
+                    .registerOnSharedPreferenceChangeListener(mCrashPrefsListener);
+        }
+
+        @Override
+        public void onPause() {
+            getPreferenceManager().getSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(mCrashPrefsListener);
+            super.onPause();
+        }
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
