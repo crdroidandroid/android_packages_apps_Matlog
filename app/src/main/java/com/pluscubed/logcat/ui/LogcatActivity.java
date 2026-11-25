@@ -60,7 +60,7 @@ import com.pluscubed.logcat.helper.DmesgHelper;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
 import com.pluscubed.logcat.intents.Intents;
-import com.pluscubed.logcat.reader.LogcatReader;
+import com.pluscubed.logcat.reader.LogcatSession;
 import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
 import com.pluscubed.logcat.util.StringUtil;
@@ -87,6 +87,7 @@ import androidx.core.content.FileProvider;
 import androidx.core.view.WindowCompat;
 import androidx.cursoradapter.widget.CursorAdapter;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
+import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -96,12 +97,10 @@ import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_EXPAND_AL
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_FILTER_ID;
 
 
-public class LogcatActivity extends AppCompatActivity implements FilterListener, LogLineViewHolder.OnClickListener {
+public class LogcatActivity extends AppCompatActivity implements FilterListener, LogLineViewHolder.OnClickListener,
+        LogcatSession.Callback {
 
     private static final int REQUEST_CODE_SETTINGS = 1;
-
-    // how often to check to see if we've gone over the max size
-    private static final int UPDATE_CHECK_INTERVAL = 200;
 
     // how many suggestions to keep in the autosuggestions text
     private static final int MAX_NUM_SUGGESTIONS = 1000;
@@ -118,7 +117,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private static UtilLogger log = new UtilLogger(LogcatActivity.class);
 
     private LogLineAdapter mLogListAdapter;
-    private LogReaderAsyncTask mTask;
+    private LogcatSession mLogcatSession;
+    private boolean mFirstLinesReceived;
 
     private String mSearchingString;
 
@@ -209,18 +209,17 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         handleShortcuts(getIntent().getStringExtra("shortcut_action"));
 
         mHandler = new Handler(Looper.getMainLooper());
+        mLogcatSession = new LogcatSession(this, LifecycleOwnerKt.getLifecycleScope(this), this);
 
         mFab = findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogReaderAsyncTask currentTask = mTask;
-
-                if (currentTask != null) {
-                    if (currentTask.isPaused()) {
-                        currentTask.unpause();
+                if (mLogcatSession.isRunning()) {
+                    if (mLogcatSession.isPaused()) {
+                        mLogcatSession.resume();
                     } else {
-                        currentTask.pause();
+                        mLogcatSession.pause();
                     }
                 }
                 updateFabStatus();
@@ -442,28 +441,14 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void startMainLog() {
-        Runnable mainLogRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (mLogListAdapter != null) {
-                    mLogListAdapter.clear();
-                }
-                mTask = new LogReaderAsyncTask();
-                mTask.execute((Void) null);
-            }
-        };
-
-        if (mTask != null) {
-            // do only after current log is depleted, to avoid splicing the streams together
-            // (Don't cross the streams!)
-            mTask.unpause();
-            mTask.setOnFinished(mainLogRunnable);
-            mTask.killReader();
-            mTask = null;
-        } else {
-            // no main log currently running; just start up the main log now
-            mainLogRunnable.run();
+        resetDisplayedLog(null);
+        if (mLogListAdapter != null) {
+            mLogListAdapter.clear();
         }
+        mFirstLinesReceived = false;
+        showProgressBar();
+        mLogcatSession.start();
+        updateFabStatus();
     }
 
     @Override
@@ -477,11 +462,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         super.onDestroy();
         log.d("onDestroy() called");
 
-        if (mTask != null) {
-            mTask.unpause();
-            mTask.killReader();
-            mTask = null;
-        }
+        mLogcatSession.stop();
     }
 
     private void populateSuggestionsAdapter(String query) {
@@ -521,7 +502,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean showingMainLog = (mTask != null);
+        boolean showingMainLog = mLogcatSession.isRunning();
         /*MenuItem saveLogMenuItem = menu.findItem(R.id.menu_save_log);
 
         saveLogMenuItem.setEnabled(showingMainLog);
@@ -1386,26 +1367,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             }
         };
 
-        // if the main log task is running, we can only run AFTER it's been canceled
-
-        if (mTask != null) {
-            mTask.setOnFinished(new Runnable() {
-
-                @Override
-                public void run() {
-                    openFileTask.execute((Void) null);
-
-                }
-            });
-            mTask.unpause();
-            mTask.killReader();
-            mTask = null;
-        } else {
-            // main log not running; just open in this thread
-            openFileTask.execute((Void) null);
-        }
-
-
+        mLogcatSession.stop();
+        openFileTask.execute((Void) null);
     }
 
     void hideProgressBar() {
@@ -1496,7 +1459,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
                 // only hide the fast scroll if we're unpaused and at the bottom of the list
                 // TODO:
-                //boolean enableFastScroll = mTask == null || mTask.isPaused() || !mAutoscrollToBottom;
                 //mListView.setFastScrollEnabled(enableFastScroll);
 
             }
@@ -1519,10 +1481,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void updateFabStatus() {
-        LogReaderAsyncTask currentTask = mTask;
-
-        if (currentTask != null) {
-            if (!currentTask.isPaused()) {
+        if (mLogcatSession.isRunning()) {
+            if (!mLogcatSession.isPaused()) {
                 mFab.setImageResource(R.drawable.ic_pause_white_24dp);
             } else {
                 mFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
@@ -1565,138 +1525,32 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         ((RecyclerView) findViewById(R.id.list)).scrollToPosition(mLogListAdapter.getItemCount() - 1);
     }
 
-    private class LogReaderAsyncTask extends AsyncTask<Void, LogLine, Void> {
+    @Override
+    public LogLine createLogLine(String line) {
+        return LogLine.newLogLine(line, !mCollapsedMode);
+    }
 
-        private final Object mLock = new Object();
-        private int counter = 0;
-        private volatile boolean mPaused;
-        private boolean mFirstLineReceived;
-        private boolean mKilled;
-        private LogcatReader mReader;
-        private Runnable mOnFinishedRunnable;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            log.d("onPreExecute()");
-
-            resetDisplayedLog(null);
-
-            showProgressBar();
+    @Override
+    public void onLogLines(List<LogLine> lines) {
+        if (!mFirstLinesReceived) {
+            mFirstLinesReceived = true;
+            hideProgressBar();
+        }
+        for (LogLine logLine : lines) {
+            mLogListAdapter.addWithFilter(logLine, mSearchingString, false);
+            addToAutocompleteSuggestions(logLine);
         }
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            log.d("doInBackground()");
-
-            try {
-                mReader = LogcatReader.open(LogcatActivity.this);
-
-                int maxLines = PreferenceHelper.getDisplayLimitPreference(LogcatActivity.this);
-
-                String line;
-                LinkedList<LogLine> pendingLines = new LinkedList<>();
-                while ((line = mReader.readLine()) != null) {
-                    pendingLines.add(LogLine.newLogLine(line, !mCollapsedMode));
-                    if (pendingLines.size() > maxLines) {
-                        pendingLines.removeFirst();
-                    }
-                    // keep reading while paused, publish in chunks otherwise
-                    if (!mPaused && !mReader.ready()) {
-                        flushLines(pendingLines);
-                    }
-                }
-            } catch (Exception e) {
-                log.d(e, "unexpected error");
-            } finally {
-                killReader();
-                log.d("AsyncTask has died");
-            }
-
-            return null;
-        }
-
-        private void flushLines(LinkedList<LogLine> lines) {
-            if (!lines.isEmpty()) {
-                publishProgress(ArrayUtil.toArray(lines, LogLine.class));
-                lines.clear();
-            }
-        }
-
-        public void killReader() {
-            if (!mKilled) {
-                synchronized (mLock) {
-                    if (!mKilled && mReader != null) {
-                        mReader.killQuietly();
-                        mKilled = true;
-                    }
-                }
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            log.d("onPostExecute()");
-            doWhenFinished();
-        }
-
-        @Override
-        protected void onProgressUpdate(LogLine... values) {
-            super.onProgressUpdate(values);
-
-            if (!mFirstLineReceived) {
-                mFirstLineReceived = true;
-                hideProgressBar();
-            }
-            for (LogLine logLine : values) {
-                mLogListAdapter.addWithFilter(logLine, mSearchingString, false);
-
-                addToAutocompleteSuggestions(logLine);
-            }
+        int maxNumLogLines = PreferenceHelper.getDisplayLimitPreference(this);
+        int numItemsToRemove = mLogListAdapter.getTrueValues().size() - maxNumLogLines;
+        if (numItemsToRemove > 0) {
+            mLogListAdapter.removeFirst(numItemsToRemove);
+        } else {
             mLogListAdapter.notifyDataSetChanged();
-
-            // how many logs to keep in memory?  this avoids OutOfMemoryErrors
-            int maxNumLogLines = PreferenceHelper.getDisplayLimitPreference(LogcatActivity.this);
-
-            // check to see if the list needs to be truncated to avoid out of memory errors
-            if (++counter % UPDATE_CHECK_INTERVAL == 0
-                    && mLogListAdapter.getTrueValues().size() > maxNumLogLines) {
-                int numItemsToRemove = mLogListAdapter.getTrueValues().size() - maxNumLogLines;
-                mLogListAdapter.removeFirst(numItemsToRemove);
-                log.d("truncating %d lines from log list to avoid out of memory errors", numItemsToRemove);
-            }
-
-            if (mAutoscrollToBottom) {
-                scrollToBottom();
-            }
-
         }
 
-        private void doWhenFinished() {
-            if (mPaused) {
-                unpause();
-            }
-            if (mOnFinishedRunnable != null) {
-                mOnFinishedRunnable.run();
-            }
-        }
-
-        public void pause() {
-            mPaused = true;
-        }
-
-        public void unpause() {
-            mPaused = false;
-        }
-
-        public boolean isPaused() {
-            return mPaused;
-        }
-
-        public void setOnFinished(Runnable onFinished) {
-            this.mOnFinishedRunnable = onFinished;
+        if (mAutoscrollToBottom) {
+            scrollToBottom();
         }
     }
 
