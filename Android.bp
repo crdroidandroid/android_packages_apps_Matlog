@@ -42,8 +42,6 @@ android_app {
         "kotlinx_coroutines_android",
     ],
 
-    kotlincflags: ["-Xjvm-default=enable"],
-
     optimize: {
         proguard_flags_files: ["app/proguard-rules.pro"],
     },
