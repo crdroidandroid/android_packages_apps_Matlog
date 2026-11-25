@@ -20,8 +20,8 @@ import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
 import com.pluscubed.logcat.helper.ServiceHelper;
 import com.pluscubed.logcat.helper.WidgetHelper;
+import com.pluscubed.logcat.helper.LogcatHelper;
 import com.pluscubed.logcat.reader.LogcatReader;
-import com.pluscubed.logcat.reader.LogcatReaderLoader;
 import com.pluscubed.logcat.ui.LogcatActivity;
 import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
@@ -44,7 +44,7 @@ public class LogcatRecordingService extends IntentService {
 
     public static final String URI_SCHEME = "catlog_recording_service";
     public static final String EXTRA_FILENAME = "filename";
-    public static final String EXTRA_LOADER = "loader";
+    public static final String EXTRA_SINCE = "since";
     public static final String EXTRA_QUERY_FILTER = "filter";
     public static final String EXTRA_LEVEL = "level";
     private static final String ACTION_STOP_RECORDING = "com.pluscubed.catlog.action.STOP_RECORDING";
@@ -87,15 +87,11 @@ public class LogcatRecordingService extends IntentService {
 
     private void initializeReader(Intent intent) {
         try {
-            // use the "time" log so we can see what time the logs were logged at
-            LogcatReaderLoader loader = intent.getParcelableExtra(EXTRA_LOADER);
-            mReader = loader.loadReader();
-
-            while (!mReader.readyToRecord() && !mKilled) {
-                mReader.readLine();
-                // keep skipping lines until we find one that is past the last log line, i.e.
-                // it's ready to record
+            String since = intent.getStringExtra(EXTRA_SINCE);
+            if (since == null) {
+                since = LogcatHelper.currentTimestamp();
             }
+            mReader = LogcatReader.open(this, since);
             if (!mKilled) {
                 makeToast(R.string.log_recording_started, Toast.LENGTH_SHORT);
             }
@@ -190,7 +186,7 @@ public class LogcatRecordingService extends IntentService {
             String line;
             int lineCount = 0;
             int logLinePeriod = PreferenceHelper.getLogLinePeriodPreference(getApplicationContext());
-            while ((line = mReader.readLine()) != null && !mKilled) {
+            while (mReader != null && (line = mReader.readLine()) != null && !mKilled) {
 
                 // filter
                 if (!searchCriteriaWillAlwaysMatch || !logLevelAcceptsEverything) {

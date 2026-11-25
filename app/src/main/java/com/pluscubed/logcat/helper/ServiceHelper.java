@@ -7,7 +7,6 @@ import android.content.Intent;
 
 import com.pluscubed.logcat.CrazyLoggerService;
 import com.pluscubed.logcat.LogcatRecordingService;
-import com.pluscubed.logcat.reader.LogcatReaderLoader;
 import com.pluscubed.logcat.util.UtilLogger;
 
 import java.util.List;
@@ -53,9 +52,7 @@ public class ServiceHelper {
             Intent intent = new Intent(context, LogcatRecordingService.class);
             intent.putExtra(LogcatRecordingService.EXTRA_FILENAME, filename);
 
-            // load "lastLine" in the background
-            LogcatReaderLoader loader = LogcatReaderLoader.create(context, true);
-            intent.putExtra(LogcatRecordingService.EXTRA_LOADER, loader);
+            intent.putExtra(LogcatRecordingService.EXTRA_SINCE, LogcatHelper.currentTimestamp());
 
             // add query text and log level
             intent.putExtra(LogcatRecordingService.EXTRA_QUERY_FILTER, queryFilter);

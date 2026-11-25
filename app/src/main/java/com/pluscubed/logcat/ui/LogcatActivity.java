@@ -61,7 +61,6 @@ import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
 import com.pluscubed.logcat.intents.Intents;
 import com.pluscubed.logcat.reader.LogcatReader;
-import com.pluscubed.logcat.reader.LogcatReaderLoader;
 import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
 import com.pluscubed.logcat.util.StringUtil;
@@ -1594,17 +1593,15 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             log.d("doInBackground()");
 
             try {
-                // use "recordingMode" because we want to load all the existing lines at once
-                // for a performance boost
-                LogcatReaderLoader loader = LogcatReaderLoader.create(LogcatActivity.this, true);
-                mReader = loader.loadReader();
+                mReader = LogcatReader.open(LogcatActivity.this);
 
                 int maxLines = PreferenceHelper.getDisplayLimitPreference(LogcatActivity.this);
 
                 String line;
-                LinkedList<LogLine> initialLines = new LinkedList<>();
+                LinkedList<LogLine> pendingLines = new LinkedList<>();
                 while ((line = mReader.readLine()) != null) {
                     if (mPaused) {
+                        flushLines(pendingLines);
                         List<LogLine> filerLines = new ArrayList<>();
                         for (int i = 0; i < NUM_FILLER_ITEMS; i++) {
                             filerLines.add(LogLine.newFillerLine());
@@ -1616,21 +1613,13 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                             }
                         }
                     }
-                    LogLine logLine = LogLine.newLogLine(line, !mCollapsedMode);
-                    if (!mReader.readyToRecord()) {
-                        // "ready to record" in this case means all the initial lines have been flushed from the reader
-                        initialLines.add(logLine);
-                        if (initialLines.size() > maxLines) {
-                            initialLines.removeFirst();
-                        }
-                    } else if (!initialLines.isEmpty()) {
-                        // flush all the initial lines we've loaded
-                        initialLines.add(logLine);
-                        publishProgress(ArrayUtil.toArray(initialLines, LogLine.class));
-                        initialLines.clear();
-                    } else {
-                        // just proceed as normal
-                        publishProgress(logLine);
+                    pendingLines.add(LogLine.newLogLine(line, !mCollapsedMode));
+                    if (pendingLines.size() > maxLines) {
+                        pendingLines.removeFirst();
+                    }
+                    // publish in chunks while the backlog is still buffered
+                    if (!mReader.ready()) {
+                        flushLines(pendingLines);
                     }
                 }
             } catch (InterruptedException e) {
@@ -1643,6 +1632,13 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             }
 
             return null;
+        }
+
+        private void flushLines(LinkedList<LogLine> lines) {
+            if (!lines.isEmpty()) {
+                publishProgress(ArrayUtil.toArray(lines, LogLine.class));
+                lines.clear();
+            }
         }
 
         public void killReader() {
