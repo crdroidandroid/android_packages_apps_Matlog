@@ -32,11 +32,14 @@ android_app {
 
     static_libs: [
         "androidx.core_core",
+        "androidx.core_core-ktx",
         "androidx.annotation_annotation",
         "androidx.appcompat_appcompat",
+        "androidx.lifecycle_lifecycle-runtime-ktx",
         "androidx.recyclerview_recyclerview",
         "androidx.preference_preference",
         "com.google.android.material_material_matlog",
+        "kotlinx_coroutines_android",
     ],
 
     kotlincflags: ["-Xjvm-default=enable"],
