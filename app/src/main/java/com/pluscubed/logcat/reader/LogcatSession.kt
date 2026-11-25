@@ -29,10 +29,15 @@ class LogcatSession(
         fun onLogLines(lines: List<LogLine>)
     }
 
-    private var job: Job? = null
+    private class Run {
+        val buffer = ArrayDeque<LogLine>()
 
-    @Volatile
-    private var reader: LogcatReader? = null
+        @Volatile
+        var reader: LogcatReader? = null
+    }
+
+    private var job: Job? = null
+    private var run: Run? = null
 
     @Volatile
     var isPaused = false
@@ -44,13 +49,14 @@ class LogcatSession(
     fun start() {
         stop()
         val maxLines = PreferenceHelper.getDisplayLimitPreference(context)
-        val buffer = ArrayDeque<LogLine>()
+        val current = Run()
+        run = current
         job = scope.launch {
-            launch(Dispatchers.IO) { read(buffer, maxLines) }
+            launch(Dispatchers.IO) { read(current, maxLines) }
             while (isActive) {
                 delay(UPDATE_INTERVAL_MS)
                 if (!isPaused) {
-                    flush(buffer)
+                    flush(current.buffer)
                 }
             }
         }
@@ -59,8 +65,8 @@ class LogcatSession(
     fun stop() {
         job?.cancel()
         job = null
-        reader?.killQuietly()
-        reader = null
+        run?.reader?.killQuietly()
+        run = null
         isPaused = false
     }
 
@@ -72,31 +78,66 @@ class LogcatSession(
         isPaused = false
     }
 
-    private suspend fun read(buffer: ArrayDeque<LogLine>, maxLines: Int) {
-        val logcat = try {
-            LogcatReader.open(context)
-        } catch (e: IOException) {
-            Log.w(TAG, "Unable to start logcat", e)
-            return
-        }
-        reader = logcat
-        try {
-            while (currentCoroutineContext().isActive) {
-                val line = logcat.readLine() ?: break
-                val logLine = callback.createLogLine(line)
-                synchronized(buffer) {
-                    buffer.addLast(logLine)
-                    while (buffer.size > maxLines) {
-                        buffer.removeFirst()
+    private suspend fun read(run: Run, maxLines: Int) {
+        val buffer = run.buffer
+        var since: String? = null
+        val linesAtSince = HashSet<String>()
+        var resuming = false
+        while (currentCoroutineContext().isActive) {
+            val logcat = try {
+                LogcatReader.open(context, since)
+            } catch (e: IOException) {
+                Log.w(TAG, "Unable to start logcat", e)
+                null
+            }
+            if (logcat != null) {
+                run.reader = logcat
+                if (!currentCoroutineContext().isActive) {
+                    logcat.killQuietly()
+                    break
+                }
+                try {
+                    while (currentCoroutineContext().isActive) {
+                        val line = logcat.readLine() ?: break
+                        val timestamp = timestampOf(line)
+                        if (timestamp != null) {
+                            if (timestamp == since) {
+                                // -T is inclusive, skip lines already shown before a restart
+                                if (!linesAtSince.add(line) && resuming) continue
+                            } else {
+                                since = timestamp
+                                linesAtSince.clear()
+                                linesAtSince.add(line)
+                                resuming = false
+                            }
+                        }
+                        val logLine = callback.createLogLine(line)
+                        synchronized(buffer) {
+                            buffer.addLast(logLine)
+                            while (buffer.size > maxLines) {
+                                buffer.removeFirst()
+                            }
+                        }
                     }
+                } catch (e: IOException) {
+                    Log.w(TAG, "Logcat stream failed", e)
+                } finally {
+                    logcat.killQuietly()
                 }
             }
-        } catch (e: IOException) {
-            Log.w(TAG, "Logcat stream ended", e)
-        } finally {
-            logcat.killQuietly()
+            if (!currentCoroutineContext().isActive) break
+            Log.w(TAG, "Logcat stopped unexpectedly, restarting")
+            resuming = true
+            delay(RESTART_DELAY_MS)
         }
     }
+
+    private fun timestampOf(line: String): String? =
+        if (line.length >= TIMESTAMP_LENGTH && line[0].isDigit()) {
+            line.substring(0, TIMESTAMP_LENGTH)
+        } else {
+            null
+        }
 
     private fun flush(buffer: ArrayDeque<LogLine>) {
         val lines = synchronized(buffer) {
@@ -109,5 +150,7 @@ class LogcatSession(
     private companion object {
         const val TAG = "LogcatSession"
         const val UPDATE_INTERVAL_MS = 250L
+        const val RESTART_DELAY_MS = 2000L
+        const val TIMESTAMP_LENGTH = 18
     }
 }
