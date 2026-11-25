@@ -60,6 +60,7 @@ import com.pluscubed.logcat.helper.DmesgHelper;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
 import com.pluscubed.logcat.intents.Intents;
+import com.pluscubed.logcat.crash.CrashesActivity;
 import com.pluscubed.logcat.reader.LogcatSession;
 import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
@@ -261,6 +262,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         return true;
                     case R.id.menu_delete_saved_log:
                         startDeleteSavedLogsDialog();
+                        return true;
+                    case R.id.menu_crashes:
+                        startActivity(CrashesActivity.intent(LogcatActivity.this));
                         return true;
                     case R.id.menu_settings:
                         startSettingsActivity();

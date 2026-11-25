@@ -7,6 +7,7 @@ package com.pluscubed.logcat.reader
 
 import android.content.Context
 import android.util.Log
+import com.pluscubed.logcat.crash.CrashMonitor
 import com.pluscubed.logcat.data.LogLine
 import com.pluscubed.logcat.helper.PreferenceHelper
 import kotlinx.coroutines.CoroutineScope
@@ -16,7 +17,11 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class LogcatSession(
     private val context: Context,
@@ -29,7 +34,7 @@ class LogcatSession(
         fun onLogLines(lines: List<LogLine>)
     }
 
-    private class Run {
+    private class Run(val crashMonitor: CrashMonitor?) {
         val buffer = ArrayDeque<LogLine>()
 
         @Volatile
@@ -49,12 +54,15 @@ class LogcatSession(
     fun start() {
         stop()
         val maxLines = PreferenceHelper.getDisplayLimitPreference(context)
-        val current = Run()
+        val current = Run(if (CrashMonitor.isEnabled(context)) CrashMonitor(context) else null)
         run = current
         job = scope.launch {
             launch(Dispatchers.IO) { read(current, maxLines) }
             while (isActive) {
                 delay(UPDATE_INTERVAL_MS)
+                current.crashMonitor?.let { monitor ->
+                    withContext(Dispatchers.IO) { monitor.onIdle() }
+                }
                 if (!isPaused) {
                     flush(current.buffer)
                 }
@@ -83,6 +91,8 @@ class LogcatSession(
         var since: String? = null
         val linesAtSince = HashSet<String>()
         var resuming = false
+        // only crashes logged after the session started are notified
+        val startedAt = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US).format(Date())
         while (currentCoroutineContext().isActive) {
             val logcat = try {
                 LogcatReader.open(context, since)
@@ -112,6 +122,7 @@ class LogcatSession(
                             }
                         }
                         val logLine = callback.createLogLine(line)
+                        run.crashMonitor?.process(logLine, timestamp != null && timestamp >= startedAt)
                         synchronized(buffer) {
                             buffer.addLast(logLine)
                             while (buffer.size > maxLines) {

@@ -47,6 +47,25 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/matlog_pref_cat_crashes">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/matlog_pref_crash_detection"
+            android:persistent="true"
+            android:summary="@string/matlog_pref_crash_detection_summary"
+            android:title="@string/matlog_pref_crash_detection_title" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="@string/matlog_pref_crash_detection"
+            android:key="@string/matlog_pref_crash_notifications"
+            android:persistent="true"
+            android:summary="@string/matlog_pref_crash_notifications_summary"
+            android:title="@string/matlog_pref_crash_notifications_title" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_cat_advanced">
 
         <EditTextPreference
