@@ -250,4 +250,10 @@
     <string name="matlog_column_pid">PID</string>
     <string name="matlog_column_package">Package</string>
     <string name="matlog_column_tag">Tag</string>
+    <string name="matlog_pause">Pause</string>
+    <string name="matlog_resume">Resume</string>
+    <string name="matlog_stop">Stop</string>
+    <string name="matlog_recording_summary">New log lines are being saved</string>
+    <string name="matlog_recording_paused">Log recording paused</string>
+    <string name="matlog_recording_paused_summary">New log lines are skipped until you resume</string>
 </resources>

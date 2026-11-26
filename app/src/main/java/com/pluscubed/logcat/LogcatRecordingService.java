@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.pluscubed.logcat.data.LogLine;
 import com.pluscubed.logcat.data.SearchCriteria;
+import com.pluscubed.logcat.filter.FilterRepository;
+import com.pluscubed.logcat.filter.FilterSet;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
 import com.pluscubed.logcat.helper.ServiceHelper;
@@ -31,9 +33,9 @@ import org.omnirom.logcat.OmniApp;
 import org.omnirom.logcat.R;
 
 import java.io.IOException;
-import java.util.Random;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 /**
  * Reads logs.
@@ -48,15 +50,28 @@ public class LogcatRecordingService extends IntentService {
     public static final String EXTRA_QUERY_FILTER = "filter";
     public static final String EXTRA_LEVEL = "level";
     private static final String ACTION_STOP_RECORDING = "com.pluscubed.catlog.action.STOP_RECORDING";
+    private static final String ACTION_PAUSE_RECORDING = "org.omnirom.logcat.action.PAUSE_RECORDING";
+    private static final String ACTION_RESUME_RECORDING = "org.omnirom.logcat.action.RESUME_RECORDING";
 
     private static UtilLogger log = new UtilLogger(LogcatRecordingService.class);
     private final Object lock = new Object();
     private LogcatReader mReader;
     private boolean mKilled;
+    // paused recordings keep logcat running but drop incoming lines
+    private volatile boolean mPaused;
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            log.d("onReceive()");
+            log.d("onReceive() %s", intent.getAction());
+
+            if (ACTION_PAUSE_RECORDING.equals(intent.getAction())) {
+                setPaused(true);
+                return;
+            }
+            if (ACTION_RESUME_RECORDING.equals(intent.getAction())) {
+                setPaused(false);
+                return;
+            }
 
             // received broadcast to kill service
             killProcess();
@@ -77,9 +92,11 @@ public class LogcatRecordingService extends IntentService {
         log.d("onCreate()");
 
         IntentFilter intentFilter = new IntentFilter(ACTION_STOP_RECORDING);
+        intentFilter.addAction(ACTION_PAUSE_RECORDING);
+        intentFilter.addAction(ACTION_RESUME_RECORDING);
         intentFilter.addDataScheme(URI_SCHEME);
 
-        registerReceiver(receiver, intentFilter);
+        ContextCompat.registerReceiver(this, receiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
 
         handler = new Handler(Looper.getMainLooper());
     }
@@ -129,29 +146,48 @@ public class LogcatRecordingService extends IntentService {
         // notify the widgets that we're running
         WidgetHelper.updateWidgets(getApplicationContext());
 
-        CharSequence tickerText = getText(R.string.notification_ticker);
+        startForeground(R.string.notification_title, buildNotification());
+    }
 
-        Intent stopRecordingIntent = new Intent();
-        stopRecordingIntent.setAction(ACTION_STOP_RECORDING);
-        // have to make this unique for God knows what reason
-        stopRecordingIntent.setData(Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://stop/"),
-                Long.toHexString(new Random().nextLong())));
+    private void setPaused(boolean paused) {
+        mPaused = paused;
+        getSystemService(NotificationManager.class).notify(R.string.notification_title, buildNotification());
+    }
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
-                0 /* no requestCode */, stopRecordingIntent,
-                PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
+    private Notification buildNotification() {
+        Intent openIntent = new Intent(getApplicationContext(), LogcatActivity.class);
+        openIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        // Set the icon, scrolling text and timestamp
-        Notification notification = new Notification.Builder(getApplicationContext(), OmniApp.NOTIFICATION_CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setTicker(tickerText)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), OmniApp.NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_record)
+                .setTicker(getText(R.string.notification_ticker))
                 .setWhen(System.currentTimeMillis())
-                .setContentTitle(getString(R.string.notification_title))
-                .setContentText(getString(R.string.notification_subtext))
-                .setContentIntent(pendingIntent)
-                .build();
+                .setOngoing(true)
+                .setOnlyAlertOnce(true)
+                .setContentTitle(getString(mPaused ? R.string.matlog_recording_paused : R.string.notification_title))
+                .setContentText(getString(mPaused ? R.string.matlog_recording_paused_summary : R.string.matlog_recording_summary))
+                .setContentIntent(contentIntent);
 
-        startForeground(R.string.notification_title, notification);
+        if (mPaused) {
+            builder.addAction(R.drawable.ic_play_arrow_white_24dp, getString(R.string.matlog_resume),
+                    controlIntent(ACTION_RESUME_RECORDING, 2));
+        } else {
+            builder.addAction(R.drawable.ic_pause_white_24dp, getString(R.string.matlog_pause),
+                    controlIntent(ACTION_PAUSE_RECORDING, 1));
+        }
+        builder.addAction(R.drawable.ic_stop, getString(R.string.matlog_stop),
+                controlIntent(ACTION_STOP_RECORDING, 3));
+        return builder.build();
+    }
+
+    private PendingIntent controlIntent(String action, int requestCode) {
+        Intent intent = new Intent(action);
+        intent.setPackage(getPackageName());
+        intent.setData(Uri.parse(URI_SCHEME + "://" + action));
+        return PendingIntent.getBroadcast(this, requestCode, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     protected void onHandleIntent(Intent intent) {
@@ -175,6 +211,10 @@ public class LogcatRecordingService extends IntentService {
         boolean searchCriteriaWillAlwaysMatch = searchCriteria.isEmpty();
         boolean logLevelAcceptsEverything = logLevelLimit == 0;
 
+        FilterRepository filterRepository = FilterRepository.get(this);
+        long filtersVersion = filterRepository.getVersion();
+        FilterSet userFilters = filterRepository.activeFilterSet();
+
         SaveLogHelper.deleteLogIfExists(filename);
 
         initializeReader(intent);
@@ -188,9 +228,18 @@ public class LogcatRecordingService extends IntentService {
             int logLinePeriod = PreferenceHelper.getLogLinePeriodPreference(getApplicationContext());
             while (mReader != null && (line = mReader.readLine()) != null && !mKilled) {
 
+                if (mPaused) {
+                    continue;
+                }
+
+                if (filterRepository.getVersion() != filtersVersion) {
+                    filtersVersion = filterRepository.getVersion();
+                    userFilters = filterRepository.activeFilterSet();
+                }
+
                 // filter
-                if (!searchCriteriaWillAlwaysMatch || !logLevelAcceptsEverything) {
-                    if (!checkLogLine(line, searchCriteria, logLevelLimit)) {
+                if (!searchCriteriaWillAlwaysMatch || !logLevelAcceptsEverything || !userFilters.isEmpty()) {
+                    if (!checkLogLine(line, searchCriteria, logLevelLimit, userFilters)) {
                         continue;
                     }
                 }
@@ -220,10 +269,11 @@ public class LogcatRecordingService extends IntentService {
         }
     }
 
-    private boolean checkLogLine(String line, SearchCriteria searchCriteria, int logLevelLimit) {
+    private boolean checkLogLine(String line, SearchCriteria searchCriteria, int logLevelLimit, FilterSet userFilters) {
         LogLine logLine = LogLine.newLogLine(line, false);
         return searchCriteria.matches(logLine)
-                && LogLineAdapterUtil.logLevelIsAcceptableGivenLogLevelLimit(logLine.getLogLevel(), logLevelLimit);
+                && LogLineAdapterUtil.logLevelIsAcceptableGivenLogLevelLimit(logLine.getLogLevel(), logLevelLimit)
+                && userFilters.accepts(logLine);
     }
 
 
