@@ -286,44 +286,30 @@ public class SaveLogHelper {
         return null;
     }
 
-    public static File saveZipFile(String filename, List<File> files) {
-        try {
-            return saveZipFileAndThrow(getSavedLogsDirectory(), filename, files);
-        } catch (IOException e) {
-            log.e(e, "unexpected error");
-        }
-        return null;
-    }
-
     private static File saveZipFileAndThrow(File dir, String filename, List<File> files) throws IOException {
         File zipFile = new File(dir, filename);
-
-        ZipOutputStream output = null;
+        OutputStream output = new FileOutputStream(zipFile);
         try {
-            output = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile), BUFFER));
-
-            for (File file : files) {
-                FileInputStream fi = new FileInputStream(file);
-                BufferedInputStream input = null;
-                try {
-                    input = new BufferedInputStream(fi, BUFFER);
-
-                    ZipEntry entry = new ZipEntry(file.getName());
-                    output.putNextEntry(entry);
-                    copy(input, output);
-                } finally {
-                    if (input != null) {
-                        input.close();
-                    }
-                }
-
-            }
+            writeZip(output, files);
         } finally {
-            if (output != null) {
-                output.close();
-            }
+            output.close();
         }
         return zipFile;
+    }
+
+    public static void writeZip(OutputStream out, List<File> files) throws IOException {
+        ZipOutputStream output = new ZipOutputStream(new BufferedOutputStream(out, BUFFER));
+        for (File file : files) {
+            BufferedInputStream input = new BufferedInputStream(new FileInputStream(file), BUFFER);
+            try {
+                output.putNextEntry(new ZipEntry(file.getName()));
+                copy(input, output);
+            } finally {
+                input.close();
+            }
+        }
+        output.finish();
+        output.flush();
     }
 
     /**

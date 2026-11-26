@@ -31,6 +31,10 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/menu_export_log"
+        android:title="@string/matlog_export" />
+
+    <item
         android:id="@+id/menu_crashes"
         android:title="@string/matlog_crashes" />
 

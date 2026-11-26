@@ -231,4 +231,7 @@
     <string name="matlog_copy_too_large">Too much text to copy, use Share instead</string>
     <string name="matlog_selection_share_subject">Selected log lines</string>
     <string name="matlog_selection_share_failed">Unable to share the selected lines</string>
+    <string name="matlog_export">Export</string>
+    <string name="matlog_export_done">Exported</string>
+    <string name="matlog_export_failed">Unable to export</string>
 </resources>

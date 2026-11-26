@@ -7,11 +7,13 @@ package com.pluscubed.logcat.crash
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -32,6 +34,7 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,6 +70,7 @@ import androidx.lifecycle.lifecycleScope
 import com.pluscubed.logcat.ui.compose.BackButton
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import com.pluscubed.logcat.data.SendLogDetails
+import com.pluscubed.logcat.helper.LogExporter
 import com.pluscubed.logcat.helper.SaveLogHelper
 import com.pluscubed.logcat.ui.LogcatActivity
 import kotlinx.coroutines.Dispatchers
@@ -77,12 +81,21 @@ import org.omnirom.logcat.R
 class CrashesActivity : ComponentActivity() {
 
     private val selectedCrashId = mutableStateOf<Long?>(null)
+    private var exportingCrashId: Long? = null
+
+    private val exportLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument(LogExporter.MIME_TEXT)) { uri ->
+            val id = exportingCrashId
+            exportingCrashId = null
+            if (uri != null && id != null) exportCrash(id, uri)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         selectedCrashId.value = savedInstanceState?.getLong(EXTRA_CRASH_ID, -1L)
             ?.takeIf { it != -1L }
             ?: crashIdFrom(intent)
+        exportingCrashId = savedInstanceState?.getLong(STATE_EXPORTING_ID, -1L)?.takeIf { it != -1L }
         val repository = CrashRepository.get(this)
         if (savedInstanceState == null) {
             handleShareIntent(intent)
@@ -104,6 +117,10 @@ class CrashesActivity : ComponentActivity() {
                         crashId = id,
                         onBack = { selectedCrashId.value = null },
                         onShare = { crash -> shareCrash(crash) },
+                        onExport = { crash ->
+                            exportingCrashId = crash.id
+                            exportLauncher.launch(LogExporter.textFilename())
+                        },
                         onDelete = { crash ->
                             selectedCrashId.value = null
                             lifecycleScope.launch(Dispatchers.IO) { repository.dismiss(crash.id) }
@@ -153,9 +170,21 @@ class CrashesActivity : ComponentActivity() {
         }
     }
 
+    private fun exportCrash(id: Long, uri: Uri) {
+        lifecycleScope.launch {
+            val crash = withContext(Dispatchers.IO) { CrashRepository.get(this@CrashesActivity).get(id) }
+            if (crash == null) {
+                Toast.makeText(this@CrashesActivity, R.string.matlog_export_failed, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            LogExporter.exportText(this@CrashesActivity, uri, crash.log)
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         selectedCrashId.value?.let { outState.putLong(EXTRA_CRASH_ID, it) }
+        exportingCrashId?.let { outState.putLong(STATE_EXPORTING_ID, it) }
     }
 
     private fun crashIdFrom(intent: Intent?): Long? =
@@ -163,6 +192,7 @@ class CrashesActivity : ComponentActivity() {
 
     companion object {
         private const val EXTRA_CRASH_ID = "crash_id"
+        private const val STATE_EXPORTING_ID = "exporting_crash_id"
         private const val ACTION_SHARE_CRASH = "org.omnirom.logcat.action.SHARE_CRASH"
 
         fun shareIntent(context: Context, crashId: Long): Intent =
@@ -274,6 +304,7 @@ private fun CrashDetailsScreen(
     crashId: Long,
     onBack: () -> Unit,
     onShare: (Crash) -> Unit,
+    onExport: (Crash) -> Unit,
     onDelete: (Crash) -> Unit,
 ) {
     val context = LocalContext.current
@@ -314,6 +345,12 @@ private fun CrashDetailsScreen(
                             Icon(
                                 Icons.Filled.Share,
                                 contentDescription = stringResource(R.string.matlog_crash_share)
+                            )
+                        }
+                        IconButton(onClick = { onExport(current) }) {
+                            Icon(
+                                Icons.Filled.SaveAlt,
+                                contentDescription = stringResource(R.string.matlog_export)
                             )
                         }
                         IconButton(onClick = {

@@ -58,6 +58,7 @@ import com.pluscubed.logcat.db.FilterItem;
 import com.pluscubed.logcat.helper.BuildHelper;
 import com.pluscubed.logcat.helper.DialogHelper;
 import com.pluscubed.logcat.helper.DmesgHelper;
+import com.pluscubed.logcat.helper.LogExporter;
 import com.pluscubed.logcat.helper.LogTextActions;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
@@ -84,6 +85,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
@@ -133,6 +136,37 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private final LogSelection mSelection = new LogSelection();
     private ActionMode mSelectionMode;
     private boolean mResumeAfterSelection;
+
+    private final ActivityResultLauncher<String> mExportLogLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument(LogExporter.MIME_TEXT), uri -> {
+                if (uri != null) {
+                    LogExporter.exportText(this, uri, getCurrentLogAsCharSequence());
+                }
+            });
+
+    // held in memory only, lost if the activity is recreated while the picker is open
+    private String mPendingSelectionExport;
+
+    private final ActivityResultLauncher<String> mExportSelectionLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument(LogExporter.MIME_TEXT), uri -> {
+                String text = mPendingSelectionExport;
+                mPendingSelectionExport = null;
+                if (uri == null) {
+                    return;
+                }
+                if (text != null) {
+                    LogExporter.exportText(this, uri, text);
+                } else {
+                    Toast.makeText(this, R.string.matlog_export_failed, Toast.LENGTH_LONG).show();
+                }
+            });
+
+    private final ActivityResultLauncher<String> mExportZipLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument(LogExporter.MIME_ZIP), uri -> {
+                if (uri != null) {
+                    exportLogZip(uri);
+                }
+            });
 
     private String mSearchingString;
 
@@ -262,6 +296,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         return true;
                     case R.id.menu_save_log:
                         showSaveLogDialog();
+                        return true;
+                    case R.id.menu_export_log:
+                        mExportLogLauncher.launch(LogExporter.textFilename());
                         return true;
                     case R.id.menu_record_log:
                         showRecordLogDialog();
@@ -769,6 +806,11 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                     LogTextActions.share(LogcatActivity.this, selectedText());
                     mode.finish();
                     return true;
+                case R.id.menu_selection_export:
+                    mPendingSelectionExport = selectedText();
+                    mExportSelectionLauncher.launch(LogExporter.textFilename());
+                    mode.finish();
+                    return true;
                 case R.id.menu_selection_extended_copy:
                     ExtendedCopyActivity.start(LogcatActivity.this, selectedText());
                     mode.finish();
@@ -1213,7 +1255,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        saveLogToTargetApp(includeDeviceInfoCheckBox.isChecked(), false);
+                        mExportZipLauncher.launch(LogExporter.zipFilename());
                     }
                 }).show();
     }
@@ -1245,31 +1287,12 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     }
 
-    protected void saveLogToTargetApp(final boolean includeDeviceInfo, final boolean includeDmesg) {
-        final Handler ui = new Handler(Looper.getMainLooper());
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                ui.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mCurrentlyOpenLog == null || includeDeviceInfo || includeDmesg) {
-                            showProgressBar();
-                        }
-                    }
-                });
-                final File zipFile = saveLogAsZip(includeDeviceInfo, includeDmesg);
-                ui.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideProgressBar();
-                        Toast.makeText(getApplicationContext(), R.string.log_saved, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        }).start();
-
+    private void exportLogZip(Uri uri) {
+        final boolean includeDeviceInfo = PreferenceHelper.getIncludeDeviceInfoPreference(this);
+        final String openLog = mCurrentlyOpenLog;
+        final List<CharSequence> lines = openLog == null ? getCurrentLogAsListOfStrings() : null;
+        LogExporter.export(this, uri, out ->
+                SaveLogHelper.writeZip(out, collectLogFiles(openLog, lines, includeDeviceInfo)));
     }
 
     @WorkerThread
@@ -1328,37 +1351,23 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         return sendLogDetails;
     }
 
-    private File saveLogAsZip(boolean includeDeviceInfo, boolean includeDmesg) {
+    @WorkerThread
+    private List<File> collectLogFiles(String openLog, List<CharSequence> lines, boolean includeDeviceInfo) {
         List<File> files = new ArrayList<>();
         SaveLogHelper.cleanTemp(this);
-        String logBasename = SaveLogHelper.createLogBasename();
 
-        if (mCurrentlyOpenLog != null) { // use saved log file
-            files.add(SaveLogHelper.getFile(mCurrentlyOpenLog));
-        } else { // create a temp file to hold the current, unsaved log
-            File tempLogFile = SaveLogHelper.saveTemporaryFile(this,
-                    logBasename + ".txt", null, getCurrentLogAsListOfStrings());
-            files.add(tempLogFile);
+        if (openLog != null) {
+            files.add(SaveLogHelper.getFile(openLog));
+        } else {
+            files.add(SaveLogHelper.saveTemporaryFile(this,
+                    SaveLogHelper.createLogFilename(), null, lines));
         }
 
         if (includeDeviceInfo) {
-            // include device info
-            String deviceInfo = BuildHelper.getBuildInformationAsString();
-            // or create as separate file called device.txt
-            File tempFile = SaveLogHelper.saveTemporaryFile(this,
-                    SaveLogHelper.TEMP_DEVICE_INFO_FILENAME, deviceInfo, null);
-            files.add(tempFile);
+            files.add(SaveLogHelper.saveTemporaryFile(this,
+                    SaveLogHelper.TEMP_DEVICE_INFO_FILENAME, BuildHelper.getBuildInformationAsString(), null));
         }
-
-        if (includeDmesg) {
-            File tempDmsgFile = SaveLogHelper.saveTemporaryFile(this,
-                    SaveLogHelper.TEMP_DMESG_FILENAME, null, DmesgHelper.getDmsg());
-            files.add(tempDmsgFile);
-        }
-
-        File zipFile = SaveLogHelper.saveZipFile(logBasename + ".zip", files);
-
-        return zipFile;
+        return files;
     }
 
     private List<CharSequence> getCurrentLogAsListOfStrings() {
