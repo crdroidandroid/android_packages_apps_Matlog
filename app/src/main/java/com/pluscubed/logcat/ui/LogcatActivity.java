@@ -50,6 +50,7 @@ import com.pluscubed.logcat.data.LogLineAdapter;
 import com.pluscubed.logcat.data.LogLineViewHolder;
 import com.pluscubed.logcat.data.LogSelection;
 import com.pluscubed.logcat.data.SavedLog;
+import com.pluscubed.logcat.data.LogSearch;
 import com.pluscubed.logcat.data.SearchCriteria;
 import com.pluscubed.logcat.data.SendLogDetails;
 import com.pluscubed.logcat.data.SortedFilterArrayAdapter;
@@ -134,6 +135,10 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private long mAppliedFiltersVersion = -1;
 
     private final LogSelection mSelection = new LogSelection();
+    private LogSearch mLogSearch;
+    private boolean mSearchRegex;
+    private boolean mFilterOnSearch;
+    private Menu mOptionsMenu;
     private ActionMode mSelectionMode;
     private boolean mResumeAfterSelection;
 
@@ -496,6 +501,12 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         mCollapsedMode = !PreferenceHelper.getExpandedByDefaultPreference(getApplicationContext());
 
+        boolean filterOnSearch = LogSearch.isFilterOnSearch(this);
+        if (filterOnSearch != mFilterOnSearch) {
+            mFilterOnSearch = filterOnSearch;
+            search(mSearchingString);
+        }
+
 
         if (requestCode == REQUEST_CODE_SETTINGS && resultCode == RESULT_OK) {
             onSettingsActivityResult(data);
@@ -609,7 +620,22 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         //used to workaround issue where the search text is cleared on expanding the SearchView
 
+        mOptionsMenu = menu;
         mSearchViewMenuItem = menu.findItem(R.id.menu_search);
+        menu.findItem(R.id.menu_search_regex).setChecked(mSearchRegex);
+        mSearchViewMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                setSearchControlsVisible(true);
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                setSearchControlsVisible(false);
+                return true;
+            }
+        });
         final SearchView searchView = (SearchView) mSearchViewMenuItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -648,8 +674,72 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             searchView.setQuery(mSearchingString, true);
             searchView.clearFocus();
         }
+        updateSearchUi();
 
         return true;
+    }
+
+    private void setSearchControlsVisible(boolean searching) {
+        if (mOptionsMenu == null) {
+            return;
+        }
+        for (int id : new int[]{R.id.menu_search_count, R.id.menu_search_previous,
+                R.id.menu_search_next, R.id.menu_search_regex}) {
+            mOptionsMenu.findItem(id).setVisible(searching);
+        }
+        for (int id : new int[]{R.id.menu_send_log_zip, R.id.menu_filters, R.id.menu_settings}) {
+            mOptionsMenu.findItem(id).setVisible(!searching);
+        }
+        updateSearchUi();
+    }
+
+    private void updateSearchUi() {
+        if (mOptionsMenu == null || mLogSearch == null) {
+            return;
+        }
+        TextView countView = (TextView) mOptionsMenu.findItem(R.id.menu_search_count).getActionView();
+        int hitCount = mLogSearch.getHitCount();
+        if (!mLogSearch.isActive()) {
+            countView.setText(null);
+        } else if (mLogSearch.isInvalid()) {
+            countView.setText(R.string.matlog_search_invalid);
+        } else if (mLogSearch.getCurrentIndex() >= 0) {
+            countView.setText(getString(R.string.matlog_search_position, mLogSearch.getCurrentIndex() + 1, hitCount));
+        } else {
+            countView.setText(String.valueOf(hitCount));
+        }
+        countView.setTextColor(getAttrColor(mLogSearch.isInvalid()
+                ? R.attr.colorError : R.attr.colorOnSurfaceVariant));
+        mOptionsMenu.findItem(R.id.menu_search_previous).setEnabled(hitCount > 0);
+        mOptionsMenu.findItem(R.id.menu_search_next).setEnabled(hitCount > 0);
+    }
+
+    private void refreshSearchHits() {
+        if (mLogSearch == null || !mLogSearch.isActive()) {
+            return;
+        }
+        mLogSearch.update(mLogListAdapter.getObjects());
+        updateSearchUi();
+    }
+
+    private void moveToSearchHit(boolean next) {
+        RecyclerView list = findViewById(R.id.list);
+        LinearLayoutManager layoutManager = (LinearLayoutManager) list.getLayoutManager();
+        List<LogLine> lines = mLogListAdapter.getObjects();
+        int oldPosition = mLogSearch.currentPosition();
+        int position = next
+                ? mLogSearch.next(lines, layoutManager.findFirstVisibleItemPosition())
+                : mLogSearch.previous(lines, layoutManager.findLastVisibleItemPosition());
+        if (position < 0) {
+            return;
+        }
+        mAutoscrollToBottom = false;
+        layoutManager.scrollToPositionWithOffset(position, list.getHeight() / 3);
+        if (oldPosition >= 0) {
+            mLogListAdapter.notifyItemChanged(oldPosition);
+        }
+        mLogListAdapter.notifyItemChanged(position);
+        updateSearchUi();
     }
 
     @Override
@@ -684,6 +774,17 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 return true;
             case R.id.menu_filters:
                 startActivity(FiltersActivity.intent(this));
+                return true;
+            case R.id.menu_search_previous:
+                moveToSearchHit(false);
+                return true;
+            case R.id.menu_search_next:
+                moveToSearchHit(true);
+                return true;
+            case R.id.menu_search_regex:
+                mSearchRegex = !item.isChecked();
+                item.setChecked(mSearchRegex);
+                search(mSearchingString);
                 return true;
         }
         return false;
@@ -1521,6 +1622,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
                 }
                 mLogListAdapter.notifyDataSetChanged();
+                refreshSearchHits();
 
                 // scroll to bottom
                 scrollToBottom();
@@ -1543,6 +1645,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     public void resetDisplayedLog(String filename) {
         finishSelection();
         mLogListAdapter.clear();
+        refreshSearchHits();
         mCurrentlyOpenLog = filename;
         mCollapsedMode = !PreferenceHelper.getExpandedByDefaultPreference(getApplicationContext());
         addFiltersToSuggestions(); // filters are what initial populate the suggestions
@@ -1599,6 +1702,11 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         mLogListAdapter = new LogLineAdapter();
         mLogListAdapter.setClickListener(this);
         mLogListAdapter.setSelection(mSelection);
+        mFilterOnSearch = LogSearch.isFilterOnSearch(this);
+        mLogSearch = new LogSearch(
+                getAttrColor(R.attr.colorTertiaryContainer), getAttrColor(R.attr.colorOnTertiaryContainer),
+                getAttrColor(R.attr.colorPrimary), getAttrColor(R.attr.colorOnPrimary));
+        mLogListAdapter.setSearch(mLogSearch);
 
         ((RecyclerView) findViewById(R.id.list)).setAdapter(mLogListAdapter);
 
@@ -1637,9 +1745,17 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void search(String filterText) {
-        Filter filter = mLogListAdapter.getFilter();
-        filter.filter(filterText, this);
         mSearchingString = filterText;
+        mLogSearch.setQuery(filterText, mSearchRegex);
+        mLogListAdapter.setSearchRegex(mSearchRegex);
+        Filter filter = mLogListAdapter.getFilter();
+        filter.filter(filterQuery(), this);
+        updateSearchUi();
+    }
+
+    // in highlight mode the search text only marks matches
+    private String filterQuery() {
+        return mFilterOnSearch ? mSearchingString : "";
     }
 
     private void updateFabStatus() {
@@ -1656,7 +1772,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     public void onFilterComplete(int count) {
         // always scroll to the bottom when searching
         ((RecyclerView) findViewById(R.id.list)).scrollToPosition(count - 1);
-
+        refreshSearchHits();
     }
 
 
@@ -1699,7 +1815,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             hideProgressBar();
         }
         for (LogLine logLine : lines) {
-            mLogListAdapter.addWithFilter(logLine, mSearchingString, false);
+            mLogListAdapter.addWithFilter(logLine, filterQuery(), false);
             addToAutocompleteSuggestions(logLine);
         }
 
@@ -1715,6 +1831,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             mLogListAdapter.notifyDataSetChanged();
         }
 
+        refreshSearchHits();
+
         if (mAutoscrollToBottom) {
             scrollToBottom();
         }
@@ -1728,6 +1846,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         finishSelection();
         if (mLogListAdapter != null) {
             mLogListAdapter.clear();
+            refreshSearchHits();
         }
     }
 

@@ -61,6 +61,8 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
 
     private LogLineViewHolder.OnClickListener mClickListener;
     private LogSelection mSelection;
+    private LogSearch mSearch;
+    private volatile boolean mSearchRegex;
 
     private ArrayList<LogLine> mOriginalValues;
     private ArrayFilter mFilter;
@@ -268,14 +270,18 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         //OUTPUT TEXT VIEW
         TextView output = (TextView) holder.itemView.findViewById(R.id.log_output_text);
         output.setSingleLine(!logLine.isExpanded());
-        output.setText(logLine.getLogOutput());
+        output.setText(mSearch != null && mSearch.isActive()
+                ? mSearch.highlightOutput(logLine.getLogOutput(), position)
+                : logLine.getLogOutput());
         //output.setTextColor(textColor);
 
 
         //TAG TEXT VIEW
         TextView tag = (TextView) holder.itemView.findViewById(R.id.tag_text);
         tag.setSingleLine(!logLine.isExpanded());
-        tag.setText(logLine.getTag());
+        tag.setText(mSearch != null && mSearch.isActive()
+                ? mSearch.highlightTag(logLine.getTag(), position)
+                : logLine.getTag());
         tag.setVisibility(logLine.getLogLevel() == -1 || !options.getShowTag() ? View.GONE : View.VISIBLE);
 
 
@@ -361,6 +367,14 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         mSelection = selection;
     }
 
+    public void setSearch(LogSearch search) {
+        mSearch = search;
+    }
+
+    public void setSearchRegex(boolean regex) {
+        mSearchRegex = regex;
+    }
+
     /**
      * <p>An array filter constrains the content of the array adapter with
      * a prefix. Each item that does not start with the supplied prefix
@@ -387,7 +401,7 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
 
         public ArrayList<LogLine> performFilteringOnList(List<LogLine> inputList, CharSequence query) {
 
-            SearchCriteria searchCriteria = new SearchCriteria(query);
+            SearchCriteria searchCriteria = new SearchCriteria(query, mSearchRegex);
 
             // search by log level
             ArrayList<LogLine> allValues = new ArrayList<LogLine>();

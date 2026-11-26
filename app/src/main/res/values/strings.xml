@@ -256,4 +256,13 @@
     <string name="matlog_recording_summary">New log lines are being saved</string>
     <string name="matlog_recording_paused">Log recording paused</string>
     <string name="matlog_recording_paused_summary">New log lines are skipped until you resume</string>
+    <string name="matlog_pref_filter_on_search" translatable="false">matlog_filter_on_search</string>
+    <string name="matlog_pref_filter_on_search_title">Hide lines that don\'t match</string>
+    <string name="matlog_pref_filter_on_search_summary">When off, search highlights matches and you can step through them</string>
+    <string name="matlog_search_matches">Matches</string>
+    <string name="matlog_search_previous">Previous match</string>
+    <string name="matlog_search_next">Next match</string>
+    <string name="matlog_search_regex">Regex</string>
+    <string name="matlog_search_position">%1$d/%2$d</string>
+    <string name="matlog_search_invalid">Invalid regex</string>
 </resources>

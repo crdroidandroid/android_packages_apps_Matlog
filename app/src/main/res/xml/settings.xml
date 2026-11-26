@@ -59,6 +59,13 @@
             android:persistent="true"
             android:title="@string/pref_default_log_level_title" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/matlog_pref_filter_on_search"
+            android:persistent="true"
+            android:summary="@string/matlog_pref_filter_on_search_summary"
+            android:title="@string/matlog_pref_filter_on_search_title" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/matlog_pref_cat_crashes">
