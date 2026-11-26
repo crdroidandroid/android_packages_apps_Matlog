@@ -21,6 +21,8 @@ public class LogLineViewHolder extends RecyclerView.ViewHolder implements PopupM
     public static final int CONTEXT_MENU_EXPAND_ALL = 2;
     public static final int CONTEXT_MENU_CLEAR = 3;
     public static final int CONTEXT_MENU_SELECT = 4;
+    public static final int CONTEXT_MENU_INCLUDE_FILTER = 5;
+    public static final int CONTEXT_MENU_EXCLUDE_FILTER = 6;
 
     LogLine logLine;
 
@@ -46,11 +48,15 @@ public class LogLineViewHolder extends RecyclerView.ViewHolder implements PopupM
             return true;
         }
         PopupMenu menu = new PopupMenu(v.getContext(), v);
-        menu.getMenu().add(0, CONTEXT_MENU_FILTER_ID, 0, R.string.filter_choice);
         menu.getMenu().add(0, CONTEXT_MENU_COPY_ID, 0, R.string.copy_to_clipboard);
         menu.getMenu().add(0, CONTEXT_MENU_SELECT, 0, R.string.matlog_select);
-        menu.getMenu().add(1, CONTEXT_MENU_CLEAR, 0, R.string.clear);
-        menu.getMenu().add(1, CONTEXT_MENU_EXPAND_ALL, 0, R.string.expand_or_collapse_all);
+        if (logLine != null && logLine.getLogLevel() != -1) {
+            menu.getMenu().add(1, CONTEXT_MENU_FILTER_ID, 0, R.string.filter_choice);
+            menu.getMenu().add(1, CONTEXT_MENU_INCLUDE_FILTER, 0, R.string.matlog_filter_from_line_include);
+            menu.getMenu().add(1, CONTEXT_MENU_EXCLUDE_FILTER, 0, R.string.matlog_filter_from_line_exclude);
+        }
+        menu.getMenu().add(2, CONTEXT_MENU_CLEAR, 0, R.string.clear);
+        menu.getMenu().add(2, CONTEXT_MENU_EXPAND_ALL, 0, R.string.expand_or_collapse_all);
         menu.setOnMenuItemClickListener(LogLineViewHolder.this);
         menu.getMenu().setGroupDividerEnabled(true);
         menu.show();

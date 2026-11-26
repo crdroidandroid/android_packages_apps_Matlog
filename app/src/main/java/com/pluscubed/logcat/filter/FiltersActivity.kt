@@ -84,11 +84,18 @@ class FiltersActivity : ComponentActivity() {
     // null shows the list, NEW_FILTER_ID a blank editor, anything else edits that filter
     private val editingId = mutableStateOf<Long?>(null)
 
+    // set when opened from a log line; the editor then closes the screen when done
+    private var template: UserFilter? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         repository = FilterRepository.get(this)
-        editingId.value = savedInstanceState?.getLong(STATE_EDITING_ID, NO_EDITOR)
-            ?.takeIf { it != NO_EDITOR }
+        template = templateFrom(intent)
+        editingId.value = if (savedInstanceState != null) {
+            savedInstanceState.getLong(STATE_EDITING_ID, NO_EDITOR).takeIf { it != NO_EDITOR }
+        } else {
+            template?.let { NEW_FILTER_ID }
+        }
         setContent {
             MatlogTheme {
                 val id = editingId.value
@@ -104,19 +111,28 @@ class FiltersActivity : ComponentActivity() {
                         onBack = { finish() },
                     )
                 } else {
-                    BackHandler { editingId.value = null }
+                    val fromLine = template != null && id == NEW_FILTER_ID
+                    BackHandler { closeEditor(fromLine) }
                     FilterEditorScreen(
                         repository = repository,
                         filterId = id.takeIf { it != NEW_FILTER_ID },
+                        template = if (fromLine) template else null,
                         onSave = { filter ->
-                            editingId.value = null
-                            runIo { repository.save(filter) }
+                            if (fromLine) {
+                                lifecycleScope.launch {
+                                    withContext(Dispatchers.IO) { repository.save(filter) }
+                                    finish()
+                                }
+                            } else {
+                                editingId.value = null
+                                runIo { repository.save(filter) }
+                            }
                         },
                         onDelete = { filter ->
                             editingId.value = null
                             runIo { repository.delete(filter.id) }
                         },
-                        onBack = { editingId.value = null },
+                        onBack = { closeEditor(fromLine) },
                     )
                 }
             }
@@ -126,6 +142,14 @@ class FiltersActivity : ComponentActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putLong(STATE_EDITING_ID, editingId.value ?: NO_EDITOR)
+    }
+
+    private fun closeEditor(fromLine: Boolean) {
+        if (fromLine) {
+            finish()
+        } else {
+            editingId.value = null
+        }
     }
 
     private fun runIo(block: () -> Unit) {
@@ -173,8 +197,29 @@ class FiltersActivity : ComponentActivity() {
         private const val NEW_FILTER_ID = 0L
         private const val EXPORT_FILENAME = "matlog-filters.json"
 
+        private const val EXTRA_TAG = "tag"
+        private const val EXTRA_PACKAGE = "package"
+        private const val EXTRA_INCLUDING = "including"
+
         @JvmStatic
         fun intent(context: Context): Intent = Intent(context, FiltersActivity::class.java)
+
+        // opens a new filter seeded with the line's tag and app
+        @JvmStatic
+        fun intentForLine(context: Context, tag: String?, packageName: String?, including: Boolean): Intent =
+            intent(context)
+                .putExtra(EXTRA_TAG, tag?.trim())
+                .putExtra(EXTRA_PACKAGE, packageName)
+                .putExtra(EXTRA_INCLUDING, including)
+
+        private fun templateFrom(intent: Intent?): UserFilter? {
+            if (intent?.hasExtra(EXTRA_INCLUDING) != true) return null
+            return UserFilter(
+                including = intent.getBooleanExtra(EXTRA_INCLUDING, true),
+                tag = intent.getStringExtra(EXTRA_TAG)?.takeIf { it.isNotEmpty() },
+                packageName = intent.getStringExtra(EXTRA_PACKAGE)?.takeIf { it.isNotEmpty() },
+            )
+        }
 
         fun exportFilename() = EXPORT_FILENAME
     }
@@ -383,6 +428,7 @@ private fun EmptyFilters(modifier: Modifier = Modifier) {
 private fun FilterEditorScreen(
     repository: FilterRepository,
     filterId: Long?,
+    template: UserFilter?,
     onSave: (UserFilter) -> Unit,
     onDelete: (UserFilter) -> Unit,
     onBack: () -> Unit,
@@ -393,7 +439,7 @@ private fun FilterEditorScreen(
     }
     // wait for an existing filter before seeding the fields
     if (filterId != null && existing == null) return
-    val initial = existing ?: UserFilter()
+    val initial = existing ?: template ?: UserFilter()
 
     var name by remember(initial) { mutableStateOf(initial.name.orEmpty()) }
     var including by remember(initial) { mutableStateOf(initial.including) }

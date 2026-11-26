@@ -265,4 +265,8 @@
     <string name="matlog_search_regex">Regex</string>
     <string name="matlog_search_position">%1$d/%2$d</string>
     <string name="matlog_search_invalid">Invalid regex</string>
+    <string name="matlog_copy_field_line">Whole line</string>
+    <string name="matlog_copy_field_message">Message</string>
+    <string name="matlog_filter_from_line_include">Add include filter</string>
+    <string name="matlog_filter_from_line_exclude">Add exclude filter</string>
 </resources>

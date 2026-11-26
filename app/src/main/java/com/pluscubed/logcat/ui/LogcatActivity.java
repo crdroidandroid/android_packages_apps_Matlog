@@ -3,7 +3,6 @@ package com.pluscubed.logcat.ui;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -105,8 +104,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_CLEAR;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_COPY_ID;
+import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_EXCLUDE_FILTER;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_EXPAND_ALL;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_FILTER_ID;
+import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_INCLUDE_FILTER;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_SELECT;
 
 
@@ -795,10 +796,12 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         if (logLine != null) {
             switch (item.getItemId()) {
                 case CONTEXT_MENU_COPY_ID:
-                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-
-                    clipboard.setPrimaryClip(ClipData.newPlainText(null, logLine.getOriginalLine()));
-                    Toast.makeText(this, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show();
+                    CopyLogLineSheet.show(this, logLine);
+                    return true;
+                case CONTEXT_MENU_INCLUDE_FILTER:
+                case CONTEXT_MENU_EXCLUDE_FILTER:
+                    startActivity(FiltersActivity.intentForLine(this, logLine.getTag(), logLine.getPackageName(),
+                            item.getItemId() == CONTEXT_MENU_INCLUDE_FILTER));
                     return true;
                 case CONTEXT_MENU_FILTER_ID:
 
