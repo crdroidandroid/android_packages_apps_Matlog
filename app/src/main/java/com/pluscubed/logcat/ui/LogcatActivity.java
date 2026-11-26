@@ -43,7 +43,6 @@ import android.widget.Toast;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pluscubed.logcat.data.FilterAdapter;
-import com.pluscubed.logcat.data.LogFileAdapter;
 import com.pluscubed.logcat.data.LogLine;
 import com.pluscubed.logcat.data.LogLineAdapter;
 import com.pluscubed.logcat.data.LogLineViewHolder;
@@ -62,6 +61,7 @@ import com.pluscubed.logcat.helper.LogExporter;
 import com.pluscubed.logcat.helper.LogTextActions;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
+import com.pluscubed.logcat.helper.SavedLogImporter;
 import com.pluscubed.logcat.intents.Intents;
 import com.pluscubed.logcat.crash.CrashMonitorService;
 import com.pluscubed.logcat.crash.CrashesActivity;
@@ -221,7 +221,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         switch (requestCode) {
             case DELETE_SAVED_LOG_REQUEST:
-                startDeleteSavedLogsDialog();
+                startActivity(SavedLogsActivity.intent(this));
                 break;
             case SEND_LOG_ID_REQUEST:
                 showSendLogDialog();
@@ -233,7 +233,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 showSaveLogZipDialog();
                 break;
             case OPEN_LOG_REQUEST:
-                showOpenLogFileDialog();
+                startActivity(SavedLogsActivity.intent(this));
                 break;
             case SHOW_RECORD_LOG_REQUEST:
                 showRecordLogDialog();
@@ -298,7 +298,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         showLogLevelDialog();
                         return true;
                     case R.id.menu_open_log:
-                        showOpenLogFileDialog();
+                        startActivity(SavedLogsActivity.intent(LogcatActivity.this));
                         return true;
                     case R.id.menu_save_log:
                         showSaveLogDialog();
@@ -317,9 +317,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         return true;
                     case android.R.id.home:
                         onBackPressed();
-                        return true;
-                    case R.id.menu_delete_saved_log:
-                        startDeleteSavedLogsDialog();
                         return true;
                     case R.id.menu_crashes:
                         startActivity(CrashesActivity.intent(LogcatActivity.this));
@@ -394,7 +391,10 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         Intent intent = getIntent();
 
-        if (intent == null || !intent.hasExtra("filename")) {
+        if (isViewIntent(intent)) {
+            startMainLog();
+            importAndOpen(intent);
+        } else if (intent == null || !intent.hasExtra("filename")) {
             startMainLog();
         } else {
             String filename = intent.getStringExtra("filename");
@@ -404,6 +404,14 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         doAfterInitialMessage(getIntent());
 
 
+    }
+
+    private static boolean isViewIntent(Intent intent) {
+        return intent != null && Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null;
+    }
+
+    private void importAndOpen(Intent intent) {
+        SavedLogImporter.importLog(this, intent.getData(), this::openLogFile);
     }
 
     private void doAfterInitialMessage(Intent intent) {
@@ -449,6 +457,11 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         updateFabStatus();
         applyUserFilters();
+
+        // the open saved log was deleted or renamed from the saved logs screen
+        if (mCurrentlyOpenLog != null && !SaveLogHelper.getFile(mCurrentlyOpenLog).exists()) {
+            startMainLog();
+        }
     }
 
     private void applyUserFilters() {
@@ -484,6 +497,11 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         super.onNewIntent(intent);
 
         doAfterInitialMessage(intent);
+
+        if (isViewIntent(intent)) {
+            importAndOpen(intent);
+            return;
+        }
 
         // launched from the widget or notification
         if (intent != null && !Intents.ACTION_LAUNCH.equals(intent.getAction()) && intent.hasExtra("filename")) {
@@ -750,7 +768,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 showLogLevelDialog();
                 return true;
             case R.id.menu_open_log:
-                showOpenLogFileDialog();
+                startActivity(SavedLogsActivity.intent(this));
                 return true;
             case R.id.menu_save_log:
                 showSaveLogDialog();
@@ -766,9 +784,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 return true;
             case android.R.id.home:
                 onBackPressed();
-                return true;
-            case R.id.menu_delete_saved_log:
-                startDeleteSavedLogsDialog();
                 return true;
             case R.id.menu_settings:
                 startSettingsActivity();
@@ -1180,65 +1195,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         supportInvalidateOptionsMenu();
     }
 
-    private void startDeleteSavedLogsDialog() {
-        List<CharSequence> filenames = new ArrayList<CharSequence>(SaveLogHelper.getLogFilenames(false));
-
-        if (filenames.isEmpty()) {
-            Toast.makeText(this, R.string.no_saved_logs, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        final CharSequence[] filenameArray = ArrayUtil.toArray(filenames, CharSequence.class);
-
-        final LogFileAdapter logFileAdapter = new LogFileAdapter(this, filenames, -1, true);
-
-        @SuppressLint("InflateParams") LinearLayout layout = (LinearLayout) getLayoutInflater().inflate(R.layout.dialog_delete_logfiles, null);
-
-        ListView view = (ListView) layout.findViewById(R.id.list);
-        view.setAdapter(logFileAdapter);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.manage_saved_logs)
-                .setView(layout)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setNeutralButton(R.string.delete_all, null)
-                .setPositiveButton(R.string.delete, null);
-
-        final AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface d) {
-                Button neutral = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-                neutral.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        boolean[] allChecked = new boolean[logFileAdapter.getCount()];
-
-                        for (int i = 0; i < allChecked.length; i++) {
-                            allChecked[i] = true;
-                        }
-                        verifyDelete(filenameArray, allChecked, dialog);
-                    }
-                });
-                Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                positive.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        verifyDelete(filenameArray, logFileAdapter.getCheckedItems(), dialog);
-                    }
-                });
-            }
-        });
-        dialog.show();
-
-        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                logFileAdapter.checkOrUncheck(position);
-            }
-        });
-    }
-
     protected void verifyDelete(final CharSequence[] filenameArray,
                                 final boolean[] checkedItems, final DialogInterface parentDialog) {
 
@@ -1537,41 +1493,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 });
             }
         }).start();
-
-    }
-
-    private void showOpenLogFileDialog() {
-        final List<CharSequence> filenames = new ArrayList<CharSequence>(SaveLogHelper.getLogFilenames(true));
-
-        if (filenames.isEmpty()) {
-            Toast.makeText(this, R.string.no_saved_logs, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        int logToSelect = mCurrentlyOpenLog != null ? filenames.indexOf(mCurrentlyOpenLog) : -1;
-        ArrayAdapter<CharSequence> logFileAdapter = new LogFileAdapter(this, filenames, logToSelect, false);
-
-        ListView view = new ListView(this);
-        view.setAdapter(logFileAdapter);
-        view.setDivider(null);
-        view.setDividerHeight(0);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.open_log)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setView(view);
-
-        final AlertDialog dialog = builder.show();
-
-
-        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                dialog.dismiss();
-                String filename = filenames.get(position).toString();
-                openLogFile(filename);
-            }
-        });
 
     }
 

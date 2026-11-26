@@ -253,7 +253,7 @@ public class SaveLogHelper {
         return tmpDir;
     }
 
-    private static File getSavedLogsDirectory() {
+    public static File getSavedLogsDirectory() {
         File catlogDir = getCatlogDirectory();
 
         File savedLogsDir = new File(catlogDir, SAVED_LOGS_DIR);

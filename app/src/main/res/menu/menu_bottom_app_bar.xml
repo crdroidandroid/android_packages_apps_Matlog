@@ -46,10 +46,4 @@
         android:id="@+id/menu_log_level"
         android:alphabeticShortcut="@string/log_level"
         android:title="@string/log_level" />
-
-    <item
-        android:id="@+id/menu_delete_saved_log"
-        android:alphabeticShortcut="@string/manage_saved_logs"
-        android:title="@string/manage_saved_logs" />
-
 </menu>

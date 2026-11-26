@@ -37,6 +37,13 @@
                 <action android:name="com.pluscubed.logcat.intents.LAUNCH" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
 
             <meta-data
                 android:name="android.app.shortcuts"
@@ -70,6 +77,11 @@
             android:exported="false"
             android:label="@string/matlog_filters"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="com.pluscubed.logcat.ui.SavedLogsActivity"
+            android:exported="false"
+            android:label="@string/matlog_saved_logs" />
 
         <activity
             android:name="com.pluscubed.logcat.ui.ExtendedCopyActivity"

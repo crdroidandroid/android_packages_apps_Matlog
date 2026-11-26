@@ -282,4 +282,28 @@
     <string name="matlog_filter_pick_apps">Choose apps</string>
     <string name="matlog_filter_system_app">System app</string>
     <string name="matlog_filter_by_apps">Filter by apps</string>
+    <string name="matlog_saved_logs">Saved logs</string>
+    <string name="matlog_saved_logs_open">Open</string>
+    <string name="matlog_saved_logs_rename">Rename</string>
+    <string name="matlog_saved_logs_rename_failed">Unable to rename the log</string>
+    <string name="matlog_saved_logs_name_exists">A log with this name already exists</string>
+    <string name="matlog_saved_logs_delete">Delete</string>
+    <string name="matlog_saved_logs_delete_one">Delete %1$s?</string>
+    <plurals name="matlog_saved_logs_delete_many">
+        <item quantity="one">Delete %1$d log?</item>
+        <item quantity="other">Delete %1$d logs?</item>
+    </plurals>
+    <plurals name="matlog_saved_logs_lines">
+        <item quantity="one">%1$d line</item>
+        <item quantity="other">%1$d lines</item>
+    </plurals>
+    <string name="matlog_saved_logs_sort">Sort</string>
+    <string name="matlog_saved_logs_sort_date">Date</string>
+    <string name="matlog_saved_logs_sort_name">Name</string>
+    <string name="matlog_saved_logs_sort_size">Size</string>
+    <string name="matlog_saved_logs_sort_lines">Line count</string>
+    <string name="matlog_saved_logs_sort_descending">Descending</string>
+    <string name="matlog_saved_logs_sort_ascending">Ascending</string>
+    <string name="matlog_saved_logs_imported">Saved a copy to saved logs</string>
+    <string name="matlog_saved_logs_import_failed">Unable to open the log</string>
 </resources>
