@@ -256,6 +256,9 @@
     <string name="matlog_recording_summary">New log lines are being saved</string>
     <string name="matlog_recording_paused">Log recording paused</string>
     <string name="matlog_recording_paused_summary">New log lines are skipped until you resume</string>
+    <string name="matlog_pref_keep_screen_on" translatable="false">matlog_keep_screen_on</string>
+    <string name="matlog_pref_keep_screen_on_title">Keep screen on</string>
+    <string name="matlog_pref_keep_screen_on_summary">Stop the screen from turning off while logs are shown</string>
     <string name="matlog_pref_filter_on_search" translatable="false">matlog_filter_on_search</string>
     <string name="matlog_pref_filter_on_search_title">Hide lines that don\'t match</string>
     <string name="matlog_pref_filter_on_search_summary">When off, search highlights matches and you can step through them</string>

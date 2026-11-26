@@ -39,6 +39,13 @@
             android:persistent="true"
             android:title="@string/matlog_pref_time_format_title" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/matlog_pref_keep_screen_on"
+            android:persistent="true"
+            android:summary="@string/matlog_pref_keep_screen_on_summary"
+            android:title="@string/matlog_pref_keep_screen_on_title" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cat_configuration">

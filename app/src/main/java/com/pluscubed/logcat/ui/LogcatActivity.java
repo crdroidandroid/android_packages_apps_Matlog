@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -99,6 +100,7 @@ import androidx.core.view.WindowCompat;
 import androidx.cursoradapter.widget.CursorAdapter;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.lifecycle.LifecycleOwnerKt;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -457,10 +459,21 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         updateFabStatus();
         applyUserFilters();
+        updateKeepScreenOn();
 
         // the open saved log was deleted or renamed from the saved logs screen
         if (mCurrentlyOpenLog != null && !SaveLogHelper.getFile(mCurrentlyOpenLog).exists()) {
             startMainLog();
+        }
+    }
+
+    private void updateKeepScreenOn() {
+        boolean keepScreenOn = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(getString(R.string.matlog_pref_keep_screen_on), false);
+        if (keepScreenOn) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 
