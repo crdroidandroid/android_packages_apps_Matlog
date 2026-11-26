@@ -218,4 +218,17 @@
     <string name="matlog_filters_export_failed">Unable to export filters</string>
     <string name="matlog_filters_delete_all">Delete all</string>
     <string name="matlog_filters_delete_all_message">Delete all filters?</string>
+    <string name="matlog_select">Select</string>
+    <string name="matlog_select_all">Select all</string>
+    <string name="matlog_copy">Copy</string>
+    <string name="matlog_copy_all">Copy all</string>
+    <string name="matlog_share">Share</string>
+    <string name="matlog_extended_copy">Extended copy</string>
+    <plurals name="matlog_selected_count">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
+    <string name="matlog_copy_too_large">Too much text to copy, use Share instead</string>
+    <string name="matlog_selection_share_subject">Selected log lines</string>
+    <string name="matlog_selection_share_failed">Unable to share the selected lines</string>
 </resources>

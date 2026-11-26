@@ -60,6 +60,7 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
     private List<LogLine> mObjects;
 
     private LogLineViewHolder.OnClickListener mClickListener;
+    private LogSelection mSelection;
 
     private ArrayList<LogLine> mOriginalValues;
     private ArrayFilter mFilter;
@@ -252,6 +253,7 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         }
 
         holder.logLine = logLine;
+        holder.itemView.setActivated(mSelection != null && mSelection.isSelected(logLine));
 
         TextView t = (TextView) holder.itemView.findViewById(R.id.log_level_text);
         t.setText(logLine.getProcessIdText());
@@ -359,6 +361,10 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
 
     public void setClickListener(LogLineViewHolder.OnClickListener clickListener) {
         mClickListener = clickListener;
+    }
+
+    public void setSelection(LogSelection selection) {
+        mSelection = selection;
     }
 
     /**

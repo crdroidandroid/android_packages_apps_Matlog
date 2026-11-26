@@ -71,6 +71,11 @@
             android:label="@string/matlog_filters"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name="com.pluscubed.logcat.ui.ExtendedCopyActivity"
+            android:exported="false"
+            android:label="@string/matlog_extended_copy" />
+
         <service
             android:name="com.pluscubed.logcat.crash.CrashMonitorService"
             android:exported="false" />

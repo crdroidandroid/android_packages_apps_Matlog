@@ -48,6 +48,7 @@ import com.pluscubed.logcat.data.LogFileAdapter;
 import com.pluscubed.logcat.data.LogLine;
 import com.pluscubed.logcat.data.LogLineAdapter;
 import com.pluscubed.logcat.data.LogLineViewHolder;
+import com.pluscubed.logcat.data.LogSelection;
 import com.pluscubed.logcat.data.SavedLog;
 import com.pluscubed.logcat.data.SearchCriteria;
 import com.pluscubed.logcat.data.SendLogDetails;
@@ -57,6 +58,7 @@ import com.pluscubed.logcat.db.FilterItem;
 import com.pluscubed.logcat.helper.BuildHelper;
 import com.pluscubed.logcat.helper.DialogHelper;
 import com.pluscubed.logcat.helper.DmesgHelper;
+import com.pluscubed.logcat.helper.LogTextActions;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.helper.SaveLogHelper;
 import com.pluscubed.logcat.intents.Intents;
@@ -86,6 +88,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
@@ -100,6 +103,7 @@ import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_CLEAR;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_COPY_ID;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_EXPAND_ALL;
 import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_FILTER_ID;
+import static com.pluscubed.logcat.data.LogLineViewHolder.CONTEXT_MENU_SELECT;
 
 
 public class LogcatActivity extends AppCompatActivity implements FilterListener, LogLineViewHolder.OnClickListener,
@@ -125,6 +129,10 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private LogcatSession mLogcatSession;
     private boolean mFirstLinesReceived;
     private long mAppliedFiltersVersion = -1;
+
+    private final LogSelection mSelection = new LogSelection();
+    private ActionMode mSelectionMode;
+    private boolean mResumeAfterSelection;
 
     private String mSearchingString;
 
@@ -222,6 +230,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mResumeAfterSelection = false;
                 if (mLogcatSession.isRunning()) {
                     if (mLogcatSession.isPaused()) {
                         mLogcatSession.resume();
@@ -527,7 +536,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     @Override
     public void onBackPressed() {
-        if (mSearchViewMenuItem.isActionViewExpanded()) {
+        if (mSelectionMode != null) {
+            finishSelection();
+        } else if (mSearchViewMenuItem.isActionViewExpanded()) {
             mSearchViewMenuItem.collapseActionView();
         } else if (mCurrentlyOpenLog != null) {
             startMainLog();
@@ -666,6 +677,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 case CONTEXT_MENU_CLEAR:
                     clearLog();
                     return true;
+                case CONTEXT_MENU_SELECT:
+                    toggleSelection(logLine);
+                    return true;
             }
         }
         return false;
@@ -673,9 +687,110 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     @Override
     public void onClick(final View itemView, final LogLine logLine) {
+        if (mSelection.isActive()) {
+            toggleSelection(logLine);
+            return;
+        }
         logLine.setExpanded(!logLine.isExpanded());
         mLogListAdapter.notifyItemChanged(((RecyclerView) findViewById(R.id.list)).getChildAdapterPosition(itemView));
     }
+
+    @Override
+    public boolean onLongClick(View itemView, LogLine logLine) {
+        if (!mSelection.isActive()) {
+            return false;
+        }
+        toggleSelection(logLine);
+        return true;
+    }
+
+    private void toggleSelection(LogLine logLine) {
+        mSelection.toggle(logLine);
+        mLogListAdapter.notifyDataSetChanged();
+        onSelectionChanged();
+    }
+
+    private void onSelectionChanged() {
+        if (!mSelection.isActive()) {
+            finishSelection();
+            return;
+        }
+        if (mSelectionMode == null) {
+            mSelectionMode = startSupportActionMode(mSelectionCallback);
+        }
+        if (mSelectionMode != null) {
+            int count = mSelection.getCount();
+            mSelectionMode.setTitle(getResources().getQuantityString(
+                    R.plurals.matlog_selected_count, count, count));
+        }
+    }
+
+    private void finishSelection() {
+        if (mSelectionMode != null) {
+            mSelectionMode.finish();
+        }
+    }
+
+    private String selectedText() {
+        return LogSelection.toText(mSelection.selectedIn(mLogListAdapter.getTrueValues()));
+    }
+
+    private final ActionMode.Callback mSelectionCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.menu_log_selection, menu);
+            // keep the list still while picking lines
+            if (mLogcatSession.isRunning() && !mLogcatSession.isPaused()) {
+                mLogcatSession.pause();
+                mResumeAfterSelection = true;
+                updateFabStatus();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.menu_selection_select_all:
+                    mSelection.toggleAll(mLogListAdapter.getObjects());
+                    mLogListAdapter.notifyDataSetChanged();
+                    onSelectionChanged();
+                    return true;
+                case R.id.menu_selection_copy:
+                    LogTextActions.copy(LogcatActivity.this, selectedText());
+                    mode.finish();
+                    return true;
+                case R.id.menu_selection_share:
+                    LogTextActions.share(LogcatActivity.this, selectedText());
+                    mode.finish();
+                    return true;
+                case R.id.menu_selection_extended_copy:
+                    ExtendedCopyActivity.start(LogcatActivity.this, selectedText());
+                    mode.finish();
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mSelectionMode = null;
+            mSelection.clear();
+            mLogListAdapter.notifyDataSetChanged();
+            if (mResumeAfterSelection) {
+                mResumeAfterSelection = false;
+                if (mLogcatSession.isRunning()) {
+                    mLogcatSession.resume();
+                }
+                updateFabStatus();
+            }
+        }
+    };
 
     private void showSearchByDialog(final LogLine logLine) {
         int tagColor = LogLineAdapterUtil.getOrCreateTagColor(this, logLine.getTag());
@@ -1417,6 +1532,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
 
     public void resetDisplayedLog(String filename) {
+        finishSelection();
         mLogListAdapter.clear();
         mCurrentlyOpenLog = filename;
         mCollapsedMode = !PreferenceHelper.getExpandedByDefaultPreference(getApplicationContext());
@@ -1473,6 +1589,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         mLogListAdapter = new LogLineAdapter();
         mLogListAdapter.setClickListener(this);
+        mLogListAdapter.setSelection(mSelection);
 
         ((RecyclerView) findViewById(R.id.list)).setAdapter(mLogListAdapter);
 
@@ -1581,6 +1698,10 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         int numItemsToRemove = mLogListAdapter.getTrueValues().size() - maxNumLogLines;
         if (numItemsToRemove > 0) {
             mLogListAdapter.removeFirst(numItemsToRemove);
+            if (mSelection.isActive()) {
+                mSelection.retainIn(mLogListAdapter.getTrueValues());
+                onSelectionChanged();
+            }
         } else {
             mLogListAdapter.notifyDataSetChanged();
         }
@@ -1595,6 +1716,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             startMainLog();
             return;
         }
+        finishSelection();
         if (mLogListAdapter != null) {
             mLogListAdapter.clear();
         }

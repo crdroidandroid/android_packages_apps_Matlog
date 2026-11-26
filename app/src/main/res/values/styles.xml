@@ -10,6 +10,7 @@
         <item name="android:windowSplashScreenIconBackgroundColor">@color/omni_logo_color</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListViewStyle</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="windowActionModeOverlay">true</item>
     </style>
 
     <style name="Theme.MatLog.Overlay" parent="ThemeOverlay.Material3.DynamicColors.DayNight">

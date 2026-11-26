@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: crDroid Android Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_selection_select_all"
+        android:icon="@drawable/ic_select_all"
+        android:title="@string/matlog_select_all"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_selection_copy"
+        android:icon="@drawable/ic_copy"
+        android:title="@string/matlog_copy"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_selection_share"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/matlog_share"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_selection_extended_copy"
+        android:title="@string/matlog_extended_copy"
+        app:showAsAction="never" />
+
+</menu>
