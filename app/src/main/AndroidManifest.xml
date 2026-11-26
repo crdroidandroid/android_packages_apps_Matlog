@@ -65,6 +65,12 @@
             android:name="com.pluscubed.logcat.crash.CrashActionReceiver"
             android:exported="false" />
 
+        <activity
+            android:name="com.pluscubed.logcat.filter.FiltersActivity"
+            android:exported="false"
+            android:label="@string/matlog_filters"
+            android:windowSoftInputMode="adjustResize" />
+
         <service
             android:name="com.pluscubed.logcat.crash.CrashMonitorService"
             android:exported="false" />

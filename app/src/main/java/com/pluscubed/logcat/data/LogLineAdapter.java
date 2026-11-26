@@ -27,6 +27,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import com.pluscubed.logcat.filter.FilterSet;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
 import com.pluscubed.logcat.util.StopWatch;
@@ -65,6 +66,8 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
 
     private int logLevelLimit = 0;
 
+    private volatile FilterSet mUserFilters = FilterSet.EMPTY;
+
 
     /**
      * Constructor
@@ -97,7 +100,17 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
     }
 
 
+    public void setUserFilters(FilterSet userFilters) {
+        mUserFilters = userFilters != null ? userFilters : FilterSet.EMPTY;
+    }
+
     public void addWithFilter(LogLine object, CharSequence text, boolean notify) {
+
+        if (mOriginalValues == null && !mUserFilters.isEmpty()) {
+            synchronized (mLock) {
+                mOriginalValues = new ArrayList<>(mObjects);
+            }
+        }
 
         if (mOriginalValues != null) {
 
@@ -384,9 +397,11 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
                 logLines = new ArrayList<LogLine>(inputList);
             }
 
+            FilterSet userFilters = mUserFilters;
             for (LogLine logLine : logLines) {
                 if (logLine != null &&
-                        LogLineAdapterUtil.logLevelIsAcceptableGivenLogLevelLimit(logLine.getLogLevel(), logLevelLimit)) {
+                        LogLineAdapterUtil.logLevelIsAcceptableGivenLogLevelLimit(logLine.getLogLevel(), logLevelLimit)
+                        && userFilters.accepts(logLine)) {
                     allValues.add(logLine);
                 }
             }

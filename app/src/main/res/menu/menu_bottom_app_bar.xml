@@ -35,6 +35,10 @@
         android:title="@string/matlog_crashes" />
 
     <item
+        android:id="@+id/menu_saved_searches"
+        android:title="@string/matlog_saved_searches" />
+
+    <item
         android:id="@+id/menu_log_level"
         android:alphabeticShortcut="@string/log_level"
         android:title="@string/log_level" />

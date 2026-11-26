@@ -62,6 +62,9 @@ import com.pluscubed.logcat.helper.SaveLogHelper;
 import com.pluscubed.logcat.intents.Intents;
 import com.pluscubed.logcat.crash.CrashMonitorService;
 import com.pluscubed.logcat.crash.CrashesActivity;
+import com.pluscubed.logcat.filter.FilterRepository;
+import com.pluscubed.logcat.filter.FilterSet;
+import com.pluscubed.logcat.filter.FiltersActivity;
 import com.pluscubed.logcat.reader.LogcatSession;
 import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
@@ -121,6 +124,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private LogLineAdapter mLogListAdapter;
     private LogcatSession mLogcatSession;
     private boolean mFirstLinesReceived;
+    private long mAppliedFiltersVersion = -1;
 
     private String mSearchingString;
 
@@ -272,6 +276,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         startSettingsActivity();
                         return true;
                     case R.id.menu_filters:
+                        startActivity(FiltersActivity.intent(LogcatActivity.this));
+                        return true;
+                    case R.id.menu_saved_searches:
                         showFiltersDialog();
                         return true;
                 }
@@ -389,6 +396,29 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         }
 
         updateFabStatus();
+        applyUserFilters();
+    }
+
+    private void applyUserFilters() {
+        final FilterRepository repository = FilterRepository.get(this);
+        final long version = repository.getVersion();
+        if (version == mAppliedFiltersVersion) {
+            return;
+        }
+        mAppliedFiltersVersion = version;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final FilterSet filterSet = repository.activeFilterSet();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLogListAdapter.setUserFilters(filterSet);
+                        search(mSearchingString);
+                    }
+                });
+            }
+        }).start();
     }
 
     private void restartMainLog() {
@@ -605,7 +635,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 startSettingsActivity();
                 return true;
             case R.id.menu_filters:
-                showFiltersDialog();
+                startActivity(FiltersActivity.intent(this));
                 return true;
         }
         return false;
@@ -742,7 +772,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         view.addFooterView(footer);
 
                         final AlertDialog dialog = new AlertDialog.Builder(LogcatActivity.this)
-                                .setTitle(R.string.title_filters)
+                                .setTitle(R.string.matlog_saved_searches)
                                 .setMessage(R.string.message_filters)
                                 .setView(view)
                                 .setNegativeButton(android.R.string.cancel, null)
