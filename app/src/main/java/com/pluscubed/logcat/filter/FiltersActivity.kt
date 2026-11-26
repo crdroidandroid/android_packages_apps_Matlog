@@ -33,12 +33,16 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.FilterAltOff
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,6 +50,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -53,7 +58,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -65,6 +73,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -76,6 +87,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.omnirom.logcat.R
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 
 class FiltersActivity : ComponentActivity() {
 
@@ -106,6 +123,9 @@ class FiltersActivity : ComponentActivity() {
                         onEdit = { editingId.value = it.id },
                         onToggle = { filter, enabled -> runIo { repository.setEnabled(filter.id, enabled) } },
                         onDeleteAll = { runIo { repository.deleteAll() } },
+                        onAddApps = { packages ->
+                            runIo { repository.addAll(packages.map { UserFilter(packageName = it) }) }
+                        },
                         onImport = ::importFilters,
                         onExport = ::exportFilters,
                         onBack = { finish() },
@@ -233,6 +253,7 @@ private fun FilterListScreen(
     onEdit: (UserFilter) -> Unit,
     onToggle: (UserFilter, Boolean) -> Unit,
     onDeleteAll: () -> Unit,
+    onAddApps: (Set<String>) -> Unit,
     onImport: (Uri) -> Unit,
     onExport: (Uri) -> Unit,
     onBack: () -> Unit,
@@ -243,6 +264,7 @@ private fun FilterListScreen(
     }
     var menuExpanded by remember { mutableStateOf(false) }
     var confirmDeleteAll by remember { mutableStateOf(false) }
+    var pickApps by remember { mutableStateOf(false) }
 
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -264,6 +286,13 @@ private fun FilterListScreen(
                         )
                     }
                     DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.matlog_filter_by_apps)) },
+                            onClick = {
+                                menuExpanded = false
+                                pickApps = true
+                            },
+                        )
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.matlog_filters_import)) },
                             onClick = {
@@ -314,6 +343,17 @@ private fun FilterListScreen(
                 }
             }
         }
+    }
+
+    if (pickApps) {
+        AppPickerDialog(
+            multiSelect = true,
+            onDismiss = { pickApps = false },
+            onSelected = { packages ->
+                pickApps = false
+                onAddApps(packages)
+            },
+        )
     }
 
     if (confirmDeleteAll) {
@@ -389,11 +429,31 @@ private fun filterSummary(filter: UserFilter): String {
         }
         filter.uid?.let { add(stringResource(R.string.matlog_filter_condition, stringResource(R.string.matlog_filter_uid), it)) }
         filter.pid?.let { add(stringResource(R.string.matlog_filter_condition, stringResource(R.string.matlog_filter_pid), it)) }
-        filter.packageName?.let { add(stringResource(R.string.matlog_filter_condition, stringResource(R.string.matlog_filter_package), it)) }
-        filter.tag?.let { add(stringResource(R.string.matlog_filter_condition, stringResource(R.string.matlog_filter_tag), it)) }
-        filter.content?.let { add(stringResource(R.string.matlog_filter_condition, stringResource(R.string.matlog_filter_content), it)) }
+        filter.packageName?.let { add(condition(R.string.matlog_filter_package, it, filter.packageRegex)) }
+        filter.tag?.let { add(condition(R.string.matlog_filter_tag, it, filter.tagRegex)) }
+        filter.content?.let { add(condition(R.string.matlog_filter_content, it, filter.contentRegex)) }
+        if (filter.since != null || filter.until != null) {
+            val any = stringResource(R.string.matlog_filter_time_any)
+            add(
+                stringResource(
+                    R.string.matlog_filter_condition,
+                    stringResource(R.string.matlog_filter_time_range),
+                    "${filter.since?.let { formatDateTime(it) } ?: any} – ${filter.until?.let { formatDateTime(it) } ?: any}"
+                )
+            )
+        }
     }
     return conditions.joinToString(" · ")
+}
+
+@Composable
+private fun condition(labelRes: Int, value: String, regex: Boolean): String {
+    val label = stringResource(labelRes)
+    return stringResource(
+        R.string.matlog_filter_condition,
+        if (regex) stringResource(R.string.matlog_filter_regex_label, label) else label,
+        value,
+    )
 }
 
 @Composable
@@ -449,6 +509,13 @@ private fun FilterEditorScreen(
     var packageName by remember(initial) { mutableStateOf(initial.packageName.orEmpty()) }
     var tag by remember(initial) { mutableStateOf(initial.tag.orEmpty()) }
     var content by remember(initial) { mutableStateOf(initial.content.orEmpty()) }
+    var tagRegex by remember(initial) { mutableStateOf(initial.tagRegex) }
+    var contentRegex by remember(initial) { mutableStateOf(initial.contentRegex) }
+    var packageRegex by remember(initial) { mutableStateOf(initial.packageRegex) }
+    var since by remember(initial) { mutableStateOf(initial.since) }
+    var until by remember(initial) { mutableStateOf(initial.until) }
+    var showAppPicker by remember { mutableStateOf(false) }
+    var pickingSince by remember { mutableStateOf<Boolean?>(null) }
 
     fun buildFilter() = initial.copy(
         name = name.trim().ifEmpty { null },
@@ -459,7 +526,23 @@ private fun FilterEditorScreen(
         packageName = packageName.trim().ifEmpty { null },
         tag = tag.trim().ifEmpty { null },
         content = content.ifEmpty { null },
+        tagRegex = tagRegex,
+        contentRegex = contentRegex,
+        packageRegex = packageRegex,
+        since = since,
+        until = until,
     )
+
+    fun validationError(filter: UserFilter): Int? = when {
+        !filter.hasConditions -> R.string.matlog_filter_no_conditions
+        (filter.tagRegex && filter.tag?.let { !UserFilter.isValidRegex(it) } == true) ||
+            (filter.contentRegex && filter.content?.let { !UserFilter.isValidRegex(it) } == true) ||
+            (filter.packageRegex && filter.packageName?.let { !UserFilter.isValidRegex(it) } == true) ->
+            R.string.matlog_filter_invalid_regex
+        filter.since != null && filter.until != null && filter.since > filter.until ->
+            R.string.matlog_filter_bad_range
+        else -> null
+    }
 
     Scaffold(
         topBar = {
@@ -476,10 +559,11 @@ private fun FilterEditorScreen(
                     }
                     IconButton(onClick = {
                         val filter = buildFilter()
-                        if (filter.hasConditions) {
+                        val error = validationError(filter)
+                        if (error == null) {
                             onSave(filter)
                         } else {
-                            Toast.makeText(context, R.string.matlog_filter_no_conditions, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                         }
                     }) {
                         Icon(Icons.Filled.Check, contentDescription = stringResource(R.string.matlog_filter_save))
@@ -525,9 +609,23 @@ private fun FilterEditorScreen(
                 }
             }
 
-            FilterTextField(tag, { tag = it }, R.string.matlog_filter_tag)
-            FilterTextField(content, { content = it }, R.string.matlog_filter_content)
-            FilterTextField(packageName, { packageName = it }, R.string.matlog_filter_package)
+            FilterTextField(
+                tag, { tag = it }, R.string.matlog_filter_tag,
+                regex = tagRegex, onRegexChange = { tagRegex = it },
+            )
+            FilterTextField(
+                content, { content = it }, R.string.matlog_filter_content,
+                regex = contentRegex, onRegexChange = { contentRegex = it },
+            )
+            FilterTextField(
+                packageName, { packageName = it }, R.string.matlog_filter_package,
+                regex = packageRegex, onRegexChange = { packageRegex = it },
+                trailingExtra = {
+                    IconButton(onClick = { showAppPicker = true }) {
+                        Icon(Icons.Filled.Apps, contentDescription = stringResource(R.string.matlog_filter_pick_app))
+                    }
+                },
+            )
             FilterTextField(
                 uid, { uid = it }, R.string.matlog_filter_uid,
                 supportingRes = R.string.matlog_filter_uid_hint,
@@ -536,7 +634,127 @@ private fun FilterEditorScreen(
                 pid, { pid = it }, R.string.matlog_filter_pid,
                 keyboardType = KeyboardType.Number,
             )
+
+            Text(
+                stringResource(R.string.matlog_filter_time_range),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            TimeRangeRow(R.string.matlog_filter_since, since, { pickingSince = true }, { since = null })
+            TimeRangeRow(R.string.matlog_filter_until, until, { pickingSince = false }, { until = null })
         }
+    }
+
+    if (showAppPicker) {
+        AppPickerDialog(
+            multiSelect = false,
+            onDismiss = { showAppPicker = false },
+            onSelected = { packages ->
+                showAppPicker = false
+                packages.firstOrNull()?.let {
+                    packageName = it
+                    packageRegex = false
+                }
+            },
+        )
+    }
+
+    pickingSince?.let { forSince ->
+        DateTimePickerDialog(
+            initial = if (forSince) since else until,
+            endOfMinute = !forSince,
+            onDismiss = { pickingSince = null },
+            onPicked = { time ->
+                if (forSince) since = time else until = time
+                pickingSince = null
+            },
+        )
+    }
+}
+
+@Composable
+private fun TimeRangeRow(labelRes: Int, value: Long?, onPick: () -> Unit, onClear: () -> Unit) {
+    ListItem(
+        modifier = Modifier.clickable(onClick = onPick),
+        headlineContent = { Text(stringResource(labelRes)) },
+        supportingContent = {
+            Text(value?.let { formatDateTime(it) } ?: stringResource(R.string.matlog_filter_time_any))
+        },
+        trailingContent = if (value != null) {
+            {
+                IconButton(onClick = onClear) {
+                    Icon(Icons.Filled.Clear, contentDescription = stringResource(R.string.matlog_filter_clear))
+                }
+            }
+        } else {
+            null
+        },
+    )
+}
+
+private fun formatDateTime(millis: Long): String =
+    java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.MEDIUM, java.text.DateFormat.SHORT)
+        .format(java.util.Date(millis))
+
+// picks a date, then a time; the end of a range covers the whole chosen minute
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DateTimePickerDialog(
+    initial: Long?,
+    endOfMinute: Boolean,
+    onDismiss: () -> Unit,
+    onPicked: (Long) -> Unit,
+) {
+    val context = LocalContext.current
+    val zone = remember { ZoneId.systemDefault() }
+    val start = remember(initial) { Instant.ofEpochMilli(initial ?: System.currentTimeMillis()).atZone(zone) }
+    var pickedDate by remember { mutableStateOf<LocalDate?>(null) }
+
+    val date = pickedDate
+    if (date == null) {
+        val dateState = rememberDatePickerState(
+            initialSelectedDateMillis = start.toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        dateState.selectedDateMillis?.let {
+                            pickedDate = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
+                        }
+                    },
+                    enabled = dateState.selectedDateMillis != null,
+                ) { Text(stringResource(android.R.string.ok)) }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
+            },
+        ) {
+            DatePicker(state = dateState)
+        }
+    } else {
+        val timeState = rememberTimePickerState(
+            initialHour = start.hour,
+            initialMinute = start.minute,
+            is24Hour = android.text.format.DateFormat.is24HourFormat(context),
+        )
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                TextButton(onClick = {
+                    val time = if (endOfMinute) {
+                        LocalTime.of(timeState.hour, timeState.minute, 59, 999_000_000)
+                    } else {
+                        LocalTime.of(timeState.hour, timeState.minute)
+                    }
+                    onPicked(LocalDateTime.of(date, time).atZone(zone).toInstant().toEpochMilli())
+                }) { Text(stringResource(android.R.string.ok)) }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
+            },
+            text = { TimeInput(state = timeState) },
+        )
     }
 }
 
@@ -547,18 +765,50 @@ private fun FilterTextField(
     labelRes: Int,
     supportingRes: Int? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
+    regex: Boolean? = null,
+    onRegexChange: (Boolean) -> Unit = {},
+    trailingExtra: (@Composable () -> Unit)? = null,
 ) {
+    val invalidRegex = regex == true && value.isNotBlank() && !UserFilter.isValidRegex(value)
+    val supporting = if (invalidRegex) R.string.matlog_filter_invalid_regex else supportingRes
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier.fillMaxWidth(),
         label = { Text(stringResource(labelRes)) },
-        supportingText = if (supportingRes != null) {
-            { Text(stringResource(supportingRes)) }
+        supportingText = if (supporting != null) {
+            { Text(stringResource(supporting)) }
+        } else {
+            null
+        },
+        isError = invalidRegex,
+        trailingIcon = if (regex != null || trailingExtra != null) {
+            {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    trailingExtra?.invoke()
+                    if (regex != null) RegexToggle(regex, onRegexChange)
+                }
+            }
         } else {
             null
         },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
     )
+}
+
+@Composable
+private fun RegexToggle(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    val description = stringResource(R.string.matlog_filter_regex)
+    IconToggleButton(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier = Modifier.semantics { contentDescription = description },
+    ) {
+        Text(
+            ".*",
+            fontWeight = FontWeight.Bold,
+            color = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }

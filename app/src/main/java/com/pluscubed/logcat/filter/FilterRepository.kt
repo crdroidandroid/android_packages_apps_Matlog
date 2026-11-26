@@ -42,13 +42,22 @@ class FilterRepository private constructor(context: Context) :
                 $COL_PACKAGE TEXT,
                 $COL_TAG TEXT,
                 $COL_CONTENT TEXT,
-                $COL_ENABLED INTEGER NOT NULL DEFAULT 1
+                $COL_ENABLED INTEGER NOT NULL DEFAULT 1,
+                $COL_REGEX TEXT,
+                $COL_SINCE INTEGER,
+                $COL_UNTIL INTEGER
             )
             """.trimIndent()
         )
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = Unit
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE $TABLE ADD COLUMN $COL_REGEX TEXT")
+            db.execSQL("ALTER TABLE $TABLE ADD COLUMN $COL_SINCE INTEGER")
+            db.execSQL("ALTER TABLE $TABLE ADD COLUMN $COL_UNTIL INTEGER")
+        }
+    }
 
     fun getAll(): List<UserFilter> = readableDatabase.query(
         TABLE, null, null, null, null, null, "$COL_ID ASC"
@@ -125,6 +134,13 @@ class FilterRepository private constructor(context: Context) :
         put(COL_TAG, tag)
         put(COL_CONTENT, content)
         put(COL_ENABLED, if (enabled) 1 else 0)
+        put(COL_REGEX, listOfNotNull(
+            REGEX_TAG.takeIf { tagRegex },
+            REGEX_CONTENT.takeIf { contentRegex },
+            REGEX_PACKAGE.takeIf { packageRegex },
+        ).joinToString(","))
+        put(COL_SINCE, since)
+        put(COL_UNTIL, until)
     }
 
     private fun Cursor.toFilter() = UserFilter(
@@ -141,7 +157,20 @@ class FilterRepository private constructor(context: Context) :
         tag = stringOrNull(COL_TAG),
         content = stringOrNull(COL_CONTENT),
         enabled = getInt(getColumnIndexOrThrow(COL_ENABLED)) != 0,
+        tagRegex = REGEX_TAG in regexFields(),
+        contentRegex = REGEX_CONTENT in regexFields(),
+        packageRegex = REGEX_PACKAGE in regexFields(),
+        since = longOrNull(COL_SINCE),
+        until = longOrNull(COL_UNTIL),
     )
+
+    private fun Cursor.regexFields(): List<String> =
+        stringOrNull(COL_REGEX)?.split(',').orEmpty()
+
+    private fun Cursor.longOrNull(column: String): Long? {
+        val index = getColumnIndexOrThrow(column)
+        return if (isNull(index)) null else getLong(index)
+    }
 
     private fun Cursor.stringOrNull(column: String): String? {
         val index = getColumnIndexOrThrow(column)
@@ -150,7 +179,7 @@ class FilterRepository private constructor(context: Context) :
 
     companion object {
         private const val DB_NAME = "user_filters.db"
-        private const val DB_VERSION = 1
+        private const val DB_VERSION = 2
         private const val TABLE = "filters"
         private const val COL_ID = "_id"
         private const val COL_NAME = "name"
@@ -162,6 +191,13 @@ class FilterRepository private constructor(context: Context) :
         private const val COL_TAG = "tag"
         private const val COL_CONTENT = "content"
         private const val COL_ENABLED = "enabled"
+        private const val COL_REGEX = "regex_fields"
+        private const val COL_SINCE = "since"
+        private const val COL_UNTIL = "until"
+
+        private const val REGEX_TAG = "tag"
+        private const val REGEX_CONTENT = "content"
+        private const val REGEX_PACKAGE = "package"
 
         @Volatile
         private var instance: FilterRepository? = null

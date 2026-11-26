@@ -10,6 +10,10 @@ import com.pluscubed.logcat.helper.PackageNameResolver
 import com.pluscubed.logcat.reader.ScrubberUtils
 import com.pluscubed.logcat.util.LogLineAdapterUtil
 import com.pluscubed.logcat.util.UtilLogger
+import java.time.DateTimeException
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.regex.Pattern
 
 class LogLine {
@@ -46,6 +50,9 @@ class LogLine {
         }
 
     val packageName: String? by lazy { PackageNameResolver.resolve(uid) }
+
+    // epoch millis of the timestamp, or -1 when it can't be read
+    val timeMillis: Long by lazy { parseTimestamp(timestamp) }
 
     val processIdText: String
         get() = convertLogLevelToChar(logLevel).toString()
@@ -87,6 +94,41 @@ class LogLine {
             }
             return logLine
         }
+
+        private const val DAY_MS = 24 * 60 * 60 * 1000L
+
+        // MM-dd HH:mm:ss.SSS; logcat leaves out the year, so assume the most recent one
+        private fun parseTimestamp(timestamp: String?): Long {
+            if (timestamp == null || timestamp.length < TIMESTAMP_LENGTH - 1) return -1
+            fun number(start: Int, length: Int): Int? =
+                timestamp.substring(start, start + length).toIntOrNull()
+            val month = number(0, 2) ?: return -1
+            val day = number(3, 2) ?: return -1
+            val hour = number(6, 2) ?: return -1
+            val minute = number(9, 2) ?: return -1
+            val second = number(12, 2) ?: return -1
+            val millis = number(15, 3) ?: return -1
+            return try {
+                val now = System.currentTimeMillis()
+                val zone = ZoneId.systemDefault()
+                var year = Instant.ofEpochMilli(now).atZone(zone).year
+                var time = toEpochMillis(year, month, day, hour, minute, second, millis, zone)
+                if (time > now + DAY_MS) {
+                    year -= 1
+                    time = toEpochMillis(year, month, day, hour, minute, second, millis, zone)
+                }
+                time
+            } catch (e: DateTimeException) {
+                -1
+            }
+        }
+
+        private fun toEpochMillis(
+            year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int, millis: Int, zone: ZoneId,
+        ): Long = LocalDateTime.of(year, month, day, hour, minute, second, millis * 1_000_000)
+            .atZone(zone)
+            .toInstant()
+            .toEpochMilli()
 
         private fun convertCharToLogLevel(logLevelChar: Char): Int = when (logLevelChar) {
             'D' -> Log.DEBUG

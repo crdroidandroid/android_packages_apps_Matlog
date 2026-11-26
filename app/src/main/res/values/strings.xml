@@ -269,4 +269,17 @@
     <string name="matlog_copy_field_message">Message</string>
     <string name="matlog_filter_from_line_include">Add include filter</string>
     <string name="matlog_filter_from_line_exclude">Add exclude filter</string>
+    <string name="matlog_filter_regex">Use regex</string>
+    <string name="matlog_filter_regex_label">%1$s (regex)</string>
+    <string name="matlog_filter_invalid_regex">Invalid regex</string>
+    <string name="matlog_filter_time_range">Time range</string>
+    <string name="matlog_filter_since">From</string>
+    <string name="matlog_filter_until">Until</string>
+    <string name="matlog_filter_time_any">Any time</string>
+    <string name="matlog_filter_bad_range">The start time is after the end time</string>
+    <string name="matlog_filter_clear">Clear</string>
+    <string name="matlog_filter_pick_app">Choose app</string>
+    <string name="matlog_filter_pick_apps">Choose apps</string>
+    <string name="matlog_filter_system_app">System app</string>
+    <string name="matlog_filter_by_apps">Filter by apps</string>
 </resources>
