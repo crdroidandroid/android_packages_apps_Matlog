@@ -8,6 +8,7 @@ import android.content.Context;
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
 
+import com.pluscubed.logcat.data.LogDisplayOptions;
 import com.pluscubed.logcat.helper.PackageNameResolver;
 
 public class OmniApp extends Application {
@@ -22,6 +23,7 @@ public class OmniApp extends Application {
         );
         createNotificationChannel();
         PackageNameResolver.init(this);
+        LogDisplayOptions.migrate(this);
     }
 
     private void createNotificationChannel() {

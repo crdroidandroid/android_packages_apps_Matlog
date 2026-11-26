@@ -90,4 +90,31 @@
         <item>@color/light_tag_color_16</item>
         <item>@color/light_tag_color_17</item>
     </integer-array>
+
+    <string-array name="matlog_log_columns">
+        <item>@string/matlog_column_date</item>
+        <item>@string/matlog_column_time</item>
+        <item>@string/matlog_column_uid</item>
+        <item>@string/matlog_column_pid</item>
+        <item>@string/matlog_column_package</item>
+        <item>@string/matlog_column_tag</item>
+    </string-array>
+
+    <string-array name="matlog_log_columns_values" translatable="false">
+        <item>date</item>
+        <item>time</item>
+        <item>uid</item>
+        <item>pid</item>
+        <item>package</item>
+        <item>tag</item>
+    </string-array>
+
+    <string-array name="matlog_log_columns_default" translatable="false">
+        <item>date</item>
+        <item>time</item>
+        <item>pid</item>
+        <item>package</item>
+        <item>tag</item>
+    </string-array>
+
 </resources>

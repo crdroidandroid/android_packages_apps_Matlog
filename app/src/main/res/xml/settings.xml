@@ -18,12 +18,26 @@
             android:summary="@string/pref_expanded_by_default_summary"
             android:title="@string/pref_expanded_by_default_title" />
 
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="@string/pref_show_timestamp"
+        <MultiSelectListPreference
+            android:defaultValue="@array/matlog_log_columns_default"
+            android:entries="@array/matlog_log_columns"
+            android:entryValues="@array/matlog_log_columns_values"
+            android:key="@string/matlog_pref_log_columns"
             android:persistent="true"
-            android:summary="@string/pref_show_timestamp_summary"
-            android:title="@string/pref_show_timestamp_title" />
+            android:summary="@string/matlog_pref_log_columns_summary"
+            android:title="@string/matlog_pref_log_columns_title" />
+
+        <EditTextPreference
+            android:defaultValue="@string/matlog_date_format_default"
+            android:key="@string/matlog_pref_date_format"
+            android:persistent="true"
+            android:title="@string/matlog_pref_date_format_title" />
+
+        <EditTextPreference
+            android:defaultValue="@string/matlog_time_format_default"
+            android:key="@string/matlog_pref_time_format"
+            android:persistent="true"
+            android:title="@string/matlog_pref_time_format_title" />
 
     </PreferenceCategory>
 

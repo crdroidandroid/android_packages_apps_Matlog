@@ -263,6 +263,7 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
 
         //int textColor = PreferenceHelper.getColorScheme(context).getForegroundColor(context);
         float textSize = PreferenceHelper.getTextSizePreference(context);
+        LogDisplayOptions options = LogDisplayOptions.get(context);
 
         //OUTPUT TEXT VIEW
         TextView output = (TextView) holder.itemView.findViewById(R.id.log_output_text);
@@ -275,7 +276,7 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         TextView tag = (TextView) holder.itemView.findViewById(R.id.tag_text);
         tag.setSingleLine(!logLine.isExpanded());
         tag.setText(logLine.getTag());
-        tag.setVisibility(logLine.getLogLevel() == -1 ? View.GONE : View.VISIBLE);
+        tag.setVisibility(logLine.getLogLevel() == -1 || !options.getShowTag() ? View.GONE : View.VISIBLE);
 
 
         //TEXT SIZE
@@ -285,27 +286,20 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
 
         //EXPANDED INFO
         boolean extraInfoIsVisible = logLine.isExpanded()
-                && PreferenceHelper.getShowTimestampAndPidPreference(context)
+                && options.getHasDetails()
                 && logLine.getProcessId() != -1; // -1 marks lines like 'beginning of /dev/log...'
 
         TextView pidText = (TextView) holder.itemView.findViewById(R.id.pid_text);
-        pidText.setVisibility(extraInfoIsVisible ? View.VISIBLE : View.GONE);
+        pidText.setVisibility(extraInfoIsVisible && options.getShowPid() ? View.VISIBLE : View.GONE);
         TextView timestampText = (TextView) holder.itemView.findViewById(R.id.timestamp_text);
         timestampText.setVisibility(extraInfoIsVisible ? View.VISIBLE : View.GONE);
 
         if (extraInfoIsVisible) {
-
-            //pidText.setTextColor(textColor);
-            //timestampText.setTextColor(textColor);
-
             pidText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             timestampText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 
-            pidText.setText(logLine.getProcessId() != -1 ? Integer.toString(logLine.getProcessId()) : null);
-            String packageName = logLine.getPackageName();
-            timestampText.setText(packageName != null
-                    ? logLine.getTimestamp() + "  " + packageName
-                    : logLine.getTimestamp());
+            pidText.setText(Integer.toString(logLine.getProcessId()));
+            timestampText.setText(options.details(logLine));
         }
 
         tag.setTextColor(LogLineAdapterUtil.getOrCreateTagColor(context, logLine.getTag()));

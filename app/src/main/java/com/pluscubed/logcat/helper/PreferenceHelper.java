@@ -6,6 +6,7 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
 import com.pluscubed.logcat.data.ColorScheme;
+import com.pluscubed.logcat.data.LogDisplayOptions;
 import com.pluscubed.logcat.util.StringUtil;
 import com.pluscubed.logcat.util.UtilLogger;
 
@@ -22,7 +23,6 @@ public class PreferenceHelper {
     private static final String WIDGET_EXISTS_PREFIX = "widget_";
     private static float textSize = -1;
     private static Character defaultLogLevel = null;
-    private static Boolean showTimestampAndPid = null;
     private static ColorScheme colorScheme = null;
     private static int displayLimit = -1;
     private static UtilLogger log = new UtilLogger(PreferenceHelper.class);
@@ -31,7 +31,7 @@ public class PreferenceHelper {
     public static void clearCache() {
         defaultLogLevel = null;
         textSize = -1;
-        showTimestampAndPid = null;
+        LogDisplayOptions.invalidate();
         colorScheme = null;
         displayLimit = -1;
     }
@@ -196,18 +196,6 @@ public class PreferenceHelper {
         log.d("unscaledSize is %g", unscaledSize);
 
         textSize = unscaledSize;
-    }
-
-    public static boolean getShowTimestampAndPidPreference(Context context) {
-
-        if (showTimestampAndPid == null) {
-            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-            showTimestampAndPid = sharedPrefs.getBoolean(context.getText(R.string.pref_show_timestamp).toString(), true);
-        }
-
-        return showTimestampAndPid;
-
     }
 
     public static boolean getExpandedByDefaultPreference(Context context) {

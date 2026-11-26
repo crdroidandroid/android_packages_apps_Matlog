@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.pluscubed.logcat.crash.CrashMonitorService;
+import com.pluscubed.logcat.data.LogDisplayOptions;
 import com.pluscubed.logcat.data.LogLine;
 import com.pluscubed.logcat.helper.PreferenceHelper;
 import com.pluscubed.logcat.util.ArrayUtil;
@@ -170,6 +171,12 @@ public class SettingsActivity extends AppCompatActivity {
             bufferPreference.setOnPreferenceChangeListener(this);
             setBufferPreferenceSummary(TextUtils.join(PreferenceHelper.DELIMITER, bufferPreference.getValues()));
 
+            for (int key : new int[]{R.string.matlog_pref_date_format, R.string.matlog_pref_time_format}) {
+                EditTextPreference formatPreference = findPreference(getString(key));
+                formatPreference.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+                formatPreference.setOnPreferenceChangeListener(this);
+            }
+
             scrubberPreference = (TwoStatePreference) getPreferenceScreen().findPreference("scrubber");
             scrubberPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -267,6 +274,14 @@ public class SettingsActivity extends AppCompatActivity {
                 setDefaultLevelPreferenceSummary(newEntry);
 
                 return true;
+
+            } else if (preference.getKey().equals(getString(R.string.matlog_pref_date_format))
+                    || preference.getKey().equals(getString(R.string.matlog_pref_time_format))) {
+                if (LogDisplayOptions.isValidFormat((String) newValue)) {
+                    return true;
+                }
+                Toast.makeText(getActivity(), R.string.matlog_invalid_date_format, Toast.LENGTH_LONG).show();
+                return false;
 
             } else { // text size pref
 

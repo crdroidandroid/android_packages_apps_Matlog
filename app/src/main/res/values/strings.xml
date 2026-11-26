@@ -234,4 +234,20 @@
     <string name="matlog_export">Export</string>
     <string name="matlog_export_done">Exported</string>
     <string name="matlog_export_failed">Unable to export</string>
+    <string name="matlog_pref_log_columns" translatable="false">matlog_log_columns</string>
+    <string name="matlog_pref_date_format" translatable="false">matlog_date_format</string>
+    <string name="matlog_pref_time_format" translatable="false">matlog_time_format</string>
+    <string name="matlog_date_format_default" translatable="false">MM-dd</string>
+    <string name="matlog_time_format_default" translatable="false">HH:mm:ss.SSS</string>
+    <string name="matlog_pref_log_columns_title">Columns</string>
+    <string name="matlog_pref_log_columns_summary">Tag is shown on every line, the rest when a line is expanded</string>
+    <string name="matlog_pref_date_format_title">Date format</string>
+    <string name="matlog_pref_time_format_title">Time format</string>
+    <string name="matlog_invalid_date_format">Invalid date or time format</string>
+    <string name="matlog_column_date">Date</string>
+    <string name="matlog_column_time">Time</string>
+    <string name="matlog_column_uid">UID</string>
+    <string name="matlog_column_pid">PID</string>
+    <string name="matlog_column_package">Package</string>
+    <string name="matlog_column_tag">Tag</string>
 </resources>
