@@ -61,4 +61,32 @@
         app:tint="?attr/colorOnSecondaryContainer"
         style="@style/SecondaryFloatingActionButtonStyle"/>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:paddingBottom="32dp"
+        android:orientation="vertical"
+        app:layout_anchor="@id/fab"
+        app:layout_anchorGravity="top|center_horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/scroll_top"
+            style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/matlog_scroll_to_top"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_vertical_align_top" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/scroll_bottom"
+            style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/matlog_scroll_to_bottom"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_vertical_align_bottom" />
+    </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

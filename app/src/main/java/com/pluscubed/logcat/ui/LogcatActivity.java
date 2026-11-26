@@ -1659,6 +1659,16 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         });
 
         ((RecyclerView) findViewById(R.id.list)).setHasFixedSize(true);
+
+        new ScrollButtons(findViewById(R.id.list), findViewById(R.id.scroll_top), findViewById(R.id.scroll_bottom),
+                () -> {
+                    mAutoscrollToBottom = false;
+                    ((RecyclerView) findViewById(R.id.list)).scrollToPosition(0);
+                },
+                () -> {
+                    mAutoscrollToBottom = true;
+                    scrollToBottom();
+                });
     }
 
     private void setSearchText(String text) {
