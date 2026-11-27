@@ -55,6 +55,7 @@ object CopyLogLineSheet {
                 fields.add(R.string.matlog_column_time to timestamp.substring(DATE_LENGTH + 1))
             }
         }
+        line.uptime?.let { fields.add(R.string.matlog_column_time to it) }
         line.uid?.let { fields.add(R.string.matlog_column_uid to it) }
         if (line.processId != -1) fields.add(R.string.matlog_column_pid to line.processId.toString())
         return fields

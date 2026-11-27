@@ -69,6 +69,7 @@ import com.pluscubed.logcat.crash.CrashesActivity;
 import com.pluscubed.logcat.filter.FilterRepository;
 import com.pluscubed.logcat.filter.FilterSet;
 import com.pluscubed.logcat.filter.FiltersActivity;
+import com.pluscubed.logcat.reader.DmesgReader;
 import com.pluscubed.logcat.reader.LogcatSession;
 import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
@@ -187,6 +188,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private CursorAdapter mSearchSuggestionsAdapter;
 
     private String mCurrentlyOpenLog = null;
+    private boolean mKernelMode = false;
 
     private Handler mHandler;
     private MenuItem mSearchViewMenuItem;
@@ -306,7 +308,11 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         showSaveLogDialog();
                         return true;
                     case R.id.menu_export_log:
-                        mExportLogLauncher.launch(LogExporter.textFilename());
+                        mExportLogLauncher.launch(mKernelMode
+                                ? SaveLogHelper.createKernelLogFilename() : LogExporter.textFilename());
+                        return true;
+                    case R.id.menu_kernel_log:
+                        setKernelMode(!mKernelMode);
                         return true;
                     case R.id.menu_record_log:
                         showRecordLogDialog();
@@ -336,6 +342,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 return false;
             }
         });
+
+        ((BottomAppBar) findViewById(R.id.bottomAppBar)).getMenu().findItem(R.id.menu_kernel_log)
+                .setVisible(DmesgReader.isAvailable());
 
         mCollapsedMode = !PreferenceHelper.getExpandedByDefaultPreference(this);
 
@@ -387,6 +396,12 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             }
         }
 
+    }
+
+    private void setKernelMode(boolean kernelMode) {
+        mKernelMode = kernelMode;
+        mLogcatSession.setKernel(kernelMode);
+        startMainLog();
     }
 
     private void startLog() {
@@ -552,7 +567,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             @Override
             public void run() {
                 if (data.hasExtra("bufferChanged") && data.getBooleanExtra("bufferChanged", false)
-                        && mCurrentlyOpenLog == null) {
+                        && mCurrentlyOpenLog == null && !mKernelMode) {
                     // log buffer changed, so update list
                     restartMainLog();
                 } else {
@@ -622,6 +637,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             mSearchViewMenuItem.collapseActionView();
         } else if (mCurrentlyOpenLog != null) {
             startMainLog();
+        } else if (mKernelMode) {
+            setKernelMode(false);
         } else {
             super.onBackPressed();
         }
@@ -1478,7 +1495,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         }
         ;
 
-        DialogHelper.showFilenameSuggestingDialog(this, null, new InputCallback(), R.string.save_log);
+        DialogHelper.showFilenameSuggestingDialog(this, null, new InputCallback(), R.string.save_log,
+                mKernelMode ? SaveLogHelper.createKernelLogFilename() : DialogHelper.createLogFilename());
     }
 
     private void saveLog(final String filename) {
@@ -1584,6 +1602,10 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         mLogListAdapter.clear();
         refreshSearchHits();
         mCurrentlyOpenLog = filename;
+        if (filename != null && mKernelMode) {
+            mKernelMode = false;
+            mLogcatSession.setKernel(false);
+        }
         mCollapsedMode = !PreferenceHelper.getExpandedByDefaultPreference(getApplicationContext());
         addFiltersToSuggestions(); // filters are what initial populate the suggestions
         updateUiForFilename();
@@ -1594,8 +1616,14 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         boolean logFileMode = mCurrentlyOpenLog != null;
 
         //noinspection ConstantConditions
-        getSupportActionBar().setTitle(logFileMode ? mCurrentlyOpenLog : getString(R.string.app_name));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(logFileMode);
+        getSupportActionBar().setTitle(logFileMode ? mCurrentlyOpenLog
+                : getString(mKernelMode ? R.string.matlog_kernel_log : R.string.app_name));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(logFileMode || mKernelMode);
+
+        Menu bottomMenu = ((BottomAppBar) findViewById(R.id.bottomAppBar)).getMenu();
+        bottomMenu.findItem(R.id.menu_kernel_log).setChecked(mKernelMode);
+        // recordings only cover logcat
+        bottomMenu.findItem(R.id.menu_record_log).setVisible(!mKernelMode);
         supportInvalidateOptionsMenu();
     }
 

@@ -125,8 +125,14 @@ public class DialogHelper {
 
     public static void showFilenameSuggestingDialog(final Context context,
                                                     final Runnable negativeCallback, final InputTextCallback inputCallback, int titleResId) {
+        showFilenameSuggestingDialog(context, negativeCallback, inputCallback, titleResId, createLogFilename());
+    }
 
-        final View v = initFilenameInputDialog(context);
+    public static void showFilenameSuggestingDialog(final Context context,
+                                                    final Runnable negativeCallback, final InputTextCallback inputCallback,
+                                                    int titleResId, String filename) {
+
+        final View v = initFilenameInputDialog(context, filename);
         final EditText input = v.findViewById(R.id.edit_text);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(titleResId)
@@ -152,14 +158,16 @@ public class DialogHelper {
     }
 
     public static View initFilenameInputDialog(final Context context) {
+        return initFilenameInputDialog(context, createLogFilename());
+    }
+
+    public static View initFilenameInputDialog(final Context context, String filename) {
         View v = LayoutInflater.from(context).inflate(R.layout.dialog_input_text, null, false);
         final EditText editText = v.findViewById(R.id.edit_text);
         editText.setSingleLine();
         editText.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
-        // create an initial filename to suggest to the user
-        String filename = createLogFilename();
         editText.setText(filename);
 
         // highlight everything but the .txt at the end

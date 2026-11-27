@@ -291,12 +291,11 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 
         //EXPANDED INFO
-        boolean extraInfoIsVisible = logLine.isExpanded()
-                && options.getHasDetails()
-                && logLine.getProcessId() != -1; // -1 marks lines like 'beginning of /dev/log...'
+        boolean extraInfoIsVisible = logLine.isExpanded() && options.hasDetails(logLine);
 
         TextView pidText = (TextView) holder.itemView.findViewById(R.id.pid_text);
-        pidText.setVisibility(extraInfoIsVisible && options.getShowPid() ? View.VISIBLE : View.GONE);
+        pidText.setVisibility(extraInfoIsVisible && options.getShowPid() && logLine.getProcessId() != -1
+                ? View.VISIBLE : View.GONE);
         TextView timestampText = (TextView) holder.itemView.findViewById(R.id.timestamp_text);
         timestampText.setVisibility(extraInfoIsVisible ? View.VISIBLE : View.GONE);
 

@@ -35,6 +35,10 @@ class LogDisplayOptions private constructor(
     private val timeFormatter = formatterOrNull(timeFormat)
     private val calendar = Calendar.getInstance()
 
+    // kernel lines only carry the time since boot
+    fun hasDetails(line: LogLine): Boolean =
+        if (line.isKernel) showDate || showTime else hasDetails && line.processId != -1
+
     // date, time, uid and package; the pid has its own column
     fun details(line: LogLine): String {
         val parts = ArrayList<String>(3)
@@ -45,8 +49,9 @@ class LogDisplayOptions private constructor(
     }
 
     private fun timestamp(line: LogLine): String? {
-        val raw = line.timestamp ?: return null
         if (!showDate && !showTime) return null
+        line.uptime?.let { return "[$it]" }
+        val raw = line.timestamp ?: return null
         if (rawTimestamp && raw.length == LOGCAT_TIMESTAMP_FORMAT.length) {
             return when {
                 showDate && showTime -> raw

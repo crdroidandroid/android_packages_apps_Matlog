@@ -9,11 +9,10 @@ import android.content.Context
 import com.pluscubed.logcat.helper.LogcatHelper
 import com.pluscubed.logcat.helper.PreferenceHelper
 import java.io.BufferedReader
-import java.io.Closeable
 import java.io.File
 import java.io.IOException
 
-class LogcatReader private constructor(private val process: Process) : Closeable {
+class LogcatReader private constructor(private val process: Process) : LineReader {
 
     private val reader: BufferedReader = process.inputStream.bufferedReader(Charsets.UTF_8)
 
@@ -22,7 +21,7 @@ class LogcatReader private constructor(private val process: Process) : Closeable
         private set
 
     @Throws(IOException::class)
-    fun readLine(): String? = if (isKilled) null else reader.readLine()
+    override fun readLine(): String? = if (isKilled) null else reader.readLine()
 
     fun ready(): Boolean = try {
         !isKilled && reader.ready()
@@ -30,13 +29,11 @@ class LogcatReader private constructor(private val process: Process) : Closeable
         false
     }
 
-    fun killQuietly() {
+    override fun killQuietly() {
         if (isKilled) return
         isKilled = true
         runCatching { process.destroy() }
     }
-
-    override fun close() = killQuietly()
 
     companion object {
         @JvmStatic

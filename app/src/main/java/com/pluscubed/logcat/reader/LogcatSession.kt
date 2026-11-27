@@ -38,7 +38,7 @@ class LogcatSession(
         val buffer = ArrayDeque<LogLine>()
 
         @Volatile
-        var reader: LogcatReader? = null
+        var reader: LineReader? = null
     }
 
     private var job: Job? = null
@@ -51,13 +51,17 @@ class LogcatSession(
     val isRunning: Boolean
         get() = job?.isActive == true
 
+    // read the kernel log instead of logcat, applied on the next start
+    var isKernel = false
+
     fun start() {
         stop()
         val maxLines = PreferenceHelper.getDisplayLimitPreference(context)
-        val current = Run(if (CrashMonitor.isEnabled(context)) CrashMonitor(context) else null)
+        val kernel = isKernel
+        val current = Run(if (!kernel && CrashMonitor.isEnabled(context)) CrashMonitor(context) else null)
         run = current
         job = scope.launch {
-            launch(Dispatchers.IO) { read(current, maxLines) }
+            launch(Dispatchers.IO) { read(current, maxLines, kernel) }
             while (isActive) {
                 delay(UPDATE_INTERVAL_MS)
                 current.crashMonitor?.let { monitor ->
@@ -86,16 +90,17 @@ class LogcatSession(
         isPaused = false
     }
 
-    private suspend fun read(run: Run, maxLines: Int) {
+    private suspend fun read(run: Run, maxLines: Int, kernel: Boolean) {
         val buffer = run.buffer
         var since: String? = null
+        var lastUptime = -1L
         val linesAtSince = HashSet<String>()
         var resuming = false
         // only crashes logged after the session started are notified
         val startedAt = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US).format(Date())
         while (currentCoroutineContext().isActive) {
             val logcat = try {
-                LogcatReader.open(context, since)
+                if (kernel) DmesgReader.open(since) else LogcatReader.open(context, since)
             } catch (e: IOException) {
                 Log.w(TAG, "Unable to start logcat", e)
                 null
@@ -109,6 +114,13 @@ class LogcatSession(
                 try {
                     while (currentCoroutineContext().isActive) {
                         val line = logcat.readLine() ?: break
+                        val uptime = LogLine.kernelUptimeMicros(line)
+                        if (uptime != null) {
+                            // the helper replays the whole kernel log after a restart
+                            if (resuming && uptime <= lastUptime) continue
+                            lastUptime = uptime
+                            resuming = false
+                        }
                         val timestamp = timestampOf(line)
                         if (timestamp != null) {
                             if (timestamp == since) {

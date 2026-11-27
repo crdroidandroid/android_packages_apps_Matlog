@@ -1,0 +1,11 @@
+#
+# SPDX-FileCopyrightText: crDroid Android Project
+# SPDX-License-Identifier: Apache-2.0
+#
+
+service matlog_dmesg /system_ext/bin/matlog_dmesg
+    class main
+    user root
+    group log
+    capabilities SYSLOG
+    socket matlog_dmesg stream 0660 root log

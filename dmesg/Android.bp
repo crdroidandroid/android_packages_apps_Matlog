@@ -1,0 +1,20 @@
+//
+// SPDX-FileCopyrightText: crDroid Android Project
+// SPDX-License-Identifier: Apache-2.0
+//
+
+cc_binary {
+    name: "matlog_dmesg",
+    srcs: ["matlog_dmesg.cpp"],
+    shared_libs: [
+        "libbase",
+        "libcutils",
+        "liblog",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+    init_rc: ["matlog_dmesg.rc"],
+    system_ext_specific: true,
+}

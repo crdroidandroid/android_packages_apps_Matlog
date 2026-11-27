@@ -317,6 +317,7 @@
     <string name="matlog_buffer_crash">Crash</string>
     <string name="matlog_buffer_security">Security</string>
     <string name="matlog_buffer_kernel">Kernel</string>
+    <string name="matlog_kernel_log">Kernel log</string>
     <string name="matlog_scroll_to_top">Scroll to top</string>
     <string name="matlog_scroll_to_bottom">Scroll to bottom</string>
 </resources>

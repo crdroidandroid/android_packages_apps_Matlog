@@ -39,6 +39,7 @@ public class SaveLogHelper {
     public static final String TEMP_DEVICE_INFO_FILENAME = "device_info.txt";
     public static final String TEMP_DMESG_FILENAME = "dmesg.txt";
     private static final String LOG_FILENAME_PREFIX = "logcat-";
+    private static final String KERNEL_LOG_FILENAME_PREFIX = "dmesg-";
     private static final int BUFFER = 0x1000; // 4K
     private static final String LEGACY_SAVED_LOGS_DIR = "catlog_saved_logs";
     private static final String CATLOG_DIR = "matlog";
@@ -343,6 +344,11 @@ public class SaveLogHelper {
 
     public static String createLogFilename() {
         return createLogBasename() + ".txt";
+    }
+
+    public static String createKernelLogFilename() {
+        return KERNEL_LOG_FILENAME_PREFIX + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US).format(new Date())
+                + ".txt";
     }
 
     public static void cleanTemp(Context context) {
