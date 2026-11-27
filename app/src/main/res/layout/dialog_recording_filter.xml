@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingStart="24dp"
+    android:paddingTop="8dp"
     android:paddingEnd="24dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/filter_text_colon"
-        android:textAppearance="@android:style/TextAppearance.Material.Menu"
-        android:maxLines="1"
-        android:layout_marginTop="10dp"/>
-
-    <AutoCompleteTextView
-        android:id="@+id/filter_text"
+    <com.google.android.material.textfield.TextInputLayout
+        style="?attr/textInputOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:completionThreshold="1"
-        android:hint="@string/text_filter_text"
-        android:imeOptions="actionDone"
-        android:inputType="textNoSuggestions"
-        android:maxLines="1"
-        android:textAppearance="@android:style/TextAppearance.Material.Menu"/>
+        android:hint="@string/text_filter_text">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/log_level_colon"
-        android:textAppearance="@android:style/TextAppearance.Material.Menu"
-        android:maxLines="1"
-        android:layout_marginTop="10dp"/>
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/filter_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:imeOptions="actionDone"
+            android:inputType="text|textNoSuggestions"
+            android:maxLines="1" />
 
-    <Spinner
-        android:id="@+id/spinner"
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:prompt="@string/log_level" />
+        android:layout_marginTop="16dp"
+        android:hint="@string/log_level">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/log_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

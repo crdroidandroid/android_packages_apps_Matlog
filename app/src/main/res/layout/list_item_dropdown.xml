@@ -23,8 +23,8 @@
     android:layout_height="48dp"
     android:ellipsize="marquee"
     android:gravity="center_vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     tools:text="TESTSDFSDFD"
     android:singleLine="true"
-    android:textAppearance="@android:style/TextAppearance.Material.Menu"/>
+    android:textAppearance="?attr/textAppearanceBodyLarge"/>

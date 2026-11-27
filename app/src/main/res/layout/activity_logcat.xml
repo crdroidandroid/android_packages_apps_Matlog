@@ -58,7 +58,6 @@
         android:layout_height="wrap_content"
         app:layout_anchor="@id/bottomAppBar"
         app:srcCompat="@drawable/ic_pause_white_24dp"
-        app:tint="?attr/colorOnSecondaryContainer"
         style="@style/SecondaryFloatingActionButtonStyle"/>
 
     <LinearLayout

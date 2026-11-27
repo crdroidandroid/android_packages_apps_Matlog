@@ -10,7 +10,7 @@ import android.os.Looper;
 import android.text.Html;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.omnirom.logcat.R;
 import com.pluscubed.logcat.util.UtilLogger;
@@ -47,7 +47,7 @@ public class SuperUserHelper {
             @Override
             public void run() {
                 final String command = String.format("adb shell pm grant %s android.permission.READ_LOGS", context.getPackageName());
-                new AlertDialog.Builder(context)
+                new MaterialAlertDialogBuilder(context)
                         .setTitle(R.string.no_logs_warning_title)
                         .setMessage(Html.fromHtml(context.getString(R.string.no_logs_warning, context.getString(R.string.app_name), command)))
                         .setPositiveButton(android.R.string.ok, null)

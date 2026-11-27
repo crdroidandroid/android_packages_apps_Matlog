@@ -350,4 +350,5 @@
     <string name="matlog_pstore_other">Pstore log</string>
     <string name="matlog_scroll_to_top">Scroll to top</string>
     <string name="matlog_scroll_to_bottom">Scroll to bottom</string>
+    <string name="matlog_search_by_item">%1$s: %2$s</string>
 </resources>

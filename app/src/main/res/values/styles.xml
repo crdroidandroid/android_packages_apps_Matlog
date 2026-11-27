@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Theme.MatLog" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.MatLog" parent="Theme.Material3Expressive.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">?attr/colorPrimary</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
@@ -9,17 +9,16 @@
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/omni_logo_color</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListViewStyle</item>
-        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
 
-    <style name="Theme.MatLog.Overlay" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
+    <style name="Theme.MatLog.Overlay" parent="ThemeOverlay.Material3Expressive.DynamicColors.DayNight">
     </style>
 
-    <style name="AlertDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">
-        <item name="colorAccent">?attr/colorPrimary</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="dialogCornerRadius">8dp</item>
+    <style name="Theme.MatLog.Translucent">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="LogcatListItem" parent="@style/TextAppearance.Material3.BodySmall">
@@ -32,6 +31,7 @@
         <item name="android:scrollbars">none</item>
     </style>
 
-    <style name="SecondaryFloatingActionButtonStyle" parent="Widget.Material3.FloatingActionButton.Secondary">
+    <style name="SecondaryFloatingActionButtonStyle" parent="Widget.Material3Expressive.FloatingActionButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Material3Expressive.FloatingActionButton.SecondaryContainer</item>
     </style>
 </resources>

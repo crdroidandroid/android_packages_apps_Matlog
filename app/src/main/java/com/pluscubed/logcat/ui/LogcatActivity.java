@@ -26,22 +26,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filter.FilterListener;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.pluscubed.logcat.data.FilterAdapter;
 import com.pluscubed.logcat.data.LogLine;
@@ -991,56 +988,23 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     };
 
     private void showSearchByDialog(final LogLine logLine) {
-        int tagColor = LogLineAdapterUtil.getOrCreateTagColor(this, logLine.getTag());
-
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_searchby, null);
-        final AlertDialog dialog = new AlertDialog.Builder(this)
+        final String tag = logLine.getTag();
+        final int pid = logLine.getProcessId();
+        CharSequence[] items = {
+                getString(R.string.matlog_search_by_item, getString(R.string.filter_choice_tag), tag),
+                getString(R.string.matlog_search_by_item, getString(R.string.filter_choice_pid), Integer.toString(pid)),
+        };
+        new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.filter_choice)
-                .setMessage(R.string.filter_choice_messager)
-                .setView(dialogView)
+                .setItems(items, (dialog, which) -> {
+                    if (which == 0) {
+                        setSearchText(SearchCriteria.TAG_KEYWORD + (tag.contains(" ") ? '"' + tag + '"' : tag));
+                    } else {
+                        setSearchText(SearchCriteria.PID_KEYWORD + pid);
+                    }
+                })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
-
-        LinearLayout customView = (LinearLayout) dialogView;
-        LinearLayout tag = (LinearLayout) customView.findViewById(R.id.dialog_searchby_tag_linear);
-        LinearLayout pid = (LinearLayout) customView.findViewById(R.id.dialog_searchby_pid_linear);
-
-        TextView tagText = (TextView) customView.findViewById(R.id.dialog_searchby_tag_text);
-        TextView pidText = (TextView) customView.findViewById(R.id.dialog_searchby_pid_text);
-
-        //ColorScheme colorScheme = PreferenceHelper.getColorScheme(this);
-
-        tagText.setText(logLine.getTag());
-        pidText.setText(Integer.toString(logLine.getProcessId()));
-        //tagText.setTextColor(tagColor);
-        //pidText.setTextColor(colorScheme.getForegroundColor(this));
-
-        /*int backgroundColor = colorScheme.getSpinnerColor(this);
-        pidText.setBackgroundColor(backgroundColor);
-        tagText.setBackgroundColor(backgroundColor);*/
-
-        tag.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String tagQuery = (logLine.getTag().contains(" "))
-                        ? ('"' + logLine.getTag() + '"')
-                        : logLine.getTag();
-                setSearchText(SearchCriteria.TAG_KEYWORD + tagQuery);
-                dialog.dismiss();
-                //TODO: put the cursor at the end
-                /*searchEditText.setSelection(searchEditText.length());*/
-            }
-        });
-
-        pid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setSearchText(SearchCriteria.PID_KEYWORD + logLine.getProcessId());
-                dialog.dismiss();
-                //TODO: put the cursor at the end
-                /*searchEditText.setSelection(searchEditText.length());*/
-            }
-        });
     }
 
     private void showRecordLogDialog() {
@@ -1084,7 +1048,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                         View footer = getLayoutInflater().inflate(R.layout.list_header_add_filter, view, false);
                         view.addFooterView(footer);
 
-                        final AlertDialog dialog = new AlertDialog.Builder(LogcatActivity.this)
+                        final AlertDialog dialog = new MaterialAlertDialogBuilder(LogcatActivity.this)
                                 .setTitle(R.string.matlog_saved_searches)
                                 .setMessage(R.string.message_filters)
                                 .setView(view)
@@ -1123,7 +1087,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 this, R.layout.list_item_dropdown, suggestions);
         editText.setAdapter(suggestionAdapter);
 
-        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+        final AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.add_filter)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
@@ -1141,8 +1105,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    // dismiss soft keyboard
-
                     handleNewFilterText(editText.getText().toString(), filterAdapter);
 
                     alertDialog.dismiss();
@@ -1152,11 +1114,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             }
         });
 
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        editText.requestFocus();
         alertDialog.show();
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(editText, 0);
-
     }
 
     protected void handleNewFilterText(String text, final FilterAdapter filterAdapter) {
@@ -1235,7 +1195,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     protected void verifyDelete(final CharSequence[] filenameArray,
                                 final boolean[] checkedItems, final DialogInterface parentDialog) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
 
         int deleteCount = 0;
 
@@ -1279,83 +1239,36 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     }
 
+    private View inflateDeviceInfoView() {
+        @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.dialog_send_log, null, false);
+        CheckBox checkBox = view.findViewById(android.R.id.checkbox);
+        checkBox.setChecked(PreferenceHelper.getIncludeDeviceInfoPreference(this));
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
+                PreferenceHelper.setIncludeDeviceInfoPreference(LogcatActivity.this, isChecked));
+        return view;
+    }
+
     private void showSendLogDialog() {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        @SuppressLint("InflateParams") View includeDeviceInfoView = inflater.inflate(R.layout.dialog_send_log, null, false);
-        final CheckBox includeDeviceInfoCheckBox = (CheckBox) includeDeviceInfoView.findViewById(android.R.id.checkbox);
-
-        // allow user to choose whether or not to include device info in report, use preferences for persistence
-        includeDeviceInfoCheckBox.setChecked(PreferenceHelper.getIncludeDeviceInfoPreference(this));
-        includeDeviceInfoCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                PreferenceHelper.setIncludeDeviceInfoPreference(LogcatActivity.this, isChecked);
-            }
-        });
-
-        /*final CheckBox includeDmesgCheckBox = (CheckBox) includeDeviceInfoView.findViewById(R.id.checkbox_dmesg);
-
-        // allow user to choose whether or not to include device info in report, use preferences for persistence
-        includeDmesgCheckBox.setChecked(PreferenceHelper.getIncludeDmesgPreference(this));
-        includeDmesgCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                PreferenceHelper.setIncludeDmesgPreference(LogcatActivity.this, isChecked);
-            }
-        });*/
-
-        new AlertDialog.Builder(LogcatActivity.this)
+        final View view = inflateDeviceInfoView();
+        final CheckBox checkBox = view.findViewById(android.R.id.checkbox);
+        new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.share_log)
-                .setView(includeDeviceInfoView)
+                .setView(view)
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        sendLogToTargetApp(includeDeviceInfoCheckBox.isChecked(), false);
-                    }
-                }).show();
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                        sendLogToTargetApp(checkBox.isChecked(), false))
+                .show();
     }
 
     private void showSaveLogZipDialog() {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        @SuppressLint("InflateParams") View includeDeviceInfoView = inflater.inflate(R.layout.dialog_send_log, null, false);
-        final CheckBox includeDeviceInfoCheckBox = (CheckBox) includeDeviceInfoView.findViewById(android.R.id.checkbox);
-
-        // allow user to choose whether or not to include device info in report, use preferences for persistence
-        includeDeviceInfoCheckBox.setChecked(PreferenceHelper.getIncludeDeviceInfoPreference(this));
-        includeDeviceInfoCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                PreferenceHelper.setIncludeDeviceInfoPreference(LogcatActivity.this, isChecked);
-            }
-        });
-
-        /*final CheckBox includeDmesgCheckBox = (CheckBox) includeDeviceInfoView.findViewById(R.id.checkbox_dmesg);
-
-        // allow user to choose whether or not to include device info in report, use preferences for persistence
-        includeDmesgCheckBox.setChecked(PreferenceHelper.getIncludeDmesgPreference(this));
-        includeDmesgCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                PreferenceHelper.setIncludeDmesgPreference(LogcatActivity.this, isChecked);
-            }
-        });*/
-
-        new AlertDialog.Builder(LogcatActivity.this)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.save_log_zip)
                 .setMessage(R.string.matlog_save_zip_summary)
-                .setView(includeDeviceInfoView)
+                .setView(inflateDeviceInfoView())
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mExportZipLauncher.launch(LogExporter.zipFilename());
-                    }
-                }).show();
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                        mExportZipLauncher.launch(LogExporter.zipFilename()))
+                .show();
     }
 
     protected void sendLogToTargetApp(final boolean includeDeviceInfo, final boolean includeDmesg) {
@@ -1504,20 +1417,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showSaveLogDialog() {
-        class InputCallback implements DialogHelper.InputTextCallback {
-            @Override
-            public void setInputText(String text) {
-                if (DialogHelper.isInvalidFilename(text)) {
-                    Toast.makeText(LogcatActivity.this, R.string.enter_good_filename, Toast.LENGTH_SHORT).show();
-                } else {
-                    String filename = text;
-                    saveLog(filename);
-                }
-            }
-        }
-        ;
-
-        DialogHelper.showFilenameSuggestingDialog(this, null, new InputCallback(), R.string.save_log,
+        DialogHelper.showFilenameSuggestingDialog(this, null, this::saveLog, R.string.save_log,
                 mKernelMode ? SaveLogHelper.createKernelLogFilename() : DialogHelper.createLogFilename());
     }
 
@@ -1658,15 +1558,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showLogLevelDialog() {
-        String[] logLevels = getResources().getStringArray(R.array.log_levels);
+        String[] logLevels = DialogHelper.logLevelLabels(this);
 
-        // put the word "default" after whatever the default log level is
-        String defaultLogLevel = Character.toString(PreferenceHelper.getDefaultLogLevelPreference(this));
-        int index = ArrayUtil.indexOf(getResources().getStringArray(R.array.log_levels_values), defaultLogLevel);
-
-        logLevels[index] = logLevels[index] + " " + getString(R.string.default_in_parens);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
 
         builder.setTitle(R.string.log_level)
                 .setNegativeButton(android.R.string.cancel, null)

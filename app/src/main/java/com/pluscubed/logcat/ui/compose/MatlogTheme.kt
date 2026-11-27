@@ -8,9 +8,12 @@ package com.pluscubed.logcat.ui.compose
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -19,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import org.omnirom.logcat.R
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MatlogTheme(content: @Composable () -> Unit) {
     val context = LocalContext.current
@@ -27,7 +31,7 @@ fun MatlogTheme(content: @Composable () -> Unit) {
     } else {
         dynamicLightColorScheme(context)
     }
-    MaterialTheme(colorScheme = colorScheme) {
+    MaterialExpressiveTheme(colorScheme = colorScheme, motionScheme = MotionScheme.expressive()) {
         Surface(color = MaterialTheme.colorScheme.background, content = content)
     }
 }
