@@ -10,11 +10,12 @@ import java.util.Locale
 object LogcatHelper {
 
     const val BUFFER_MAIN = "main"
-    const val BUFFER_EVENTS = "events"
-    const val BUFFER_RADIO = "radio"
+    const val BUFFER_SYSTEM = "system"
+    const val BUFFER_CRASH = "crash"
 
-    // "main" maps to logcat's default set so crash output stays visible
-    private val MAIN_BUFFERS = listOf("main", "system", "crash")
+    // what logcat reads when no buffer is given
+    @JvmField
+    val DEFAULT_BUFFERS: Set<String> = setOf(BUFFER_MAIN, BUFFER_SYSTEM, BUFFER_CRASH)
 
     @JvmStatic
     fun buildArgs(
@@ -23,10 +24,8 @@ object LogcatHelper {
         filterSpecs: List<String> = emptyList(),
     ): List<String> {
         val args = mutableListOf("logcat", "-v", "time", "-v", "uid")
-        if (buffers.isNotEmpty() && !(buffers.size == 1 && buffers.contains(BUFFER_MAIN))) {
-            buffers.flatMap { if (it == BUFFER_MAIN) MAIN_BUFFERS else listOf(it) }
-                .distinct()
-                .forEach { args += listOf("-b", it) }
+        if (buffers.toSet() != DEFAULT_BUFFERS) {
+            buffers.distinct().forEach { args += listOf("-b", it) }
         }
         if (since != null) {
             args += listOf("-T", since)

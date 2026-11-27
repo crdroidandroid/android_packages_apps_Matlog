@@ -77,7 +77,7 @@ class CrashMonitorService : Service() {
         try {
             while (currentCoroutineContext().isActive) {
                 val logcat = try {
-                    LogcatReader.open(listOf(LogcatHelper.BUFFER_MAIN), since, CRASH_FILTER_SPECS)
+                    LogcatReader.open(LogcatHelper.DEFAULT_BUFFERS, since, CRASH_FILTER_SPECS)
                 } catch (e: IOException) {
                     Log.w(TAG, "Unable to start logcat", e)
                     null

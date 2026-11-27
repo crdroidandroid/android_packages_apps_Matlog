@@ -2,18 +2,32 @@
 
     <string-array name="pref_buffer_choices">
         <item>@string/pref_buffer_choice_main</item>
+        <item>@string/matlog_buffer_system</item>
+        <item>@string/matlog_buffer_crash</item>
         <item>@string/pref_buffer_choice_events</item>
         <item>@string/pref_buffer_choice_radio</item>
+        <item>@string/matlog_buffer_security</item>
+        <item>@string/matlog_buffer_kernel</item>
     </string-array>
 
     <string-array name="pref_buffer_choice_values">
         <item>@string/pref_buffer_choice_main_value</item>
+        <item>@string/matlog_buffer_system_value</item>
+        <item>@string/matlog_buffer_crash_value</item>
         <item>@string/pref_buffer_choice_events_value</item>
         <item>@string/pref_buffer_choice_radio_value</item>
+        <item>@string/matlog_buffer_security_value</item>
+        <item>@string/matlog_buffer_kernel_value</item>
     </string-array>
 
     <string-array name="pref_buffer_choice_values_default">
         <item>@string/pref_buffer_choice_main_value</item>
+        <item>@string/matlog_buffer_system_value</item>
+        <item>@string/matlog_buffer_crash_value</item>
+        <item>@string/pref_buffer_choice_events_value</item>
+        <item>@string/pref_buffer_choice_radio_value</item>
+        <item>@string/matlog_buffer_security_value</item>
+        <item>@string/matlog_buffer_kernel_value</item>
     </string-array>
 
     <string-array name="log_levels">

@@ -309,6 +309,14 @@
     <string name="matlog_saved_logs_sort_ascending">Ascending</string>
     <string name="matlog_saved_logs_imported">Saved a copy to saved logs</string>
     <string name="matlog_saved_logs_import_failed">Unable to open the log</string>
+    <string name="matlog_buffer_system_value" translatable="false">system</string>
+    <string name="matlog_buffer_crash_value" translatable="false">crash</string>
+    <string name="matlog_buffer_security_value" translatable="false">security</string>
+    <string name="matlog_buffer_kernel_value" translatable="false">kernel</string>
+    <string name="matlog_buffer_system">System</string>
+    <string name="matlog_buffer_crash">Crash</string>
+    <string name="matlog_buffer_security">Security</string>
+    <string name="matlog_buffer_kernel">Kernel</string>
     <string name="matlog_scroll_to_top">Scroll to top</string>
     <string name="matlog_scroll_to_bottom">Scroll to bottom</string>
 </resources>
