@@ -70,6 +70,7 @@ import com.pluscubed.logcat.filter.FilterRepository;
 import com.pluscubed.logcat.filter.FilterSet;
 import com.pluscubed.logcat.filter.FiltersActivity;
 import com.pluscubed.logcat.reader.DmesgReader;
+import com.pluscubed.logcat.reader.LogcatReader;
 import com.pluscubed.logcat.reader.LogcatSession;
 import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
@@ -1340,6 +1341,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         new AlertDialog.Builder(LogcatActivity.this)
                 .setTitle(R.string.save_log_zip)
+                .setMessage(R.string.matlog_save_zip_summary)
                 .setView(includeDeviceInfoView)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -1380,9 +1382,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private void exportLogZip(Uri uri) {
         final boolean includeDeviceInfo = PreferenceHelper.getIncludeDeviceInfoPreference(this);
         final String openLog = mCurrentlyOpenLog;
-        final List<CharSequence> lines = openLog == null ? getCurrentLogAsListOfStrings() : null;
         LogExporter.export(this, uri, out ->
-                SaveLogHelper.writeZip(out, collectLogFiles(openLog, lines, includeDeviceInfo)));
+                SaveLogHelper.writeZip(out, collectLogFiles(openLog, includeDeviceInfo)));
     }
 
     @WorkerThread
@@ -1442,15 +1443,22 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     @WorkerThread
-    private List<File> collectLogFiles(String openLog, List<CharSequence> lines, boolean includeDeviceInfo) {
+    private List<File> collectLogFiles(String openLog, boolean includeDeviceInfo) {
         List<File> files = new ArrayList<>();
         SaveLogHelper.cleanTemp(this);
 
-        if (openLog != null) {
+        files.add(SaveLogHelper.saveTemporaryFile(this,
+                SaveLogHelper.TEMP_LOGCAT_FILENAME, null, LogcatReader.dumpAll(this)));
+
+        List<CharSequence> dmesg = DmesgHelper.getDmsg();
+        if (!dmesg.isEmpty()) {
+            files.add(SaveLogHelper.saveTemporaryFile(this, SaveLogHelper.TEMP_DMESG_FILENAME, null, dmesg));
+        }
+
+        // a zip can't hold two entries with the same name
+        if (openLog != null && !openLog.equals(SaveLogHelper.TEMP_LOGCAT_FILENAME)
+                && !openLog.equals(SaveLogHelper.TEMP_DMESG_FILENAME)) {
             files.add(SaveLogHelper.getFile(openLog));
-        } else {
-            files.add(SaveLogHelper.saveTemporaryFile(this,
-                    SaveLogHelper.createLogFilename(), null, lines));
         }
 
         if (includeDeviceInfo) {

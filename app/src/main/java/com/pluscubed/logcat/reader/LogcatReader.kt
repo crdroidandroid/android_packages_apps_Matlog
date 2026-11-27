@@ -6,8 +6,10 @@
 package com.pluscubed.logcat.reader
 
 import android.content.Context
+import android.util.Log
 import com.pluscubed.logcat.helper.LogcatHelper
 import com.pluscubed.logcat.helper.PreferenceHelper
+import org.omnirom.logcat.R
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -36,6 +38,27 @@ class LogcatReader private constructor(private val process: Process) : LineReade
     }
 
     companion object {
+        private const val TAG = "LogcatReader"
+
+        // everything logcat still holds, across all buffers
+        @JvmStatic
+        fun dumpAll(context: Context): List<CharSequence> {
+            val buffers = context.resources.getStringArray(R.array.pref_buffer_choice_values).toList()
+            return try {
+                val process = ProcessBuilder(LogcatHelper.buildArgs(buffers, dump = true))
+                    .redirectError(ProcessBuilder.Redirect.to(File("/dev/null")))
+                    .start()
+                try {
+                    process.inputStream.bufferedReader(Charsets.UTF_8).readLines()
+                } finally {
+                    process.destroy()
+                }
+            } catch (e: IOException) {
+                Log.w(TAG, "Unable to dump logcat", e)
+                emptyList()
+            }
+        }
+
         @JvmStatic
         @JvmOverloads
         @Throws(IOException::class)

@@ -34,7 +34,7 @@ object LogExporter {
     fun textFilename(): String = SaveLogHelper.createLogFilename()
 
     @JvmStatic
-    fun zipFilename(): String = SaveLogHelper.createLogBasename() + ".zip"
+    fun zipFilename(): String = SaveLogHelper.createZipFilename()
 
     @JvmStatic
     fun exportText(activity: ComponentActivity, uri: Uri, text: CharSequence) {

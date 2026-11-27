@@ -22,8 +22,12 @@ object LogcatHelper {
         buffers: Collection<String>,
         since: String? = null,
         filterSpecs: List<String> = emptyList(),
+        dump: Boolean = false,
     ): List<String> {
         val args = mutableListOf("logcat", "-v", "time", "-v", "uid")
+        if (dump) {
+            args += "-d"
+        }
         if (buffers.toSet() != DEFAULT_BUFFERS) {
             buffers.distinct().forEach { args += listOf("-b", it) }
         }
