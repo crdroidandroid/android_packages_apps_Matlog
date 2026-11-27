@@ -89,18 +89,24 @@ class CrashDetector(private val listener: Listener) {
 
     private inner class JavaCollector : Collector(CrashType.JAVA) {
         override fun isStart(line: LogLine) =
-            line.cleanTag == "AndroidRuntime" && line.output.startsWith("FATAL EXCEPTION: ")
+            line.cleanTag == "AndroidRuntime" &&
+                (line.output.startsWith("FATAL EXCEPTION: ") || line.output.startsWith(SYSTEM_FATAL))
 
         override fun belongsTo(first: LogLine, line: LogLine) =
             line.cleanTag == "AndroidRuntime" && line.processId == first.processId
 
-        // "Process: com.example.app, PID: 1234"
-        override fun packageName(lines: List<LogLine>) = lines.firstNotNullOfOrNull { line ->
-            line.output.takeIf { it.startsWith("Process: ") }
-                ?.removePrefix("Process: ")
-                ?.substringBefore(',')
-                ?.trim()
-        }
+        // "Process: com.example.app, PID: 1234"; system_server crashes have no such line
+        override fun packageName(lines: List<LogLine>) =
+            if (lines.firstOrNull()?.output?.startsWith(SYSTEM_FATAL) == true) {
+                SYSTEM_PACKAGE
+            } else {
+                lines.firstNotNullOfOrNull { line ->
+                    line.output.takeIf { it.startsWith("Process: ") }
+                        ?.removePrefix("Process: ")
+                        ?.substringBefore(',')
+                        ?.trim()
+                }
+            }
     }
 
     private inner class NativeCollector : Collector(CrashType.NATIVE) {
@@ -139,6 +145,8 @@ class CrashDetector(private val listener: Listener) {
     private companion object {
         const val NATIVE_HEADER = "*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***"
         const val UNKNOWN_PACKAGE = "unknown"
+        const val SYSTEM_FATAL = "*** FATAL EXCEPTION IN SYSTEM PROCESS: "
+        const val SYSTEM_PACKAGE = "android"
         const val MAX_GAP = 30
         const val MAX_LINES = 1000
         const val IDLE_TIMEOUT_MS = 1500L
