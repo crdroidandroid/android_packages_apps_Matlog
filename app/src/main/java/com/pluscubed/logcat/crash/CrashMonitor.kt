@@ -11,10 +11,11 @@ import androidx.preference.PreferenceManager
 import com.pluscubed.logcat.data.LogLine
 import org.omnirom.logcat.R
 
-class CrashMonitor(context: Context) {
+class CrashMonitor @JvmOverloads constructor(context: Context, trackExceptions: Boolean = true) {
 
     private val appContext = context.applicationContext
     private val repository = CrashRepository.get(appContext)
+    private val exceptions = if (trackExceptions) ExceptionTracker(appContext) else null
 
     private val detector = CrashDetector { type, packageName, timestamp, lines, live ->
         val crash = Crash(
@@ -31,11 +32,15 @@ class CrashMonitor(context: Context) {
     }
 
     fun process(line: LogLine, live: Boolean) = synchronized(detector) {
-        detector.process(line, live, SystemClock.elapsedRealtime())
+        val now = SystemClock.elapsedRealtime()
+        detector.process(line, live, now)
+        exceptions?.process(line, now)
     }
 
     fun onIdle() = synchronized(detector) {
-        detector.onIdle(SystemClock.elapsedRealtime())
+        val now = SystemClock.elapsedRealtime()
+        detector.onIdle(now)
+        exceptions?.onIdle(now)
     }
 
     companion object {

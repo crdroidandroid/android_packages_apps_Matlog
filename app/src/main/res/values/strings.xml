@@ -182,6 +182,26 @@
     <string name="matlog_crash_delete">Delete</string>
     <string name="matlog_crash_clear_all">Clear all</string>
     <string name="matlog_crash_clear_all_message">Remove all detected crashes?</string>
+    <string name="matlog_pref_exception_monitor" translatable="false">matlog_exception_monitor</string>
+    <string name="matlog_pref_exception_monitor_title">Track exceptions in background</string>
+    <string name="matlog_pref_exception_monitor_summary">Also record exceptions that apps catch and log while Matlog is closed. Uses more battery.</string>
+    <string name="matlog_exceptions">Exceptions</string>
+    <string name="matlog_exceptions_empty">No exceptions recorded. Exceptions that apps catch and log appear here while the log is open, or in the background when enabled in settings.</string>
+    <string name="matlog_exceptions_clear_all_message">Remove all recorded exceptions?</string>
+    <string name="matlog_exceptions_search">Search exceptions</string>
+    <string name="matlog_exceptions_sort">Sort</string>
+    <string name="matlog_exceptions_sort_last_seen">Last seen</string>
+    <string name="matlog_exceptions_sort_count">Most frequent</string>
+    <string name="matlog_exceptions_sort_app">App</string>
+    <string name="matlog_exception_count">×%1$d</string>
+    <string name="matlog_exception_seen">Seen %1$d times · first %2$s · last %3$s</string>
+    <string name="matlog_exception_tag">Tag: %1$s</string>
+    <string name="matlog_exception_muted">Muted</string>
+    <string name="matlog_exception_show_in_log">Show in log</string>
+    <string name="matlog_exception_mute">Mute</string>
+    <string name="matlog_exception_unmute">Unmute</string>
+    <string name="matlog_exception_exclude_tag">Exclude tag</string>
+    <string name="matlog_exception_share_subject">Exception in %1$s</string>
     <string name="matlog_back">Back</string>
     <string name="matlog_more_options">More options</string>
     <string name="matlog_saved_searches">Saved searches</string>

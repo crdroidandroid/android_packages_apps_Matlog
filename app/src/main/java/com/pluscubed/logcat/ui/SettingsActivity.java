@@ -108,7 +108,8 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                         if (getString(R.string.matlog_pref_crash_detection).equals(key)
-                                || getString(R.string.matlog_pref_crash_monitor_service).equals(key)) {
+                                || getString(R.string.matlog_pref_crash_monitor_service).equals(key)
+                                || getString(R.string.matlog_pref_exception_monitor).equals(key)) {
                             CrashMonitorService.update(requireContext());
                         }
                     }

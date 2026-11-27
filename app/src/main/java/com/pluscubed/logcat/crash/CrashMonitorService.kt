@@ -38,6 +38,7 @@ class CrashMonitorService : Service() {
 
     @Volatile
     private var reader: LogcatReader? = null
+    private var trackingExceptions: Boolean? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -51,8 +52,13 @@ class CrashMonitorService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
-        if (job == null) {
-            job = scope.launch { monitor() }
+        // a changed exception setting needs a logcat with different filters
+        val trackExceptions = ExceptionTracker.isBackgroundEnabled(this)
+        if (job == null || trackExceptions != trackingExceptions) {
+            job?.cancel()
+            reader?.killQuietly()
+            trackingExceptions = trackExceptions
+            job = scope.launch { monitor(trackExceptions) }
         }
         return START_STICKY
     }
@@ -65,8 +71,9 @@ class CrashMonitorService : Service() {
         super.onDestroy()
     }
 
-    private suspend fun monitor() {
-        val monitor = CrashMonitor(this)
+    private suspend fun monitor(trackExceptions: Boolean) {
+        val monitor = CrashMonitor(this, trackExceptions)
+        val filterSpecs = if (trackExceptions) EXCEPTION_FILTER_SPECS else CRASH_FILTER_SPECS
         val idleJob = scope.launch {
             while (isActive) {
                 delay(IDLE_CHECK_MS)
@@ -77,7 +84,7 @@ class CrashMonitorService : Service() {
         try {
             while (currentCoroutineContext().isActive) {
                 val logcat = try {
-                    LogcatReader.open(LogcatHelper.DEFAULT_BUFFERS, since, CRASH_FILTER_SPECS)
+                    LogcatReader.open(LogcatHelper.DEFAULT_BUFFERS, since, filterSpecs)
                 } catch (e: IOException) {
                     Log.w(TAG, "Unable to start logcat", e)
                     null
@@ -153,6 +160,9 @@ class CrashMonitorService : Service() {
             "DEBUG:F",
             "*:S",
         )
+
+        // apps log caught exceptions at warning level and above
+        private val EXCEPTION_FILTER_SPECS = listOf("*:W")
 
         @JvmStatic
         fun isEnabled(context: Context): Boolean =
