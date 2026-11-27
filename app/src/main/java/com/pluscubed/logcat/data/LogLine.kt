@@ -29,7 +29,7 @@ class LogLine {
     // seconds since boot, only set for kernel lines
     var uptime: String? = null
         private set
-    private var kernelPriority = 0
+    private var kernelPriority = -1
     private var hasKernelTag = false
 
     val isKernel: Boolean
@@ -47,8 +47,8 @@ class LogLine {
             }
             if (isKernel) {
                 return buildString {
-                    append('[').append(uptime!!.padStart(KERNEL_UPTIME_WIDTH)).append("] <")
-                        .append(kernelPriority).append("> ")
+                    append('[').append(uptime!!.padStart(KERNEL_UPTIME_WIDTH)).append("] ")
+                    if (kernelPriority >= 0) append('<').append(kernelPriority).append("> ")
                     if (hasKernelTag) append(tag).append(": ")
                     append(logOutput)
                 }
@@ -81,8 +81,10 @@ class LogLine {
         private val LOG_PATTERN: Pattern =
             Pattern.compile("(\\w)/([^(]+)\\(\\s*(?:([^\\s:()]+):)?\\s*(\\d+)(?:\\*\\s*\\d+)?\\): ")
 
-        // "[    12.345678] <6> message", as written by the matlog_dmesg helper
-        private val KERNEL_PATTERN: Pattern = Pattern.compile("\\[\\s*(\\d+)\\.(\\d{6})] <([0-7])> ?")
+        // "[    12.345678] <6> message" from the helper, "<6>[    12.345678] message" from pstore
+        // panic dumps and "[    12.345678] message" from the pstore console
+        private val KERNEL_PATTERN: Pattern =
+            Pattern.compile("(?:<([0-7])>)?\\[\\s*(\\d+)\\.(\\d{6})](?: <([0-7])>)? ?")
 
         // a leading "subsystem:" or "driver device:" becomes the tag
         private val KERNEL_TAG_PATTERN: Pattern = Pattern.compile("([^\\s:\\[\\]]{1,40}(?: [^\\s:\\[\\]]{1,40})?): ")
@@ -97,7 +99,7 @@ class LogLine {
 
         @JvmStatic
         fun newLogLine(originalLine: String, expanded: Boolean): LogLine {
-            if (originalLine.startsWith('[')) {
+            if (originalLine.startsWith('[') || originalLine.startsWith('<')) {
                 newKernelLine(originalLine, expanded)?.let { return it }
             }
 
@@ -127,10 +129,10 @@ class LogLine {
 
         @JvmStatic
         fun kernelUptimeMicros(line: String): Long? {
-            if (!line.startsWith('[')) return null
+            if (!line.startsWith('[') && !line.startsWith('<')) return null
             val matcher = KERNEL_PATTERN.matcher(line)
             if (!matcher.lookingAt()) return null
-            return matcher.group(1)!!.toLongOrNull()?.let { it * 1_000_000 + matcher.group(2)!!.toLong() }
+            return matcher.group(2)!!.toLongOrNull()?.let { it * 1_000_000 + matcher.group(3)!!.toLong() }
         }
 
         private fun newKernelLine(originalLine: String, expanded: Boolean): LogLine? {
@@ -138,8 +140,8 @@ class LogLine {
             if (!matcher.lookingAt()) return null
             val logLine = LogLine()
             logLine.isExpanded = expanded
-            logLine.uptime = "${matcher.group(1)}.${matcher.group(2)}"
-            logLine.kernelPriority = matcher.group(3)!!.toInt()
+            logLine.uptime = "${matcher.group(2)}.${matcher.group(3)}"
+            logLine.kernelPriority = (matcher.group(1) ?: matcher.group(4))?.toInt() ?: -1
             logLine.logLevel = kernelLogLevel(logLine.kernelPriority)
 
             val message = originalLine.substring(matcher.end())
@@ -156,6 +158,7 @@ class LogLine {
         }
 
         private fun kernelLogLevel(priority: Int): Int = when (priority) {
+            -1 -> Log.INFO
             0, 1, 2 -> LogLineAdapterUtil.LOG_WTF
             3 -> Log.ERROR
             4 -> Log.WARN

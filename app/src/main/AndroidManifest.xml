@@ -84,6 +84,11 @@
             android:label="@string/matlog_saved_logs" />
 
         <activity
+            android:name="com.pluscubed.logcat.ui.PstoreActivity"
+            android:exported="false"
+            android:label="@string/matlog_pstore" />
+
+        <activity
             android:name="com.pluscubed.logcat.ui.ExtendedCopyActivity"
             android:exported="false"
             android:label="@string/matlog_extended_copy" />

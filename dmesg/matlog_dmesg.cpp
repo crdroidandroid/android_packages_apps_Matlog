@@ -3,11 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Streams the kernel log to clients of the matlog_dmesg socket.
-// A client sends one byte: 'd' dumps the current log, 'f' also follows new messages.
+// Serves the kernel log and pstore files to clients of the matlog_dmesg socket.
+// Commands: 'd' dumps the kernel log, 'f' also follows it, 'l' lists pstore files
+// as "name\tsize\tmtime" lines and 'p' followed by "name\n" sends one pstore file.
 
 #define LOG_TAG "matlog_dmesg"
 
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -15,14 +17,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
+#include <memory>
+#include <string>
 #include <thread>
 
 #include <android-base/logging.h>
+#include <android-base/stringprintf.h>
 #include <android-base/unique_fd.h>
 #include <cutils/sockets.h>
 
+using android::base::StringPrintf;
 using android::base::unique_fd;
 
 namespace {
@@ -30,6 +37,10 @@ namespace {
 constexpr char kSocketName[] = "matlog_dmesg";
 constexpr char kCommandDump = 'd';
 constexpr char kCommandFollow = 'f';
+constexpr char kCommandPstoreList = 'l';
+constexpr char kCommandPstoreFile = 'p';
+constexpr char kPstoreDir[] = "/sys/fs/pstore";
+constexpr size_t kMaxNameLength = 255;
 constexpr int kCommandTimeoutMs = 5000;
 constexpr size_t kRecordSize = 8192;
 
@@ -71,9 +82,58 @@ bool ReadCommand(int client, char* command) {
     return TEMP_FAILURE_RETRY(read(client, command, 1)) == 1;
 }
 
+bool ReadName(int client, std::string* name) {
+    char c;
+    while (ReadCommand(client, &c)) {
+        if (c == '\n') return true;
+        if (name->size() >= kMaxNameLength) return false;
+        name->push_back(c);
+    }
+    return false;
+}
+
+void ListPstore(int client) {
+    std::unique_ptr<DIR, decltype(&closedir)> dir(opendir(kPstoreDir), closedir);
+    if (!dir) return;
+    while (dirent* entry = readdir(dir.get())) {
+        if (entry->d_name[0] == '.') continue;
+        std::string path = StringPrintf("%s/%s", kPstoreDir, entry->d_name);
+        struct stat st;
+        if (stat(path.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) continue;
+        std::string line = StringPrintf("%s\t%lld\t%lld\n", entry->d_name,
+                                        static_cast<long long>(st.st_size),
+                                        static_cast<long long>(st.st_mtime));
+        if (!WriteAll(client, line.data(), line.size())) return;
+    }
+}
+
+void SendPstoreFile(int client, const std::string& name) {
+    if (name.empty() || name[0] == '.' || name.find('/') != std::string::npos) return;
+    std::string path = StringPrintf("%s/%s", kPstoreDir, name.c_str());
+    unique_fd fd(TEMP_FAILURE_RETRY(open(path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC)));
+    if (fd < 0) {
+        PLOG(ERROR) << "Unable to open " << path;
+        return;
+    }
+    char buffer[kRecordSize];
+    ssize_t length;
+    while ((length = TEMP_FAILURE_RETRY(read(fd.get(), buffer, sizeof(buffer)))) > 0) {
+        if (!WriteAll(client, buffer, length)) return;
+    }
+}
+
 void Serve(unique_fd client) {
     char command;
     if (!ReadCommand(client.get(), &command)) return;
+    if (command == kCommandPstoreList) {
+        ListPstore(client.get());
+        return;
+    }
+    if (command == kCommandPstoreFile) {
+        std::string name;
+        if (ReadName(client.get(), &name)) SendPstoreFile(client.get(), name);
+        return;
+    }
     bool follow = command == kCommandFollow;
     if (!follow && command != kCommandDump) return;
 

@@ -14,7 +14,7 @@ import java.io.File
 import java.io.IOException
 
 // reads the kernel log from the matlog_dmesg helper
-class DmesgReader private constructor(private val socket: LocalSocket) : LineReader {
+class DmesgReader internal constructor(private val socket: LocalSocket) : LineReader {
 
     private val reader: BufferedReader = socket.inputStream.bufferedReader(Charsets.UTF_8)
 
@@ -49,13 +49,16 @@ class DmesgReader private constructor(private val socket: LocalSocket) : LineRea
         @JvmStatic
         @Throws(IOException::class)
         fun open(since: String?): LineReader =
-            if (hasHelper()) connect(COMMAND_FOLLOW) else LogcatReader.open(listOf(KERNEL_BUFFER), since)
+            if (hasHelper()) DmesgReader(connect(COMMAND_FOLLOW.toString()))
+            else LogcatReader.open(listOf(KERNEL_BUFFER), since)
 
         @JvmStatic
         fun dump(): List<String> {
             if (!hasHelper()) return emptyList()
             return try {
-                connect(COMMAND_DUMP).use { reader -> generateSequence { reader.readLine() }.toList() }
+                DmesgReader(connect(COMMAND_DUMP.toString())).use { reader ->
+                    generateSequence { reader.readLine() }.toList()
+                }
             } catch (e: IOException) {
                 Log.w(TAG, "Unable to read the kernel log", e)
                 emptyList()
@@ -63,17 +66,17 @@ class DmesgReader private constructor(private val socket: LocalSocket) : LineRea
         }
 
         @Throws(IOException::class)
-        private fun connect(command: Char): DmesgReader {
+        internal fun connect(command: String): LocalSocket {
             val socket = LocalSocket()
             try {
                 socket.connect(LocalSocketAddress(SOCKET_NAME, LocalSocketAddress.Namespace.RESERVED))
-                socket.outputStream.write(command.code)
+                socket.outputStream.write(command.toByteArray(Charsets.UTF_8))
                 socket.outputStream.flush()
             } catch (e: IOException) {
                 socket.close()
                 throw e
             }
-            return DmesgReader(socket)
+            return socket
         }
     }
 }

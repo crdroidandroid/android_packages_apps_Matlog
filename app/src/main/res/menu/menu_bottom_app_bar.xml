@@ -40,6 +40,10 @@
         android:title="@string/matlog_kernel_log" />
 
     <item
+        android:id="@+id/menu_pstore"
+        android:title="@string/matlog_pstore" />
+
+    <item
         android:id="@+id/menu_crashes"
         android:title="@string/matlog_crashes" />
 

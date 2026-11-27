@@ -318,7 +318,16 @@
     <string name="matlog_buffer_security">Security</string>
     <string name="matlog_buffer_kernel">Kernel</string>
     <string name="matlog_kernel_log">Kernel log</string>
-    <string name="matlog_save_zip_summary">Saves every logcat buffer and the kernel log</string>
+    <string name="matlog_save_zip_summary">Saves every logcat buffer, the kernel log and pstore logs</string>
+    <string name="matlog_pstore">Pstore logs</string>
+    <string name="matlog_pstore_refresh">Refresh</string>
+    <string name="matlog_pstore_empty">No pstore logs. The kernel keeps them across a reboot, for example after a crash or panic, when ramoops is set up.</string>
+    <string name="matlog_pstore_read_failed">Unable to read the pstore log</string>
+    <string name="matlog_pstore_console">Kernel log from the previous boot</string>
+    <string name="matlog_pstore_dmesg">Kernel panic or oops</string>
+    <string name="matlog_pstore_pmsg">Logcat from the previous boot</string>
+    <string name="matlog_pstore_ftrace">Function trace</string>
+    <string name="matlog_pstore_other">Pstore log</string>
     <string name="matlog_scroll_to_top">Scroll to top</string>
     <string name="matlog_scroll_to_bottom">Scroll to bottom</string>
 </resources>

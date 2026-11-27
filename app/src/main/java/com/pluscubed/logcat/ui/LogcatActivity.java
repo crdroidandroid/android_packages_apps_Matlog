@@ -72,6 +72,8 @@ import com.pluscubed.logcat.filter.FiltersActivity;
 import com.pluscubed.logcat.reader.DmesgReader;
 import com.pluscubed.logcat.reader.LogcatReader;
 import com.pluscubed.logcat.reader.LogcatSession;
+import com.pluscubed.logcat.reader.PstoreFile;
+import com.pluscubed.logcat.reader.PstoreReader;
 import com.pluscubed.logcat.util.ArrayUtil;
 import com.pluscubed.logcat.util.LogLineAdapterUtil;
 import com.pluscubed.logcat.util.StringUtil;
@@ -315,6 +317,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                     case R.id.menu_kernel_log:
                         setKernelMode(!mKernelMode);
                         return true;
+                    case R.id.menu_pstore:
+                        startActivity(PstoreActivity.intent(LogcatActivity.this));
+                        return true;
                     case R.id.menu_record_log:
                         showRecordLogDialog();
                         return true;
@@ -344,8 +349,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             }
         });
 
-        ((BottomAppBar) findViewById(R.id.bottomAppBar)).getMenu().findItem(R.id.menu_kernel_log)
-                .setVisible(DmesgReader.isAvailable());
+        Menu bottomMenu = ((BottomAppBar) findViewById(R.id.bottomAppBar)).getMenu();
+        bottomMenu.findItem(R.id.menu_kernel_log).setVisible(DmesgReader.isAvailable());
+        bottomMenu.findItem(R.id.menu_pstore).setVisible(PstoreReader.isAvailable());
 
         mCollapsedMode = !PreferenceHelper.getExpandedByDefaultPreference(this);
 
@@ -1453,6 +1459,14 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         List<CharSequence> dmesg = DmesgHelper.getDmsg();
         if (!dmesg.isEmpty()) {
             files.add(SaveLogHelper.saveTemporaryFile(this, SaveLogHelper.TEMP_DMESG_FILENAME, null, dmesg));
+        }
+
+        for (PstoreFile pstoreFile : PstoreReader.list()) {
+            List<CharSequence> pstoreLines = new ArrayList<>(PstoreReader.read(pstoreFile));
+            if (!pstoreLines.isEmpty()) {
+                files.add(SaveLogHelper.saveTemporaryFile(this,
+                        "pstore-" + pstoreFile.getName() + ".txt", null, pstoreLines));
+            }
         }
 
         // a zip can't hold two entries with the same name
