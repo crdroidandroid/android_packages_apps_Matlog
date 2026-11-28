@@ -26,7 +26,7 @@ import org.omnirom.logcat.R
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun MatlogTheme(content: @Composable () -> Unit) {
+fun MatlogTheme(surface: Boolean = true, content: @Composable () -> Unit) {
     val context = LocalContext.current
     val colorScheme = if (isSystemInDarkTheme()) {
         dynamicDarkColorScheme(context)
@@ -34,7 +34,11 @@ fun MatlogTheme(content: @Composable () -> Unit) {
         dynamicLightColorScheme(context)
     }
     MaterialExpressiveTheme(colorScheme = colorScheme, motionScheme = MotionScheme.expressive()) {
-        Surface(color = MaterialTheme.colorScheme.background, content = content)
+        if (surface) {
+            Surface(color = MaterialTheme.colorScheme.background, content = content)
+        } else {
+            content()
+        }
     }
 }
 

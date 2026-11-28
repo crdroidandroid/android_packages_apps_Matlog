@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: crDroid Android Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <item name="menu_export_log" type="id" />
+    <item name="menu_kernel_log" type="id" />
+    <item name="menu_pstore" type="id" />
+    <item name="menu_crashes" type="id" />
+    <item name="menu_saved_searches" type="id" />
+    <item name="menu_log_level" type="id" />
+    <item name="menu_search_regex" type="id" />
+    <item name="menu_selection_export" type="id" />
+    <item name="menu_selection_extended_copy" type="id" />
+</resources>

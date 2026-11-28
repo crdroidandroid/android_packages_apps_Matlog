@@ -25,13 +25,9 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/menu_selection_export"
-        android:title="@string/matlog_export"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_selection_extended_copy"
-        android:title="@string/matlog_extended_copy"
-        app:showAsAction="never" />
+        android:id="@+id/menu_more"
+        android:icon="@drawable/ic_more_vert"
+        android:title="@string/matlog_more_options"
+        app:showAsAction="always" />
 
 </menu>

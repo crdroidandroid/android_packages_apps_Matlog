@@ -99,7 +99,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.core.view.WindowCompat;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
@@ -302,61 +301,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         mSearchBar.setOnClickListener(v -> openSearch(true));
 
 
-        ((BottomAppBar) findViewById(R.id.bottomAppBar)).setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.menu_log_level:
-                        showLogLevelDialog();
-                        return true;
-                    case R.id.menu_open_log:
-                        startActivity(SavedLogsActivity.intent(LogcatActivity.this));
-                        return true;
-                    case R.id.menu_save_log:
-                        showSaveLogDialog();
-                        return true;
-                    case R.id.menu_export_log:
-                        mExportLogLauncher.launch(mKernelMode
-                                ? SaveLogHelper.createKernelLogFilename() : LogExporter.textFilename());
-                        return true;
-                    case R.id.menu_kernel_log:
-                        setKernelMode(!mKernelMode);
-                        return true;
-                    case R.id.menu_pstore:
-                        startActivity(PstoreActivity.intent(LogcatActivity.this));
-                        return true;
-                    case R.id.menu_record_log:
-                        showRecordLogDialog();
-                        return true;
-                    case R.id.menu_send_log_zip:
-                        showSendLogDialog();
-                        return true;
-                    case R.id.menu_save_log_zip:
-                        showSaveLogZipDialog();
-                        return true;
-                    case android.R.id.home:
-                        onBackPressed();
-                        return true;
-                    case R.id.menu_crashes:
-                        startActivity(CrashesActivity.intent(LogcatActivity.this));
-                        return true;
-                    case R.id.menu_settings:
-                        startSettingsActivity();
-                        return true;
-                    case R.id.menu_filters:
-                        startActivity(FiltersActivity.intent(LogcatActivity.this));
-                        return true;
-                    case R.id.menu_saved_searches:
-                        showFiltersDialog();
-                        return true;
-                }
-                return false;
-            }
-        });
-
-        Menu bottomMenu = ((BottomAppBar) findViewById(R.id.bottomAppBar)).getMenu();
-        bottomMenu.findItem(R.id.menu_kernel_log).setVisible(DmesgReader.isAvailable());
-        bottomMenu.findItem(R.id.menu_pstore).setVisible(PstoreReader.isAvailable());
+        ((BottomAppBar) findViewById(R.id.bottomAppBar)).setOnMenuItemClickListener(
+                item -> onBottomMenuItemSelected(item.getItemId()));
 
         mCollapsedMode = !PreferenceHelper.getExpandedByDefaultPreference(this);
 
@@ -690,8 +636,13 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private void setUpFindBar() {
         mFindBar = findViewById(R.id.find_bar);
         mFindBar.setNavigationOnClickListener(v -> closeSearch());
-        mFindBar.setOnMenuItemClickListener(this::onOptionsItemSelected);
-        mFindBar.getMenu().findItem(R.id.menu_search_regex).setChecked(mSearchRegex);
+        mFindBar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.menu_more) {
+                LogcatOverflowMenu.showFind(mFindBar, R.id.menu_more, mSearchRegex, this::onFindMenuItemSelected);
+                return true;
+            }
+            return onOptionsItemSelected(item);
+        });
         mFindText = findViewById(R.id.find_text);
         mFindText.setAdapter(mSearchSuggestionsAdapter);
         mFindText.addTextChangedListener(new TextWatcher() {
@@ -843,13 +794,15 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             case R.id.menu_search_next:
                 moveToSearchHit(true);
                 return true;
-            case R.id.menu_search_regex:
-                mSearchRegex = !item.isChecked();
-                item.setChecked(mSearchRegex);
-                search(mSearchingString);
-                return true;
         }
         return false;
+    }
+
+    private void onFindMenuItemSelected(int itemId) {
+        if (itemId == R.id.menu_search_regex) {
+            mSearchRegex = !mSearchRegex;
+            search(mSearchingString);
+        }
     }
 
     @Override
@@ -928,7 +881,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private void setUpSelectionBar() {
         mSelectionBar = findViewById(R.id.selection_bar);
         mSelectionBar.setNavigationOnClickListener(v -> finishSelection());
-        mSelectionBar.setOnMenuItemClickListener(this::onSelectionItemClicked);
+        mSelectionBar.setOnMenuItemClickListener(item -> onSelectionItemClicked(item.getItemId()));
     }
 
     // the selection bar takes the place of the search bar
@@ -974,8 +927,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         return LogSelection.toText(mSelection.selectedIn(mLogListAdapter.getTrueValues()));
     }
 
-    private boolean onSelectionItemClicked(MenuItem item) {
-        switch (item.getItemId()) {
+    private boolean onSelectionItemClicked(int itemId) {
+        switch (itemId) {
             case R.id.menu_selection_select_all:
                 mSelection.toggleAll(mLogListAdapter.getObjects());
                 mLogListAdapter.notifyDataSetChanged();
@@ -997,6 +950,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             case R.id.menu_selection_extended_copy:
                 ExtendedCopyActivity.start(this, selectedText());
                 finishSelection();
+                return true;
+            case R.id.menu_more:
+                LogcatOverflowMenu.showSelection(mSelectionBar, R.id.menu_more, this::onSelectionItemClicked);
                 return true;
         }
         return false;
@@ -1169,6 +1125,64 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 }
             }).start();
         }
+    }
+
+    private boolean onBottomMenuItemSelected(int itemId) {
+        switch (itemId) {
+            case R.id.menu_more:
+                showOverflowMenu();
+                return true;
+            case R.id.menu_log_level:
+                showLogLevelDialog();
+                return true;
+            case R.id.menu_open_log:
+                startActivity(SavedLogsActivity.intent(LogcatActivity.this));
+                return true;
+            case R.id.menu_save_log:
+                showSaveLogDialog();
+                return true;
+            case R.id.menu_export_log:
+                mExportLogLauncher.launch(mKernelMode
+                        ? SaveLogHelper.createKernelLogFilename() : LogExporter.textFilename());
+                return true;
+            case R.id.menu_kernel_log:
+                setKernelMode(!mKernelMode);
+                return true;
+            case R.id.menu_pstore:
+                startActivity(PstoreActivity.intent(LogcatActivity.this));
+                return true;
+            case R.id.menu_record_log:
+                showRecordLogDialog();
+                return true;
+            case R.id.menu_send_log_zip:
+                showSendLogDialog();
+                return true;
+            case R.id.menu_save_log_zip:
+                showSaveLogZipDialog();
+                return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.menu_crashes:
+                startActivity(CrashesActivity.intent(LogcatActivity.this));
+                return true;
+            case R.id.menu_settings:
+                startSettingsActivity();
+                return true;
+            case R.id.menu_filters:
+                startActivity(FiltersActivity.intent(LogcatActivity.this));
+                return true;
+            case R.id.menu_saved_searches:
+                showFiltersDialog();
+                return true;
+        }
+        return false;
+    }
+
+    private void showOverflowMenu() {
+        LogcatOverflowMenu.showMain(findViewById(R.id.bottomAppBar), R.id.menu_more,
+                DmesgReader.isAvailable(), mKernelMode, PstoreReader.isAvailable(),
+                this::onBottomMenuItemSelected);
     }
 
     private void startSettingsActivity() {
@@ -1568,7 +1582,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         });
 
         Menu bottomMenu = ((BottomAppBar) findViewById(R.id.bottomAppBar)).getMenu();
-        bottomMenu.findItem(R.id.menu_kernel_log).setChecked(mKernelMode);
         // recordings only cover logcat
         bottomMenu.findItem(R.id.menu_record_log).setVisible(!mKernelMode);
         supportInvalidateOptionsMenu();

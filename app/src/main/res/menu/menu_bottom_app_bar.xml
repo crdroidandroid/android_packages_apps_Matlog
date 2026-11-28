@@ -31,28 +31,8 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/menu_export_log"
-        android:title="@string/matlog_export" />
-
-    <item
-        android:id="@+id/menu_kernel_log"
-        android:checkable="true"
-        android:title="@string/matlog_kernel_log" />
-
-    <item
-        android:id="@+id/menu_pstore"
-        android:title="@string/matlog_pstore" />
-
-    <item
-        android:id="@+id/menu_crashes"
-        android:title="@string/matlog_crashes" />
-
-    <item
-        android:id="@+id/menu_saved_searches"
-        android:title="@string/matlog_saved_searches" />
-
-    <item
-        android:id="@+id/menu_log_level"
-        android:alphabeticShortcut="@string/log_level"
-        android:title="@string/log_level" />
+        android:id="@+id/menu_more"
+        android:icon="@drawable/ic_more_vert"
+        android:title="@string/matlog_more_options"
+        app:showAsAction="always" />
 </menu>
