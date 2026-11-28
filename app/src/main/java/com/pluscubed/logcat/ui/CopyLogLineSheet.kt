@@ -3,15 +3,40 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+
 package com.pluscubed.logcat.ui
 
-import android.content.Context
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.widget.TextView
-import com.google.android.material.bottomsheet.BottomSheetDialog
+import android.app.Activity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.pluscubed.logcat.data.LogLine
 import com.pluscubed.logcat.helper.LogTextActions
+import com.pluscubed.logcat.ui.compose.ComposeDialogs
+import kotlinx.coroutines.launch
 import org.omnirom.logcat.R
 
 // lets the user copy the whole line or a single field of it
@@ -20,25 +45,9 @@ object CopyLogLineSheet {
     private const val DATE_LENGTH = 5
 
     @JvmStatic
-    fun show(context: Context, line: LogLine) {
-        val dialog = BottomSheetDialog(context)
-        val inflater = LayoutInflater.from(context)
-        val root = inflater.inflate(R.layout.sheet_copy_log_line, null)
-        val container = root.findViewById<ViewGroup>(R.id.copy_fields)
-
-        for ((label, value) in fields(line)) {
-            val item = inflater.inflate(R.layout.item_copy_field, container, false)
-            item.findViewById<TextView>(R.id.copy_field_label).setText(label)
-            item.findViewById<TextView>(R.id.copy_field_value).text = value
-            item.setOnClickListener {
-                LogTextActions.copy(context, value)
-                dialog.dismiss()
-            }
-            container.addView(item)
-        }
-
-        dialog.setContentView(root)
-        dialog.show()
+    fun show(activity: Activity, line: LogLine) {
+        val fields = fields(line)
+        ComposeDialogs.show(activity) { dismiss -> CopySheet(fields, dismiss) { LogTextActions.copy(activity, it) } }
     }
 
     private fun fields(line: LogLine): List<Pair<Int, String>> {
@@ -60,4 +69,68 @@ object CopyLogLineSheet {
         if (line.processId != -1) fields.add(R.string.matlog_column_pid to line.processId.toString())
         return fields
     }
+}
+
+@Composable
+private fun CopySheet(fields: List<Pair<Int, String>>, onDismiss: () -> Unit, onCopy: (String) -> Unit) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.copy_to_clipboard),
+                style = MaterialTheme.typography.titleMediumEmphasized,
+                modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
+            )
+            fields.forEachIndexed { index, (label, value) ->
+                CopyField(stringResource(label), value, fieldShape(index, fields.size)) {
+                    onCopy(value)
+                    scope.launch { sheetState.hide() }.invokeOnCompletion { onDismiss() }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CopyField(label: String, value: String, shape: Shape, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 56.dp)
+            .clip(shape)
+            .background(MaterialTheme.colorScheme.surfaceBright)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+        Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            fontFamily = FontFamily.Monospace,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+private fun fieldShape(index: Int, count: Int): Shape {
+    val outer = 20.dp
+    val inner = 4.dp
+    return RoundedCornerShape(
+        topStart = if (index == 0) outer else inner,
+        topEnd = if (index == 0) outer else inner,
+        bottomStart = if (index == count - 1) outer else inner,
+        bottomEnd = if (index == count - 1) outer else inner,
+    )
 }

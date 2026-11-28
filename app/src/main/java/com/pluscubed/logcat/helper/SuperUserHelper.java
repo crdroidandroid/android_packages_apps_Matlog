@@ -1,23 +1,9 @@
 package com.pluscubed.logcat.helper;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.Html;
-import android.widget.Toast;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import org.omnirom.logcat.R;
 import com.pluscubed.logcat.util.UtilLogger;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -38,35 +24,6 @@ public class SuperUserHelper {
     private static final Pattern SPACES_PATTERN = Pattern.compile("\\s+");
     private static UtilLogger log = new UtilLogger(SuperUserHelper.class);
     private static boolean failedToObtainRoot = true;
-
-    private static void showWarningDialog(final Context context) {
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        handler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                final String command = String.format("adb shell pm grant %s android.permission.READ_LOGS", context.getPackageName());
-                new MaterialAlertDialogBuilder(context)
-                        .setTitle(R.string.no_logs_warning_title)
-                        .setMessage(Html.fromHtml(context.getString(R.string.no_logs_warning, context.getString(R.string.app_name), command)))
-                        .setPositiveButton(android.R.string.ok, null)
-                        .setNeutralButton(R.string.copy_command, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ((ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE))
-                                        .setPrimaryClip(ClipData.newPlainText(context.getString(R.string.adb_command), command));
-                                Toast.makeText(context, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .show();
-            }
-        });
-    }
-
-    private static boolean haveReadLogsPermission(Context context) {
-        return context.getPackageManager().checkPermission("android.permission.READ_LOGS", context.getPackageName()) == PackageManager.PERMISSION_GRANTED;
-    }
 
     private static List<Integer> getAllRelatedPids(final int pid) {
         List<Integer> result = new ArrayList<>();
@@ -167,52 +124,6 @@ public class SuperUserHelper {
                 }
             }
         }
-    }
-
-    public static void requestRoot(final Context context) {
-        // Don't request root when read logs permission is already granted
-        if(haveReadLogsPermission(context)) {
-            failedToObtainRoot = true;
-            return;
-        }
-
-        Handler handler = new Handler(Looper.getMainLooper());
-        Runnable toastRunnable = new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, R.string.toast_request_root, Toast.LENGTH_LONG).show();
-            }
-        };
-        handler.postDelayed(toastRunnable, 200);
-
-        Process process = null;
-        try {
-            // Preform su to get root privileges
-            process = Runtime.getRuntime().exec("su");
-
-            // confirm that we have root
-            DataOutputStream outputStream = new DataOutputStream(process.getOutputStream());
-            outputStream.writeBytes("echo hello\n");
-
-            // Close the terminal
-            outputStream.writeBytes("exit\n");
-            outputStream.flush();
-
-            process.waitFor();
-            if (process.exitValue() != 0) {
-                showWarningDialog(context);
-                failedToObtainRoot = true;
-            } else {
-                // success
-                PreferenceHelper.setJellybeanRootRan(context);
-            }
-
-        } catch (IOException | InterruptedException e) {
-            log.w(e, "Cannot obtain root");
-            showWarningDialog(context);
-            failedToObtainRoot = true;
-        }
-        handler.removeCallbacks(toastRunnable);
     }
 
     public static boolean isFailedToObtainRoot() {

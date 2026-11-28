@@ -1,10 +1,8 @@
 package com.pluscubed.logcat.ui;
 
-import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
@@ -19,43 +17,30 @@ import android.provider.BaseColumns;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filter.FilterListener;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.pluscubed.logcat.data.FilterAdapter;
 import com.pluscubed.logcat.data.LogLine;
 import com.pluscubed.logcat.data.LogLineAdapter;
 import com.pluscubed.logcat.data.LogLineViewHolder;
 import com.pluscubed.logcat.data.LogSelection;
 import com.pluscubed.logcat.data.SavedLog;
 import com.pluscubed.logcat.data.LogSearch;
-import com.pluscubed.logcat.data.SearchCriteria;
 import com.pluscubed.logcat.data.SendLogDetails;
-import com.pluscubed.logcat.data.SortedFilterArrayAdapter;
 import com.pluscubed.logcat.db.CatlogDBHelper;
 import com.pluscubed.logcat.db.FilterItem;
 import com.pluscubed.logcat.helper.BuildHelper;
@@ -97,7 +82,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.core.view.WindowCompat;
@@ -959,23 +943,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showSearchByDialog(final LogLine logLine) {
-        final String tag = logLine.getTag();
-        final int pid = logLine.getProcessId();
-        CharSequence[] items = {
-                getString(R.string.matlog_search_by_item, getString(R.string.filter_choice_tag), tag),
-                getString(R.string.matlog_search_by_item, getString(R.string.filter_choice_pid), Integer.toString(pid)),
-        };
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.filter_choice)
-                .setItems(items, (dialog, which) -> {
-                    if (which == 0) {
-                        setSearchText(SearchCriteria.TAG_KEYWORD + (tag.contains(" ") ? '"' + tag + '"' : tag));
-                    } else {
-                        setSearchText(SearchCriteria.PID_KEYWORD + pid);
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+        LogcatDialogs.showSearchBy(this, logLine.getTag(), logLine.getProcessId(), this::setSearchText);
     }
 
     private void showRecordLogDialog() {
@@ -989,142 +957,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showFiltersDialog() {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.e("t", "Started thread");
-                final List<FilterItem> filters = new ArrayList<>();
-
-                CatlogDBHelper dbHelper = null;
-                try {
-                    dbHelper = new CatlogDBHelper(LogcatActivity.this);
-                    filters.addAll(dbHelper.findFilterItems());
-                } finally {
-                    if (dbHelper != null) {
-                        dbHelper.close();
-                    }
-                }
-
-                Collections.sort(filters);
-
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        final FilterAdapter filterAdapter = new FilterAdapter(LogcatActivity.this, filters);
-                        ListView view = new ListView(LogcatActivity.this);
-                        view.setAdapter(filterAdapter);
-                        view.setDivider(null);
-                        view.setDividerHeight(0);
-                        View footer = getLayoutInflater().inflate(R.layout.list_header_add_filter, view, false);
-                        view.addFooterView(footer);
-
-                        final AlertDialog dialog = new MaterialAlertDialogBuilder(LogcatActivity.this)
-                                .setTitle(R.string.matlog_saved_searches)
-                                .setMessage(R.string.message_filters)
-                                .setView(view)
-                                .setNegativeButton(android.R.string.cancel, null)
-                                .show();
-
-                        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                if (position == parent.getCount() - 1) {
-                                    showAddFilterDialog(filterAdapter);
-                                } else {
-                                    // load filter
-                                    String text = filterAdapter.getItem(position).getText();
-                                    setSearchText(text);
-                                    dialog.dismiss();
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        }).start();
-    }
-
-    private void showAddFilterDialog(final FilterAdapter filterAdapter) {
-
-        // show a popup to add a new filter text
-        LayoutInflater inflater = getLayoutInflater();
-        View v = inflater.inflate(R.layout.dialog_new_filter, null, false);
-        final AutoCompleteTextView editText = v.findViewById(R.id.filter_text);
-
-        // show suggestions as the user types
-        List<String> suggestions = new ArrayList<>(mSearchSuggestionsSet);
-        SortedFilterArrayAdapter<String> suggestionAdapter = new SortedFilterArrayAdapter<>(
-                this, R.layout.list_item_dropdown, suggestions);
-        editText.setAdapter(suggestionAdapter);
-
-        final AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.add_filter)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        handleNewFilterText(editText.getText().toString(), filterAdapter);
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .setView(v)
-                .create();
-
-        // when 'Done' is clicked (i.e. enter button), do the same as when "OK" is clicked
-        editText.setOnEditorActionListener(new OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    handleNewFilterText(editText.getText().toString(), filterAdapter);
-
-                    alertDialog.dismiss();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        editText.requestFocus();
-        alertDialog.show();
-    }
-
-    protected void handleNewFilterText(String text, final FilterAdapter filterAdapter) {
-        final String trimmed = text.trim();
-        if (!TextUtils.isEmpty(trimmed)) {
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    CatlogDBHelper dbHelper = null;
-                    FilterItem item = null;
-                    try {
-                        dbHelper = new CatlogDBHelper(LogcatActivity.this);
-                        item = dbHelper.addFilter(trimmed);
-                    } finally {
-                        if (dbHelper != null) {
-                            dbHelper.close();
-                        }
-                    }
-
-                    final FilterItem finalItem = item;
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (finalItem != null) { // null indicates duplicate
-                                filterAdapter.add(finalItem);
-                                filterAdapter.sort(FilterItem.DEFAULT_COMPARATOR);
-                                filterAdapter.notifyDataSetChanged();
-
-                                addToAutocompleteSuggestions(trimmed);
-                            }
-                        }
-                    });
-
-                }
-            }).start();
-        }
+        LogcatDialogs.showSavedSearches(this, new ArrayList<>(mSearchSuggestionsSet),
+                this::setSearchText, this::addToAutocompleteSuggestions);
     }
 
     private boolean onBottomMenuItemSelected(int itemId) {
@@ -1221,83 +1055,12 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         supportInvalidateOptionsMenu();
     }
 
-    protected void verifyDelete(final CharSequence[] filenameArray,
-                                final boolean[] checkedItems, final DialogInterface parentDialog) {
-
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-
-        int deleteCount = 0;
-
-        for (boolean checkedItem : checkedItems) {
-            if (checkedItem) {
-                deleteCount++;
-            }
-        }
-
-
-        final int finalDeleteCount = deleteCount;
-
-        if (finalDeleteCount > 0) {
-
-            builder.setTitle(R.string.delete_saved_log)
-                    .setMessage(getResources().getQuantityString(R.plurals.are_you_sure, finalDeleteCount, finalDeleteCount))
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // ok, delete
-
-                            for (int i = 0; i < checkedItems.length; i++) {
-                                if (checkedItems[i]) {
-                                    SaveLogHelper.deleteLogIfExists(filenameArray[i].toString());
-                                }
-                            }
-
-                            String toastText = getResources().getQuantityString(R.plurals.files_deleted, finalDeleteCount, finalDeleteCount);
-                            Toast.makeText(LogcatActivity.this, toastText, Toast.LENGTH_SHORT).show();
-
-                            dialog.dismiss();
-                            parentDialog.dismiss();
-
-                        }
-                    });
-            builder.setNegativeButton(android.R.string.cancel, null);
-            builder.show();
-        }
-
-
-    }
-
-    private View inflateDeviceInfoView() {
-        @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.dialog_send_log, null, false);
-        CheckBox checkBox = view.findViewById(android.R.id.checkbox);
-        checkBox.setChecked(PreferenceHelper.getIncludeDeviceInfoPreference(this));
-        checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
-                PreferenceHelper.setIncludeDeviceInfoPreference(LogcatActivity.this, isChecked));
-        return view;
-    }
-
     private void showSendLogDialog() {
-        final View view = inflateDeviceInfoView();
-        final CheckBox checkBox = view.findViewById(android.R.id.checkbox);
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.share_log)
-                .setView(view)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                        sendLogToTargetApp(checkBox.isChecked(), false))
-                .show();
+        LogcatDialogs.showShareLog(this, includeDeviceInfo -> sendLogToTargetApp(includeDeviceInfo, false));
     }
 
     private void showSaveLogZipDialog() {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.save_log_zip)
-                .setMessage(R.string.matlog_save_zip_summary)
-                .setView(inflateDeviceInfoView())
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                        mExportZipLauncher.launch(LogExporter.zipFilename()))
-                .show();
+        LogcatDialogs.showSaveLogZip(this, () -> mExportZipLauncher.launch(LogExporter.zipFilename()));
     }
 
     protected void sendLogToTargetApp(final boolean includeDeviceInfo, final boolean includeDmesg) {
@@ -1446,8 +1209,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showSaveLogDialog() {
-        DialogHelper.showFilenameSuggestingDialog(this, null, this::saveLog, R.string.save_log,
-                mKernelMode ? SaveLogHelper.createKernelLogFilename() : DialogHelper.createLogFilename());
+        LogcatDialogs.showSaveLog(this,
+                mKernelMode ? SaveLogHelper.createKernelLogFilename() : DialogHelper.createLogFilename(),
+                this::saveLog);
     }
 
     private void saveLog(final String filename) {
@@ -1596,24 +1360,10 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     private void showLogLevelDialog() {
-        String[] logLevels = DialogHelper.logLevelLabels(this);
-
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
-
-        builder.setTitle(R.string.log_level)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setSingleChoiceItems(logLevels, mLogListAdapter.getLogLevelLimit(), new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mLogListAdapter.setLogLevelLimit(which);
-                        logLevelChanged();
-                        dialog.dismiss();
-
-                    }
-                });
-
-        builder.show();
+        LogcatDialogs.showLogLevel(this, mLogListAdapter.getLogLevelLimit(), which -> {
+            mLogListAdapter.setLogLevelLimit(which);
+            logLevelChanged();
+        });
     }
 
     private void setUpAdapter() {

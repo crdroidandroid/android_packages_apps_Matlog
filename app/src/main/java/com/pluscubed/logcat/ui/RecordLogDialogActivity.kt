@@ -5,28 +5,49 @@
 
 package com.pluscubed.logcat.ui
 
-import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
-import androidx.fragment.app.DialogFragment
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.FiberManualRecord
+import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
 import com.pluscubed.logcat.LogcatRecordingService
 import com.pluscubed.logcat.RecordingWidgetProvider
 import com.pluscubed.logcat.helper.DialogHelper
 import com.pluscubed.logcat.helper.PreferenceHelper
 import com.pluscubed.logcat.helper.ServiceHelper
 import com.pluscubed.logcat.helper.WidgetHelper
+import com.pluscubed.logcat.ui.compose.ActionRow
+import com.pluscubed.logcat.ui.compose.DialogButton
+import com.pluscubed.logcat.ui.compose.DropdownField
+import com.pluscubed.logcat.ui.compose.FilenameDialog
+import com.pluscubed.logcat.ui.compose.MatlogDialog
+import com.pluscubed.logcat.ui.compose.MatlogTheme
+import com.pluscubed.logcat.ui.compose.SuggestionTextField
 import org.omnirom.logcat.R
 
-class RecordLogDialogActivity : AppCompatActivity() {
+// a translucent activity that only hosts the record dialog
+class RecordLogDialogActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) return
-
-        if (intent?.action == RecordingWidgetProvider.ACTION_RECORD_OR_STOP) {
+        if (savedInstanceState == null && intent?.action == RecordingWidgetProvider.ACTION_RECORD_OR_STOP) {
             WidgetHelper.updateWidgets(applicationContext)
             if (ServiceHelper.checkIfServiceIsRunning(this, LogcatRecordingService::class.java)) {
                 DialogHelper.stopRecordingLog(this)
@@ -34,65 +55,92 @@ class RecordLogDialogActivity : AppCompatActivity() {
                 return
             }
         }
-        RecordLogDialog.newInstance(intent?.getStringArrayExtra(EXTRA_QUERY_SUGGESTIONS) ?: emptyArray())
-            .show(supportFragmentManager, TAG_DIALOG)
-    }
-
-    class RecordLogDialog : DialogFragment() {
-
-        private var filterQuery = ""
-        private var logLevel = ""
-        private var starting = false
-
-        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val activity = requireActivity()
-            val suggestions = requireArguments().getStringArray(ARG_SUGGESTIONS).orEmpty().toList()
-            filterQuery = savedInstanceState?.getString(STATE_QUERY).orEmpty()
-            logLevel = savedInstanceState?.getString(STATE_LEVEL)
-                ?: PreferenceHelper.getDefaultLogLevelPreference(activity).toString()
-
-            return DialogHelper.filenameDialog(
-                activity, R.string.record_log, DialogHelper.createLogFilename(),
-                configure = { setNeutralButton(R.string.text_filter_ellipsis, null) },
-                onShow = { dialog ->
-                    dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
-                        DialogHelper.showFilterDialogForRecording(activity, filterQuery, logLevel, suggestions) {
-                            filterQuery = it.filterQuery
-                            logLevel = it.logLevel
-                        }
-                    }
-                },
-            ) { filename ->
-                starting = true
-                DialogHelper.startRecording(filename, filterQuery, logLevel, { activity.finish() }, activity)
-            }
-        }
-
-        override fun onSaveInstanceState(outState: Bundle) {
-            super.onSaveInstanceState(outState)
-            outState.putString(STATE_QUERY, filterQuery)
-            outState.putString(STATE_LEVEL, logLevel)
-        }
-
-        // the activity only exists to host this dialog
-        override fun onDismiss(dialog: DialogInterface) {
-            super.onDismiss(dialog)
-            val activity = activity ?: return
-            if (!starting && !activity.isChangingConfigurations) activity.finish()
-        }
-
-        companion object {
-            fun newInstance(suggestions: Array<String>) = RecordLogDialog().apply {
-                arguments = bundleOf(ARG_SUGGESTIONS to suggestions)
+        val suggestions = intent?.getStringArrayExtra(EXTRA_QUERY_SUGGESTIONS).orEmpty().toList()
+        setContent {
+            MatlogTheme(surface = false) {
+                RecordLogDialog(suggestions, onDismiss = ::finish) { filename, query, level ->
+                    DialogHelper.startRecording(filename, query, level, { finish() }, this)
+                }
             }
         }
     }
 
     companion object {
         const val EXTRA_QUERY_SUGGESTIONS = "suggestions"
-        private const val TAG_DIALOG = "showRecordLogDialog"
-        private const val ARG_SUGGESTIONS = "suggestions"
-        private const val STATE_QUERY = "filter_query"
-        private const val STATE_LEVEL = "log_level"
+    }
+}
+
+@Composable
+private fun RecordLogDialog(
+    suggestions: List<String>,
+    onDismiss: () -> Unit,
+    onRecord: (filename: String, query: String, level: String) -> Unit,
+) {
+    val context = LocalContext.current
+    val defaultLevel = remember { PreferenceHelper.getDefaultLogLevelPreference(context).toString() }
+    val defaultFilename = remember { DialogHelper.createLogFilename() }
+    var query by rememberSaveable { mutableStateOf("") }
+    var level by rememberSaveable { mutableStateOf(defaultLevel) }
+    var starting by rememberSaveable { mutableStateOf(false) }
+    var editingFilter by rememberSaveable { mutableStateOf(false) }
+    if (starting) return
+
+    FilenameDialog(
+        icon = Icons.Outlined.FiberManualRecord,
+        title = stringResource(R.string.record_log),
+        filename = defaultFilename,
+        onDismiss = { if (!starting) onDismiss() },
+        onFilename = {
+            starting = true
+            onRecord(it, query, level)
+        },
+    ) {
+        Spacer(Modifier.height(8.dp))
+        ActionRow(stringResource(R.string.text_filter_ellipsis), Icons.Outlined.FilterAlt) { editingFilter = true }
+    }
+    if (editingFilter) {
+        RecordingFilterDialog(query, level, suggestions, onDismiss = { editingFilter = false }) { newQuery, newLevel ->
+            query = newQuery
+            level = newLevel
+            editingFilter = false
+        }
+    }
+}
+
+@Composable
+private fun RecordingFilterDialog(
+    query: String,
+    level: String,
+    suggestions: List<String>,
+    onDismiss: () -> Unit,
+    onDone: (query: String, level: String) -> Unit,
+) {
+    val context = LocalContext.current
+    val values = stringArrayResource(R.array.log_levels_values)
+    val labels = remember { DialogHelper.logLevelLabels(context).toList() }
+    var text by remember { mutableStateOf(TextFieldValue(query, TextRange(query.length))) }
+    var selected by remember { mutableStateOf(values.indexOf(level).coerceAtLeast(0)) }
+    val submit = { onDone(text.text, values[selected]) }
+    MatlogDialog(
+        onDismiss = onDismiss,
+        icon = Icons.Outlined.FilterAlt,
+        title = stringResource(R.string.title_filter),
+        confirmButton = { DialogButton(android.R.string.ok, submit) },
+    ) {
+        SuggestionTextField(
+            value = text,
+            onValueChange = { text = it },
+            suggestions = suggestions,
+            label = stringResource(R.string.text_filter_text),
+            onDone = submit,
+        )
+        Spacer(Modifier.height(12.dp))
+        DropdownField(
+            label = stringResource(R.string.log_level),
+            options = labels,
+            selected = selected,
+            onSelect = { selected = it },
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }

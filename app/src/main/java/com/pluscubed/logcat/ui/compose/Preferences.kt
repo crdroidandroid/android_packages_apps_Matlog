@@ -471,7 +471,7 @@ fun TextInputPreference(
 }
 
 @Composable
-private fun DialogOptionRow(label: String, modifier: Modifier, control: @Composable () -> Unit) {
+internal fun DialogOptionRow(label: String, modifier: Modifier, control: @Composable () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
