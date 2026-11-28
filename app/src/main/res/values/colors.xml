@@ -10,12 +10,6 @@
     <color name="background_debug">#FF0066CC</color>
     <color name="background_info">#FF00CC00</color>
     <color name="background_warn">#FFFFFF00</color>
-    <color name="foreground_wtf">@android:color/white</color>
-    <color name="foreground_error">@android:color/white</color>
-    <color name="foreground_verbose">@android:color/white</color>
-    <color name="foreground_debug">@android:color/white</color>
-    <color name="foreground_info">@android:color/black</color>
-    <color name="foreground_warn">@android:color/black</color>
 
     <!-- Android color FTW -->
     <color name="tag_color_01">#FFA4C639</color>
