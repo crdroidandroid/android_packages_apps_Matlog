@@ -32,4 +32,34 @@
     <style name="SecondaryFloatingActionButtonStyle" parent="Widget.Material3Expressive.FloatingActionButton">
         <item name="materialThemeOverlay">@style/ThemeOverlay.Material3Expressive.FloatingActionButton.SecondaryContainer</item>
     </style>
+
+    <style name="MatlogSearchBar" parent="Widget.Material3Expressive.SearchBar">
+        <item name="android:layout_marginTop">@dimen/matlog_bar_margin_vertical</item>
+        <item name="android:layout_marginBottom">@dimen/matlog_bar_margin_vertical</item>
+    </style>
+
+    <style name="MatlogPillBar" parent="Widget.Material3.Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/matlog_bar_height</item>
+        <item name="android:layout_marginStart">@dimen/matlog_bar_margin_horizontal</item>
+        <item name="android:layout_marginEnd">@dimen/matlog_bar_margin_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/matlog_bar_margin_vertical</item>
+        <item name="android:layout_marginBottom">@dimen/matlog_bar_margin_vertical</item>
+        <item name="android:background">@drawable/bg_pill_bar</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+    </style>
+
+    <style name="MatlogPillBar.Selection">
+        <item name="android:background">@drawable/bg_pill_bar_selection</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.MatLog.SelectionBar</item>
+        <item name="titleTextAppearance">?attr/textAppearanceTitleMedium</item>
+        <item name="titleTextColor">?attr/colorOnSecondaryContainer</item>
+    </style>
+
+    <style name="ThemeOverlay.MatLog.SelectionBar" parent="">
+        <item name="colorControlNormal">?attr/colorOnSecondaryContainer</item>
+        <item name="colorOnSurface">?attr/colorOnSecondaryContainer</item>
+        <item name="colorOnSurfaceVariant">?attr/colorOnSecondaryContainer</item>
+    </style>
 </resources>

@@ -16,7 +16,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.BaseColumns;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -39,7 +42,10 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.pluscubed.logcat.data.FilterAdapter;
 import com.pluscubed.logcat.data.LogLine;
 import com.pluscubed.logcat.data.LogLineAdapter;
@@ -93,12 +99,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ActionMode;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.core.view.WindowCompat;
-import androidx.cursoradapter.widget.CursorAdapter;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.lifecycle.LifecycleOwnerKt;
 import androidx.preference.PreferenceManager;
@@ -142,8 +145,7 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private LogSearch mLogSearch;
     private boolean mSearchRegex;
     private boolean mFilterOnSearch;
-    private Menu mOptionsMenu;
-    private ActionMode mSelectionMode;
+    private boolean mSelecting;
     private boolean mResumeAfterSelection;
 
     private final ActivityResultLauncher<String> mExportLogLauncher = registerForActivityResult(
@@ -184,14 +186,18 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     private boolean mDynamicallyEnteringSearchText;
 
-    private Set<String> mSearchSuggestionsSet = new HashSet<>();
-    private CursorAdapter mSearchSuggestionsAdapter;
+    // read by the suggestion filter on a worker thread
+    private final Set<String> mSearchSuggestionsSet = Collections.synchronizedSet(new HashSet<>());
+    private SimpleCursorAdapter mSearchSuggestionsAdapter;
 
     private String mCurrentlyOpenLog = null;
     private boolean mKernelMode = false;
 
     private Handler mHandler;
-    private MenuItem mSearchViewMenuItem;
+    private SearchBar mSearchBar;
+    private MaterialToolbar mFindBar;
+    private MaterialToolbar mSelectionBar;
+    private MaterialAutoCompleteTextView mFindText;
     private FloatingActionButton mFab;
 
     public static void startChooser(Context context, String subject, String body, SendLogDetails.AttachmentType attachmentType, File attachment) {
@@ -291,7 +297,9 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
         ((RecyclerView) findViewById(R.id.list)).setItemAnimator(null);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        mSearchBar = findViewById(R.id.search_bar);
+        setSupportActionBar(mSearchBar);
+        mSearchBar.setOnClickListener(v -> openSearch(true));
 
 
         ((BottomAppBar) findViewById(R.id.bottomAppBar)).setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -359,7 +367,12 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
                 null,
                 new String[]{"suggestion"},
                 new int[]{android.R.id.text1},
-                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+                0);
+        mSearchSuggestionsAdapter.setStringConversionColumn(1);
+        mSearchSuggestionsAdapter.setFilterQueryProvider(this::suggestionsCursor);
+
+        setUpFindBar();
+        setUpSelectionBar();
 
         setUpAdapter();
 
@@ -609,14 +622,14 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         mLogcatSession.stop();
     }
 
-    private void populateSuggestionsAdapter(String query) {
+    private MatrixCursor suggestionsCursor(CharSequence query) {
         final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "suggestion"});
-        List<String> suggestionsForQuery = getSuggestionsForQuery(query);
+        List<String> suggestionsForQuery = getSuggestionsForQuery(query == null ? null : query.toString());
         for (int i = 0, suggestionsForQuerySize = suggestionsForQuery.size(); i < Math.min(suggestionsForQuerySize, 8); i++) {
             String suggestion = suggestionsForQuery.get(i);
             c.addRow(new Object[]{i, suggestion});
         }
-        mSearchSuggestionsAdapter.changeCursor(c);
+        return c;
     }
 
     private List<String> getSuggestionsForQuery(String query) {
@@ -635,10 +648,10 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     @Override
     public void onBackPressed() {
-        if (mSelectionMode != null) {
+        if (mSelecting) {
             finishSelection();
-        } else if (mSearchViewMenuItem.isActionViewExpanded()) {
-            mSearchViewMenuItem.collapseActionView();
+        } else if (isSearchOpen()) {
+            closeSearch();
         } else if (mCurrentlyOpenLog != null) {
             startMainLog();
         } else if (mKernelMode) {
@@ -671,86 +684,85 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
-        //used to workaround issue where the search text is cleared on expanding the SearchView
-
-        mOptionsMenu = menu;
-        mSearchViewMenuItem = menu.findItem(R.id.menu_search);
-        menu.findItem(R.id.menu_search_regex).setChecked(mSearchRegex);
-        mSearchViewMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                setSearchControlsVisible(true);
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                setSearchControlsVisible(false);
-                return true;
-            }
-        });
-        final SearchView searchView = (SearchView) mSearchViewMenuItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (!mDynamicallyEnteringSearchText) {
-                    log.d("filtering: %s", newText);
-                    search(newText);
-                    populateSuggestionsAdapter(newText);
-                }
-                mDynamicallyEnteringSearchText = false;
-                return false;
-            }
-        });
-        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-            @Override
-            public boolean onSuggestionSelect(int position) {
-                return false;
-            }
-
-            @Override
-            public boolean onSuggestionClick(int position) {
-                List<String> suggestions = getSuggestionsForQuery(mSearchingString);
-                searchView.setQuery(suggestions.get(position), true);
-                return false;
-            }
-        });
-        searchView.setSuggestionsAdapter(mSearchSuggestionsAdapter);
-        if (mSearchingString != null && !mSearchingString.isEmpty()) {
-            mDynamicallyEnteringSearchText = true;
-            mSearchViewMenuItem.expandActionView();
-            searchView.setQuery(mSearchingString, true);
-            searchView.clearFocus();
-        }
-        updateSearchUi();
-
         return true;
     }
 
-    private void setSearchControlsVisible(boolean searching) {
-        if (mOptionsMenu == null) {
+    private void setUpFindBar() {
+        mFindBar = findViewById(R.id.find_bar);
+        mFindBar.setNavigationOnClickListener(v -> closeSearch());
+        mFindBar.setOnMenuItemClickListener(this::onOptionsItemSelected);
+        mFindBar.getMenu().findItem(R.id.menu_search_regex).setChecked(mSearchRegex);
+        mFindText = findViewById(R.id.find_text);
+        mFindText.setAdapter(mSearchSuggestionsAdapter);
+        mFindText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!mDynamicallyEnteringSearchText) {
+                    log.d("filtering: %s", s);
+                    search(s.toString());
+                }
+                mDynamicallyEnteringSearchText = false;
+            }
+        });
+        mFindText.setOnEditorActionListener((v, actionId, event) -> {
+            mFindText.dismissDropDown();
+            setKeyboardVisible(false);
+            return true;
+        });
+    }
+
+    private boolean isSearchOpen() {
+        return mFindBar.getVisibility() == View.VISIBLE;
+    }
+
+    private void openSearch(boolean showKeyboard) {
+        if (mSelecting) {
             return;
         }
-        for (int id : new int[]{R.id.menu_search_count, R.id.menu_search_previous,
-                R.id.menu_search_next, R.id.menu_search_regex}) {
-            mOptionsMenu.findItem(id).setVisible(searching);
-        }
-        for (int id : new int[]{R.id.menu_send_log_zip, R.id.menu_filters, R.id.menu_settings}) {
-            mOptionsMenu.findItem(id).setVisible(!searching);
-        }
+        mSearchBar.setVisibility(View.GONE);
+        mFindBar.setVisibility(View.VISIBLE);
         updateSearchUi();
+        if (showKeyboard) {
+            setKeyboardVisible(true);
+        }
+    }
+
+    private void closeSearch() {
+        if (!isSearchOpen()) {
+            return;
+        }
+        setKeyboardVisible(false);
+        mFindText.dismissDropDown();
+        mFindText.setText(null);
+        mFindBar.setVisibility(View.GONE);
+        mSearchBar.setVisibility(mSelecting ? View.GONE : View.VISIBLE);
+    }
+
+    private void setKeyboardVisible(boolean visible) {
+        InputMethodManager imm = getSystemService(InputMethodManager.class);
+        if (visible) {
+            mFindText.requestFocus();
+            imm.showSoftInput(mFindText, InputMethodManager.SHOW_IMPLICIT);
+        } else {
+            mFindText.clearFocus();
+            imm.hideSoftInputFromWindow(mFindText.getWindowToken(), 0);
+        }
     }
 
     private void updateSearchUi() {
-        if (mOptionsMenu == null || mLogSearch == null) {
+        if (mFindBar == null || mLogSearch == null) {
             return;
         }
-        TextView countView = (TextView) mOptionsMenu.findItem(R.id.menu_search_count).getActionView();
+        Menu menu = mFindBar.getMenu();
+        TextView countView = (TextView) menu.findItem(R.id.menu_search_count).getActionView();
         int hitCount = mLogSearch.getHitCount();
         if (!mLogSearch.isActive()) {
             countView.setText(null);
@@ -763,8 +775,8 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         }
         countView.setTextColor(getAttrColor(mLogSearch.isInvalid()
                 ? R.attr.colorError : R.attr.colorOnSurfaceVariant));
-        mOptionsMenu.findItem(R.id.menu_search_previous).setEnabled(hitCount > 0);
-        mOptionsMenu.findItem(R.id.menu_search_next).setEnabled(hitCount > 0);
+        menu.findItem(R.id.menu_search_previous).setEnabled(hitCount > 0);
+        menu.findItem(R.id.menu_search_next).setEnabled(hitCount > 0);
     }
 
     private void refreshSearchHits() {
@@ -905,19 +917,56 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
             finishSelection();
             return;
         }
-        if (mSelectionMode == null) {
-            mSelectionMode = startSupportActionMode(mSelectionCallback);
+        if (!mSelecting) {
+            startSelection();
         }
-        if (mSelectionMode != null) {
-            int count = mSelection.getCount();
-            mSelectionMode.setTitle(getResources().getQuantityString(
-                    R.plurals.matlog_selected_count, count, count));
+        int count = mSelection.getCount();
+        mSelectionBar.setTitle(getResources().getQuantityString(
+                R.plurals.matlog_selected_count, count, count));
+    }
+
+    private void setUpSelectionBar() {
+        mSelectionBar = findViewById(R.id.selection_bar);
+        mSelectionBar.setNavigationOnClickListener(v -> finishSelection());
+        mSelectionBar.setOnMenuItemClickListener(this::onSelectionItemClicked);
+    }
+
+    // the selection bar takes the place of the search bar
+    private void startSelection() {
+        mSelecting = true;
+        if (isSearchOpen()) {
+            setKeyboardVisible(false);
+            mFindBar.setVisibility(View.GONE);
+        }
+        mSearchBar.setVisibility(View.GONE);
+        mSelectionBar.setVisibility(View.VISIBLE);
+        // keep the list still while picking lines
+        if (mLogcatSession.isRunning() && !mLogcatSession.isPaused()) {
+            mLogcatSession.pause();
+            mResumeAfterSelection = true;
+            updateFabStatus();
         }
     }
 
     private void finishSelection() {
-        if (mSelectionMode != null) {
-            mSelectionMode.finish();
+        if (!mSelecting) {
+            return;
+        }
+        mSelecting = false;
+        mSelectionBar.setVisibility(View.GONE);
+        if (mSearchingString != null && !mSearchingString.isEmpty()) {
+            mFindBar.setVisibility(View.VISIBLE);
+        } else {
+            mSearchBar.setVisibility(View.VISIBLE);
+        }
+        mSelection.clear();
+        mLogListAdapter.notifyDataSetChanged();
+        if (mResumeAfterSelection) {
+            mResumeAfterSelection = false;
+            if (mLogcatSession.isRunning()) {
+                mLogcatSession.resume();
+            }
+            updateFabStatus();
         }
     }
 
@@ -925,67 +974,33 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         return LogSelection.toText(mSelection.selectedIn(mLogListAdapter.getTrueValues()));
     }
 
-    private final ActionMode.Callback mSelectionCallback = new ActionMode.Callback() {
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.getMenuInflater().inflate(R.menu.menu_log_selection, menu);
-            // keep the list still while picking lines
-            if (mLogcatSession.isRunning() && !mLogcatSession.isPaused()) {
-                mLogcatSession.pause();
-                mResumeAfterSelection = true;
-                updateFabStatus();
-            }
-            return true;
+    private boolean onSelectionItemClicked(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_selection_select_all:
+                mSelection.toggleAll(mLogListAdapter.getObjects());
+                mLogListAdapter.notifyDataSetChanged();
+                onSelectionChanged();
+                return true;
+            case R.id.menu_selection_copy:
+                LogTextActions.copy(this, selectedText());
+                finishSelection();
+                return true;
+            case R.id.menu_selection_share:
+                LogTextActions.share(this, selectedText());
+                finishSelection();
+                return true;
+            case R.id.menu_selection_export:
+                mPendingSelectionExport = selectedText();
+                mExportSelectionLauncher.launch(LogExporter.textFilename());
+                finishSelection();
+                return true;
+            case R.id.menu_selection_extended_copy:
+                ExtendedCopyActivity.start(this, selectedText());
+                finishSelection();
+                return true;
         }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.menu_selection_select_all:
-                    mSelection.toggleAll(mLogListAdapter.getObjects());
-                    mLogListAdapter.notifyDataSetChanged();
-                    onSelectionChanged();
-                    return true;
-                case R.id.menu_selection_copy:
-                    LogTextActions.copy(LogcatActivity.this, selectedText());
-                    mode.finish();
-                    return true;
-                case R.id.menu_selection_share:
-                    LogTextActions.share(LogcatActivity.this, selectedText());
-                    mode.finish();
-                    return true;
-                case R.id.menu_selection_export:
-                    mPendingSelectionExport = selectedText();
-                    mExportSelectionLauncher.launch(LogExporter.textFilename());
-                    mode.finish();
-                    return true;
-                case R.id.menu_selection_extended_copy:
-                    ExtendedCopyActivity.start(LogcatActivity.this, selectedText());
-                    mode.finish();
-                    return true;
-            }
-            return false;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            mSelectionMode = null;
-            mSelection.clear();
-            mLogListAdapter.notifyDataSetChanged();
-            if (mResumeAfterSelection) {
-                mResumeAfterSelection = false;
-                if (mLogcatSession.isRunning()) {
-                    mLogcatSession.resume();
-                }
-                updateFabStatus();
-            }
-        }
-    };
+        return false;
+    }
 
     private void showSearchByDialog(final LogLine logLine) {
         final String tag = logLine.getTag();
@@ -1537,10 +1552,20 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     private void updateUiForFilename() {
         boolean logFileMode = mCurrentlyOpenLog != null;
 
-        //noinspection ConstantConditions
-        getSupportActionBar().setTitle(logFileMode ? mCurrentlyOpenLog
-                : getString(mKernelMode ? R.string.matlog_kernel_log : R.string.app_name));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(logFileMode || mKernelMode);
+        String hint = logFileMode ? getString(R.string.matlog_search_hint_file, mCurrentlyOpenLog)
+                : getString(mKernelMode ? R.string.matlog_search_hint_kernel : R.string.matlog_search_hint_log);
+        mSearchBar.setHint(hint);
+        mFindText.setHint(hint);
+        boolean showBack = logFileMode || mKernelMode;
+        mSearchBar.setNavigationIcon(showBack ? R.drawable.ic_arrow_back : R.drawable.ic_search);
+        mSearchBar.setNavigationContentDescription(showBack ? R.string.matlog_back : R.string.search);
+        mSearchBar.setNavigationOnClickListener(v -> {
+            if (showBack) {
+                onBackPressed();
+            } else {
+                openSearch(true);
+            }
+        });
 
         Menu bottomMenu = ((BottomAppBar) findViewById(R.id.bottomAppBar)).getMenu();
         bottomMenu.findItem(R.id.menu_kernel_log).setChecked(mKernelMode);
@@ -1630,9 +1655,11 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
 
     private void setSearchText(String text) {
         // sets the search text without invoking autosuggestions, which are really only useful when typing
-        mDynamicallyEnteringSearchText = true;
         search(text);
-        supportInvalidateOptionsMenu();
+        openSearch(false);
+        mDynamicallyEnteringSearchText = true;
+        mFindText.setText(text, false);
+        mFindText.setSelection(mFindText.length());
     }
 
     private void search(String filterText) {
@@ -1685,8 +1712,6 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
         if (mSearchSuggestionsSet.size() < MAX_NUM_SUGGESTIONS
                 && !mSearchSuggestionsSet.contains(trimmed)) {
             mSearchSuggestionsSet.add(trimmed);
-            populateSuggestionsAdapter(mSearchingString);
-            //searchSuggestionsAdapter.add(trimmed);
         }
     }
 

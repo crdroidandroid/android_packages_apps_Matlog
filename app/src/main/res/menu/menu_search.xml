@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: crDroid Android Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_search_count"
+        android:title="@string/matlog_search_matches"
+        app:actionLayout="@layout/menu_search_count"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_search_previous"
+        android:icon="@drawable/ic_keyboard_arrow_up"
+        android:title="@string/matlog_search_previous"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_search_next"
+        android:icon="@drawable/ic_keyboard_arrow_down"
+        android:title="@string/matlog_search_next"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_search_regex"
+        android:checkable="true"
+        android:title="@string/matlog_search_regex"
+        app:showAsAction="never" />
+
+</menu>

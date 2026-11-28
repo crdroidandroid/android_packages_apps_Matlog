@@ -3,41 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_search"
-        android:icon="@drawable/ic_search"
-        android:title="@string/search"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="always|collapseActionView" />
-
-    <item
-        android:id="@+id/menu_search_count"
-        android:title="@string/matlog_search_matches"
-        android:visible="false"
-        app:actionLayout="@layout/menu_search_count"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/menu_search_previous"
-        android:icon="@drawable/ic_keyboard_arrow_up"
-        android:title="@string/matlog_search_previous"
-        android:visible="false"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/menu_search_next"
-        android:icon="@drawable/ic_keyboard_arrow_down"
-        android:title="@string/matlog_search_next"
-        android:visible="false"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/menu_search_regex"
-        android:checkable="true"
-        android:title="@string/matlog_search_regex"
-        android:visible="false"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/menu_send_log_zip"
         android:alphabeticShortcut="@string/share_log"
         android:icon="@drawable/ic_share_white_24dp"

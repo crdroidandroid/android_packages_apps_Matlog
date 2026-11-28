@@ -9,10 +9,50 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize" />
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/search_bar"
+                style="@style/MatlogSearchBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/matlog_search_hint_log"
+                app:defaultScrollFlagsEnabled="false" />
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/find_bar"
+                style="@style/MatlogPillBar"
+                android:visibility="gone"
+                app:menu="@menu/menu_search"
+                app:navigationContentDescription="@string/matlog_back"
+                app:navigationIcon="@drawable/ic_arrow_back">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/find_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:completionThreshold="1"
+                    android:dropDownVerticalOffset="8dp"
+                    android:hint="@string/matlog_search_hint_log"
+                    android:imeOptions="actionSearch|flagNoExtractUi"
+                    android:inputType="text|textNoSuggestions"
+                    android:maxLines="1"
+                    android:saveEnabled="false"
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+            </com.google.android.material.appbar.MaterialToolbar>
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/selection_bar"
+                style="@style/MatlogPillBar.Selection"
+                android:visibility="gone"
+                app:menu="@menu/menu_log_selection"
+                app:navigationContentDescription="@android:string/cancel"
+                app:navigationIcon="@drawable/ic_close" />
+
+        </FrameLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 

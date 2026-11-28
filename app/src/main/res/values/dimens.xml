@@ -12,4 +12,7 @@
     <dimen name="min_widget_width">48dp</dimen>
     <dimen name="min_widget_height">48dp</dimen>
     <dimen name="max_widget_width">140dp</dimen>
+    <dimen name="matlog_bar_height">56dp</dimen>
+    <dimen name="matlog_bar_margin_horizontal">16dp</dimen>
+    <dimen name="matlog_bar_margin_vertical">8dp</dimen>
 </resources>

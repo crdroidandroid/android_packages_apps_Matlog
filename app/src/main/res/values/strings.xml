@@ -351,4 +351,7 @@
     <string name="matlog_scroll_to_top">Scroll to top</string>
     <string name="matlog_scroll_to_bottom">Scroll to bottom</string>
     <string name="matlog_search_by_item">%1$s: %2$s</string>
+    <string name="matlog_search_hint_log">Search logs</string>
+    <string name="matlog_search_hint_kernel">Search kernel log</string>
+    <string name="matlog_search_hint_file">Search %1$s</string>
 </resources>
