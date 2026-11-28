@@ -1,40 +1,52 @@
-![Icon](./app/src/main/res/mipmap-hdpi/ic_launcher.png)MatLog
+<img src="./ic_launcher.svg" width="48" alt="MatLog icon"> MatLog
 =========
-It's CatLog, but with material goodness.
+A log reader by crDroid Team, built with Material 3 Expressive.
 
-Graphical log reader for Android.
+MatLog shows a live, scrolling view of the Android logcat and kernel logs, helps you find what
+matters in them, and saves, records or shares them when something goes wrong.
 
-[![Get it on Google Play](http://i.imgur.com/PeDVOwW.png)](https://play.google.com/store/apps/details?id=com.pluscubed.matlog)
+It ships as a system app (`com.crdroid.logcat`) and grew out of Daniel Ciao's [MatLog][1], which
+was itself based on Nolan Lawson's [CatLog][2].
 
-Based on Nolan Lawson's CatLog: [Google Play][1], [GitHub][2]
-
-Overview
+Features
 ---------
-MatLog is a free and open-source material-style log reader for Android based on CatLog.
+- **Live log** of the logcat buffers chosen in settings, with pause and resume
+- **Search** that highlights or filters matches, with regex, `tag:` and `pid:` support and
+  saved searches
+- **Filters** that include or exclude lines by tag, package, text, log level or time range
+- **Kernel log** from dmesg and **pstore** logs from the previous boot
+- **Crash detection** for app crashes, ANRs and native crashes, with notifications and a
+  history of crashes and exceptions
+- **Recording** to a file in the background, controlled from the notification, the
+  home-screen widget or the launcher shortcut
+- **Saved logs** that you can open, search, rename, sort, share and export
+- **Sharing** a log, a selection of lines or a single field, or exporting everything with
+  device info as a zip
+- **Privacy scrubber** that hides email addresses, phone numbers, URLs, IP addresses and
+  account details
 
-It shows a scrolling (tailed) view of the Android "logcat" system log, 
-hence the goofy name.  It also allows you to record logs in real time, send logs via email, 
-and filter using a variety of criteria.
+Building
+---------
+MatLog is built as part of crDroid with `Android.bp`. It is signed with the platform key so it
+can read logs without asking, and it uses the `matlog_dmesg` helper in [dmesg](./dmesg) to read
+the kernel log and pstore.
 
-FAQs
--------------
-Taken from CatLog's FAQ:
+FAQ
+---------
+#### Where are saved logs kept?
 
-#### Where are the logs saved?
-
-On the SD card, under ```/sdcard/catlog/saved_logs/```.
+On shared storage, under `/sdcard/matlog/saved_logs/`.
 
 #### I can't see any logs!
 
-This problem typically shows up on custom ROMs.  First off, try an alternative logging app, to verify that
-the problem is with your ROM and not MatLog.
-
-Next, see if your ROM offers system-wide settings to disable logging.  Be sure to reboot after you change anything.
-
-If that still doesn't work, you can contact the creator of your ROM to file a bug/RFE.
+Check the log buffers in MatLog's settings, and make sure logging hasn't been turned off in the
+system settings. Reboot after changing either.
 
 License
 ---------
+Code carried over from MatLog and CatLog is licensed under the GNU General Public License v3, see
+[LICENSE.txt](./LICENSE.txt). Files added for crDroid carry their own SPDX headers.
+
 ```
 Copyright (C) 2017  Daniel Ciao
 
@@ -50,9 +62,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 ```
 
-[1]: https://play.google.com/store/apps/details?id=com.nolanlawson.logcat
+[1]: https://github.com/plusCubed/matlog
 [2]: https://github.com/nolanlawson/Catlog
-[3]: https://plus.google.com/u/0/communities/108705871773878445106
