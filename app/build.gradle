@@ -7,7 +7,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "org.omnirom.logcat"
+        applicationId "com.crdroid.logcat"
         minSdk 31
         targetSdk 33
         versionName '1.0'
@@ -45,7 +45,7 @@ android {
     sourceSets {
         main {
             java.srcDirs = ['src/main/kotlin']
-            res.srcDirs = ['src/main/res', 'src/main/res-private']
+            res.srcDirs = ['src/main/res']
         }
     }
 }

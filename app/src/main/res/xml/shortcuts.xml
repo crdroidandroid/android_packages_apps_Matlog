@@ -11,8 +11,8 @@
         android:shortcutShortLabel="@string/start_recording_log">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetClass="com.pluscubed.logcat.ui.LogcatActivity"
-            android:targetPackage="org.omnirom.logcat">
+            android:targetClass="com.crdroid.logcat.ui.LogcatActivity"
+            android:targetPackage="com.crdroid.logcat">
 
             <extra
                 android:name="shortcut_action"

@@ -5,7 +5,7 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">@color/omni_logo_color</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/matlog_logo_color</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListViewStyle</item>
         <item name="windowActionModeOverlay">true</item>
     </style>

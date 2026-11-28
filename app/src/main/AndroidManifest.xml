@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.omnirom.logcat">
+    package="com.crdroid.logcat">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_LOGS" />
@@ -16,7 +16,7 @@
         android:targetSdkVersion="32" />
 
     <application
-        android:name=".OmniApp"
+        android:name=".MatlogApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -25,7 +25,7 @@
 
         <!--TODO: REMOVE THIS CONFIGCHANGES ATROCITY-->
         <activity
-            android:name="com.pluscubed.logcat.ui.LogcatActivity"
+            android:name="com.crdroid.logcat.ui.LogcatActivity"
             android:configChanges="screenSize|orientation"
             android:launchMode="singleInstance"
             android:exported="true" >
@@ -51,7 +51,7 @@
         </activity>
 
         <activity
-            android:name="com.pluscubed.logcat.ui.RecordLogDialogActivity"
+            android:name="com.crdroid.logcat.ui.RecordLogDialogActivity"
             android:excludeFromRecents="true"
             android:exported="true"
             android:theme="@style/Theme.MatLog.Translucent">
@@ -61,46 +61,46 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.pluscubed.logcat.ui.SettingsActivity"
+        <activity android:name="com.crdroid.logcat.ui.SettingsActivity"
             android:exported="false"/>
 
         <activity
-            android:name="com.pluscubed.logcat.crash.CrashesActivity"
+            android:name="com.crdroid.logcat.crash.CrashesActivity"
             android:exported="false"
             android:label="@string/matlog_crashes"
             android:launchMode="singleTop" />
 
         <receiver
-            android:name="com.pluscubed.logcat.crash.CrashActionReceiver"
+            android:name="com.crdroid.logcat.crash.CrashActionReceiver"
             android:exported="false" />
 
         <activity
-            android:name="com.pluscubed.logcat.filter.FiltersActivity"
+            android:name="com.crdroid.logcat.filter.FiltersActivity"
             android:exported="false"
             android:label="@string/matlog_filters"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name="com.pluscubed.logcat.ui.SavedLogsActivity"
+            android:name="com.crdroid.logcat.ui.SavedLogsActivity"
             android:exported="false"
             android:label="@string/matlog_saved_logs" />
 
         <activity
-            android:name="com.pluscubed.logcat.ui.PstoreActivity"
+            android:name="com.crdroid.logcat.ui.PstoreActivity"
             android:exported="false"
             android:label="@string/matlog_pstore" />
 
         <activity
-            android:name="com.pluscubed.logcat.ui.ExtendedCopyActivity"
+            android:name="com.crdroid.logcat.ui.ExtendedCopyActivity"
             android:exported="false"
             android:label="@string/matlog_extended_copy" />
 
         <service
-            android:name="com.pluscubed.logcat.crash.CrashMonitorService"
+            android:name="com.crdroid.logcat.crash.CrashMonitorService"
             android:exported="false" />
 
         <receiver
-            android:name="com.pluscubed.logcat.crash.BootReceiver"
+            android:name="com.crdroid.logcat.crash.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -108,11 +108,11 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.pluscubed.logcat.LogcatRecordingService"
+        <service android:name="com.crdroid.logcat.LogcatRecordingService"
             android:exported="false"/>
 
         <receiver
-            android:name="com.pluscubed.logcat.RecordingWidgetProvider"
+            android:name="com.crdroid.logcat.RecordingWidgetProvider"
             android:icon="@mipmap/ic_launcher"
             android:exported="true">
             <intent-filter>
@@ -125,7 +125,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="org.omnirom.logcat.provider"
+            android:authorities="com.crdroid.logcat.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
