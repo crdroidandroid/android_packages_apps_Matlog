@@ -263,7 +263,6 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         t.setTextColor(LogLineAdapterUtil.getForegroundColorForLogLevel(context, logLine.getLogLevel()));
         t.setVisibility(logLine.getLogLevel() == -1 ? View.GONE : View.VISIBLE);
 
-        //int textColor = PreferenceHelper.getColorScheme(context).getForegroundColor(context);
         float textSize = PreferenceHelper.getTextSizePreference(context);
         LogDisplayOptions options = LogDisplayOptions.get(context);
 
@@ -273,7 +272,6 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         output.setText(mSearch != null && mSearch.isActive()
                 ? mSearch.highlightOutput(logLine.getLogOutput(), position)
                 : logLine.getLogOutput());
-        //output.setTextColor(textColor);
 
 
         //TAG TEXT VIEW
@@ -308,13 +306,6 @@ public class LogLineAdapter extends RecyclerView.Adapter<LogLineViewHolder> impl
         }
 
         tag.setTextColor(LogLineAdapterUtil.getOrCreateTagColor(context, logLine.getTag()));
-
-        // if this is a "partially selected" log, change the color to orange or whatever
-
-        /*int selectedBackground = logLine.isHighlighted()
-                ? PreferenceHelper.getColorScheme(context).getSelectedColor(context)
-                : ContextCompat.getColor(context,android.R.color.transparent);
-        holder.itemView.setBackgroundColor(selectedBackground);*/
     }
 
     /**

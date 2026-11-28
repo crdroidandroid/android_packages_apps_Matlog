@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
-import com.pluscubed.logcat.data.ColorScheme;
 import com.pluscubed.logcat.data.LogDisplayOptions;
 import com.pluscubed.logcat.util.StringUtil;
 import com.pluscubed.logcat.util.UtilLogger;
@@ -24,7 +23,6 @@ public class PreferenceHelper {
     private static final String WIDGET_EXISTS_PREFIX = "widget_";
     private static float textSize = -1;
     private static Character defaultLogLevel = null;
-    private static ColorScheme colorScheme = null;
     private static int displayLimit = -1;
     private static UtilLogger log = new UtilLogger(PreferenceHelper.class);
     public static final String DELIMITER = ",";
@@ -33,7 +31,6 @@ public class PreferenceHelper {
         defaultLogLevel = null;
         textSize = -1;
         LogDisplayOptions.invalidate();
-        colorScheme = null;
         displayLimit = -1;
     }
 
@@ -205,11 +202,6 @@ public class PreferenceHelper {
 
         return sharedPrefs.getBoolean(
                 context.getText(R.string.pref_expanded_by_default).toString(), false);
-    }
-
-    public static ColorScheme getColorScheme(Context context) {
-        return ColorScheme.Default;
-
     }
 
     public static Set<String> getBuffers(Context context) {

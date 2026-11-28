@@ -10,7 +10,6 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.material.color.ColorRoles
 import com.google.android.material.color.MaterialColors
-import com.pluscubed.logcat.helper.PreferenceHelper
 import org.omnirom.logcat.R
 
 object LogLineAdapterUtil {
@@ -62,7 +61,7 @@ object LogLineAdapterUtil {
     private fun tagColors(context: Context): IntArray {
         checkTheme(context)
         if (tagColors.isEmpty()) {
-            tagColors = PreferenceHelper.getColorScheme(context).getTagColors(context)
+            tagColors = context.resources.getIntArray(R.array.tag_colors)
                 .map { MaterialColors.harmonizeWithPrimary(context, it) }.toIntArray()
         }
         return tagColors
