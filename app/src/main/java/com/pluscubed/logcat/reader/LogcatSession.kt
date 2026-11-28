@@ -143,7 +143,8 @@ class LogcatSession(
                         }
                     }
                 } catch (e: IOException) {
-                    Log.w(TAG, "Logcat stream failed", e)
+                    // stop() closes the stream under a blocked read, which is expected
+                    if (currentCoroutineContext().isActive) Log.w(TAG, "Logcat stream failed", e)
                 } finally {
                     logcat.killQuietly()
                 }
