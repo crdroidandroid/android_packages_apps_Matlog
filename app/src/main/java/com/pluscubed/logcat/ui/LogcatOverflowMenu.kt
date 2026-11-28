@@ -21,13 +21,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.FileUpload
+import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.outlined.FilterAltOff
 import androidx.compose.material.icons.outlined.Memory
 import androidx.compose.material.icons.outlined.SavedSearch
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.SelectAll
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
@@ -53,13 +60,14 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
+import com.pluscubed.logcat.data.LogLineViewHolder
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import java.util.function.IntConsumer
 import org.omnirom.logcat.R
 
 private class MenuEntry(val id: Int, val title: Int, val icon: ImageVector, val checked: Boolean? = null)
 
-// the log screen's overflow menus, shown as Material 3 Expressive dropdowns
+// the log screen's menus, shown as Material 3 Expressive dropdowns
 object LogcatOverflowMenu {
 
     private const val HOST_TAG = "matlog_overflow_menu"
@@ -107,8 +115,33 @@ object LogcatOverflowMenu {
         ))
     }
 
+    // the long-press menu of a log line, opened from its row
+    @JvmStatic
+    fun showLogLine(row: View, filterable: Boolean, onItemSelected: IntConsumer) {
+        show(row, onItemSelected, listOfNotNull(
+            listOf(
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_COPY_ID, R.string.copy_to_clipboard, Icons.Outlined.ContentCopy),
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_SELECT, R.string.matlog_select, Icons.Outlined.SelectAll),
+            ),
+            if (filterable) listOf(
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_FILTER_ID, R.string.filter_choice, Icons.Outlined.Search),
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_INCLUDE_FILTER, R.string.matlog_filter_from_line_include,
+                    Icons.Outlined.FilterAlt),
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_EXCLUDE_FILTER, R.string.matlog_filter_from_line_exclude,
+                    Icons.Outlined.FilterAltOff),
+            ) else null,
+            listOf(
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_EXPAND_ALL, R.string.expand_or_collapse_all, Icons.Outlined.UnfoldMore),
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_CLEAR, R.string.clear, Icons.Outlined.ClearAll),
+            ),
+        ))
+    }
+
     private fun show(toolbar: Toolbar, anchorItemId: Int, onItemSelected: IntConsumer, groups: List<List<MenuEntry>>) {
-        val anchor = findItemView(toolbar, anchorItemId) ?: toolbar
+        show(findItemView(toolbar, anchorItemId) ?: toolbar, onItemSelected, groups)
+    }
+
+    private fun show(anchor: View, onItemSelected: IntConsumer, groups: List<List<MenuEntry>>) {
         val token = ++shown
         hostOver(anchor).setContent {
             MatlogTheme(surface = false) {

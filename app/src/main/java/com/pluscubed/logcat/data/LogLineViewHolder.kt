@@ -5,13 +5,9 @@
 
 package com.pluscubed.logcat.data
 
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.widget.PopupMenu
-import androidx.core.view.MenuCompat
 import androidx.recyclerview.widget.RecyclerView
-import org.omnirom.logcat.R
+import com.pluscubed.logcat.ui.LogcatOverflowMenu
 
 class LogLineViewHolder(itemView: View, private val clickListener: OnClickListener) :
     RecyclerView.ViewHolder(itemView) {
@@ -29,33 +25,15 @@ class LogLineViewHolder(itemView: View, private val clickListener: OnClickListen
 
     private fun showMenu(view: View) {
         val line = logLine
-        PopupMenu(view.context, view).apply {
-            menu.addItem(GROUP_LINE, CONTEXT_MENU_COPY_ID, R.string.copy_to_clipboard, R.drawable.ic_copy)
-            menu.addItem(GROUP_LINE, CONTEXT_MENU_SELECT, R.string.matlog_select, R.drawable.ic_select_all)
-            if (line != null && line.logLevel != -1) {
-                menu.addItem(GROUP_FILTER, CONTEXT_MENU_FILTER_ID, R.string.filter_choice, R.drawable.ic_search)
-                menu.addItem(GROUP_FILTER, CONTEXT_MENU_INCLUDE_FILTER, R.string.matlog_filter_from_line_include,
-                    R.drawable.ic_filter)
-                menu.addItem(GROUP_FILTER, CONTEXT_MENU_EXCLUDE_FILTER, R.string.matlog_filter_from_line_exclude,
-                    R.drawable.ic_filter_off)
-            }
-            menu.addItem(GROUP_LIST, CONTEXT_MENU_EXPAND_ALL, R.string.expand_or_collapse_all, R.drawable.ic_unfold_more)
-            menu.addItem(GROUP_LIST, CONTEXT_MENU_CLEAR, R.string.clear, R.drawable.ic_clear_all)
-            MenuCompat.setGroupDividerEnabled(menu, true)
-            setForceShowIcon(true)
-            setOnMenuItemClickListener { clickListener.onMenuItemClick(it, line) }
-            show()
+        LogcatOverflowMenu.showLogLine(view, line != null && line.logLevel != -1) {
+            clickListener.onMenuItemClick(it, line)
         }
-    }
-
-    private fun Menu.addItem(group: Int, id: Int, title: Int, icon: Int) {
-        add(group, id, Menu.NONE, title).setIcon(icon)
     }
 
     interface OnClickListener {
         fun onClick(itemView: View, logLine: LogLine?)
         fun onLongClick(itemView: View, logLine: LogLine?): Boolean
-        fun onMenuItemClick(item: MenuItem, logLine: LogLine?): Boolean
+        fun onMenuItemClick(itemId: Int, logLine: LogLine?): Boolean
     }
 
     companion object {
@@ -66,9 +44,5 @@ class LogLineViewHolder(itemView: View, private val clickListener: OnClickListen
         const val CONTEXT_MENU_SELECT = 4
         const val CONTEXT_MENU_INCLUDE_FILTER = 5
         const val CONTEXT_MENU_EXCLUDE_FILTER = 6
-
-        private const val GROUP_LINE = 0
-        private const val GROUP_FILTER = 1
-        private const val GROUP_LIST = 2
     }
 }

@@ -790,16 +790,16 @@ public class LogcatActivity extends AppCompatActivity implements FilterListener,
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item, LogLine logLine) {
+    public boolean onMenuItemClick(int itemId, LogLine logLine) {
         if (logLine != null) {
-            switch (item.getItemId()) {
+            switch (itemId) {
                 case CONTEXT_MENU_COPY_ID:
                     CopyLogLineSheet.show(this, logLine);
                     return true;
                 case CONTEXT_MENU_INCLUDE_FILTER:
                 case CONTEXT_MENU_EXCLUDE_FILTER:
                     startActivity(FiltersActivity.intentForLine(this, logLine.getTag(), logLine.getPackageName(),
-                            item.getItemId() == CONTEXT_MENU_INCLUDE_FILTER));
+                            itemId == CONTEXT_MENU_INCLUDE_FILTER));
                     return true;
                 case CONTEXT_MENU_FILTER_ID:
 
