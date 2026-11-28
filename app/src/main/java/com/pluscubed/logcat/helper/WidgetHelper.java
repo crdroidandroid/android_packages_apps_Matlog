@@ -5,8 +5,8 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.view.View;
+import android.util.ArrayMap;
+import android.util.SizeF;
 import android.widget.RemoteViews;
 
 import com.pluscubed.logcat.LogcatRecordingService;
@@ -14,11 +14,14 @@ import com.pluscubed.logcat.RecordingWidgetProvider;
 import com.pluscubed.logcat.ui.RecordLogDialogActivity;
 import com.pluscubed.logcat.util.UtilLogger;
 
+import java.util.Map;
+
 import org.omnirom.logcat.R;
 
 public class WidgetHelper {
 
     private static UtilLogger log = new UtilLogger(WidgetHelper.class);
+    private static final float WIDE_WIDGET_WIDTH = 120f;
 
     public static void updateWidgets(Context context) {
         int[] appWidgetIds = findAppWidgetIds(context);
@@ -51,11 +54,29 @@ public class WidgetHelper {
     }
 
     private static void updateWidget(Context context, AppWidgetManager manager, int appWidgetId, boolean serviceRunning) {
-        RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_recording);
-        updateViews.setImageViewResource(R.id.record_badge_image_view, serviceRunning ? R.drawable.ic_widget_stop_record : R.drawable.ic_widget_start_record);
         PendingIntent pendingIntent = getPendingIntent(context, appWidgetId);
-        updateViews.setOnClickPendingIntent(R.id.record_badge_view, pendingIntent);
-        manager.updateAppWidget(appWidgetId, updateViews);
+        Map<SizeF, RemoteViews> layouts = new ArrayMap<>();
+        layouts.put(new SizeF(48f, 48f), widgetViews(context, R.layout.widget_recording, serviceRunning, pendingIntent));
+        layouts.put(new SizeF(WIDE_WIDGET_WIDTH, 48f),
+                widgetViews(context, R.layout.widget_recording_wide, serviceRunning, pendingIntent));
+        manager.updateAppWidget(appWidgetId, new RemoteViews(layouts));
+    }
+
+    private static RemoteViews widgetViews(Context context, int layout, boolean serviceRunning,
+            PendingIntent pendingIntent) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), layout);
+        views.setImageViewResource(R.id.record_badge_image_view,
+                serviceRunning ? R.drawable.ic_widget_stop : R.drawable.ic_widget_record);
+        views.setInt(R.id.record_badge_image_view, "setBackgroundResource",
+                serviceRunning ? R.drawable.bg_widget_button_recording : R.drawable.bg_widget_button_idle);
+        views.setContentDescription(R.id.record_badge_image_view,
+                context.getString(serviceRunning ? R.string.matlog_stop : R.string.record_log));
+        if (layout == R.layout.widget_recording_wide) {
+            views.setTextViewText(R.id.record_label, context.getString(
+                    serviceRunning ? R.string.widget_status_recording : R.string.start_recording_log));
+        }
+        views.setOnClickPendingIntent(android.R.id.background, pendingIntent);
+        return views;
     }
 
     private static PendingIntent getPendingIntent(Context context, int appWidgetId) {

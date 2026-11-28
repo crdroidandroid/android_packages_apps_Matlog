@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: crDroid Android Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <color name="matlog_widget_background">@android:color/system_neutral2_800</color>
+    <color name="matlog_widget_label">@android:color/system_neutral1_100</color>
+    <color name="matlog_widget_idle">@android:color/system_accent1_700</color>
+    <color name="matlog_widget_on_idle">@android:color/system_accent1_100</color>
+    <color name="matlog_widget_recording">@android:color/system_accent3_200</color>
+    <color name="matlog_widget_on_recording">@android:color/system_accent3_800</color>
+</resources>

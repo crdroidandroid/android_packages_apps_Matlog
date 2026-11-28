@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/record_badge_view"
+<!--
+     SPDX-FileCopyrightText: crDroid Android Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/selectableItemBackgroundBorderless"
-    android:orientation="vertical">
+    android:background="@drawable/bg_widget"
+    android:clipToOutline="true"
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/record_badge_image_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="center"
-        android:layout_weight="1"
+        android:background="@drawable/bg_widget_button_idle"
         android:contentDescription="@string/record_log"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_widget_start_record" />
+        android:padding="12dp"
+        android:src="@drawable/ic_widget_record" />
 
-</LinearLayout>
-
+</FrameLayout>

@@ -276,6 +276,7 @@
     <string name="matlog_recording_summary">New log lines are being saved</string>
     <string name="matlog_recording_paused">Log recording paused</string>
     <string name="matlog_recording_paused_summary">New log lines are skipped until you resume</string>
+    <string name="matlog_widget_description">Start or stop a log recording</string>
     <string name="matlog_pref_keep_screen_on" translatable="false">matlog_keep_screen_on</string>
     <string name="matlog_pref_keep_screen_on_title">Keep screen on</string>
     <string name="matlog_pref_keep_screen_on_summary">Stop the screen from turning off while logs are shown</string>
