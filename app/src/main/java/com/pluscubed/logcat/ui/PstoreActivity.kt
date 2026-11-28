@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +55,7 @@ import com.pluscubed.logcat.helper.SaveLogHelper
 import com.pluscubed.logcat.reader.PstoreFile
 import com.pluscubed.logcat.reader.PstoreReader
 import com.pluscubed.logcat.ui.compose.BackButton
+import com.pluscubed.logcat.ui.compose.MatlogLoadingIndicator
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -165,7 +165,7 @@ private fun PstoreScreen(
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             val list = files
             when {
-                list == null -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                list == null -> MatlogLoadingIndicator(modifier = Modifier.align(Alignment.Center))
                 list.isEmpty() -> Text(
                     stringResource(R.string.matlog_pstore_empty),
                     style = MaterialTheme.typography.bodyLarge,

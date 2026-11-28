@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -50,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.drawable.toBitmap
+import com.pluscubed.logcat.ui.compose.MatlogLoadingIndicator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.omnirom.logcat.R
@@ -101,7 +101,7 @@ fun AppPickerDialog(
                 Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                     val list = apps
                     if (list == null) {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        MatlogLoadingIndicator(modifier = Modifier.align(Alignment.Center))
                     } else {
                         val shown = remember(list, query) {
                             list.filter {

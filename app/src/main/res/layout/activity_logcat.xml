@@ -36,8 +36,8 @@
         android:background="@android:color/transparent"
         android:visibility="gone">
 
-        <ProgressBar
-            style="?android:attr/progressBarStyle"
+        <com.google.android.material.loadingindicator.LoadingIndicator
+            style="@style/Widget.Material3.LoadingIndicator.Contained"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />

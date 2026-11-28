@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,6 +73,7 @@ import com.pluscubed.logcat.helper.DialogHelper
 import com.pluscubed.logcat.helper.LogExporter
 import com.pluscubed.logcat.helper.SaveLogHelper
 import com.pluscubed.logcat.ui.compose.BackButton
+import com.pluscubed.logcat.ui.compose.MatlogLoadingIndicator
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -300,7 +300,7 @@ private fun SavedLogsScreen(
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             when {
-                list == null -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                list == null -> MatlogLoadingIndicator(modifier = Modifier.align(Alignment.Center))
                 list.isEmpty() -> Text(
                     stringResource(R.string.no_saved_logs),
                     style = MaterialTheme.typography.bodyLarge,
