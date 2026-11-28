@@ -35,7 +35,6 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -44,7 +43,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,10 +61,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.lifecycleScope
 import com.pluscubed.logcat.data.SendLogDetails
@@ -78,7 +74,10 @@ import com.pluscubed.logcat.intents.Intents
 import com.pluscubed.logcat.ui.LogcatActivity
 import com.pluscubed.logcat.ui.compose.BackButton
 import com.pluscubed.logcat.ui.compose.MatlogIcon
+import com.pluscubed.logcat.ui.compose.MatlogIconButton
+import com.pluscubed.logcat.ui.compose.MatlogTextButton
 import com.pluscubed.logcat.ui.compose.MatlogTheme
+import com.pluscubed.logcat.ui.compose.logText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -334,7 +333,7 @@ private fun CrashesHomeScreen(
                 navigationIcon = { BackButton(onBack) },
                 actions = {
                     if (onExceptions && !exceptions.isNullOrEmpty()) {
-                        IconButton(onClick = {
+                        MatlogIconButton(onClick = {
                             searching = !searching
                             if (!searching) query = ""
                         }) {
@@ -343,7 +342,7 @@ private fun CrashesHomeScreen(
                                 contentDescription = stringResource(R.string.matlog_exceptions_search)
                             )
                         }
-                        IconButton(onClick = { showSort = true }) {
+                        MatlogIconButton(onClick = { showSort = true }) {
                             MatlogIcon(
                                 R.drawable.ic_sort,
                                 contentDescription = stringResource(R.string.matlog_exceptions_sort)
@@ -351,7 +350,7 @@ private fun CrashesHomeScreen(
                         }
                     }
                     if (hasItems) {
-                        IconButton(onClick = { confirmClear = true }) {
+                        MatlogIconButton(onClick = { confirmClear = true }) {
                             MatlogIcon(
                                 R.drawable.ic_delete_sweep,
                                 contentDescription = stringResource(R.string.matlog_crash_clear_all)
@@ -414,7 +413,7 @@ private fun CrashesHomeScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { showSort = false }) { Text(stringResource(android.R.string.cancel)) }
+                MatlogTextButton(onClick = { showSort = false }) { Text(stringResource(android.R.string.cancel)) }
             },
         )
     }
@@ -432,7 +431,7 @@ private fun CrashesHomeScreen(
                 )
             },
             confirmButton = {
-                TextButton(onClick = {
+                MatlogTextButton(onClick = {
                     confirmClear = false
                     scope.launch(Dispatchers.IO) {
                         if (onExceptions) repository.dismissAllExceptions() else repository.dismissAll()
@@ -440,7 +439,7 @@ private fun CrashesHomeScreen(
                 }) { Text(stringResource(android.R.string.ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmClear = false }) {
+                MatlogTextButton(onClick = { confirmClear = false }) {
                     Text(stringResource(android.R.string.cancel))
                 }
             },
@@ -591,7 +590,7 @@ private fun CrashDetailsScreen(
                 navigationIcon = { BackButton(onBack) },
                 actions = {
                     if (current != null) {
-                        IconButton(onClick = {
+                        MatlogIconButton(onClick = {
                             CrashActionReceiver.copyToClipboard(context, current)
                             Toast.makeText(context, R.string.matlog_crash_copied, Toast.LENGTH_SHORT).show()
                         }) {
@@ -600,19 +599,19 @@ private fun CrashDetailsScreen(
                                 contentDescription = stringResource(R.string.matlog_crash_copy)
                             )
                         }
-                        IconButton(onClick = { onShare(current) }) {
+                        MatlogIconButton(onClick = { onShare(current) }) {
                             MatlogIcon(
                                 R.drawable.ic_share_white_24dp,
                                 contentDescription = stringResource(R.string.matlog_crash_share)
                             )
                         }
-                        IconButton(onClick = { onExport(current) }) {
+                        MatlogIconButton(onClick = { onExport(current) }) {
                             MatlogIcon(
                                 R.drawable.ic_download,
                                 contentDescription = stringResource(R.string.matlog_export)
                             )
                         }
-                        IconButton(onClick = { onDelete(current) }) {
+                        MatlogIconButton(onClick = { onDelete(current) }) {
                             MatlogIcon(
                                 R.drawable.ic_delete,
                                 contentDescription = stringResource(R.string.matlog_crash_delete)
@@ -679,20 +678,20 @@ private fun ExceptionDetailsScreen(
                 navigationIcon = { BackButton(onBack) },
                 actions = {
                     if (current != null) {
-                        IconButton(onClick = { LogTextActions.copy(context, current.log) }) {
+                        MatlogIconButton(onClick = { LogTextActions.copy(context, current.log) }) {
                             MatlogIcon(
                                 R.drawable.ic_copy,
                                 contentDescription = stringResource(R.string.matlog_crash_copy)
                             )
                         }
-                        IconButton(onClick = { onShare(current) }) {
+                        MatlogIconButton(onClick = { onShare(current) }) {
                             MatlogIcon(
                                 R.drawable.ic_share_white_24dp,
                                 contentDescription = stringResource(R.string.matlog_crash_share)
                             )
                         }
                         Box {
-                            IconButton(onClick = { menuOpen = true }) {
+                            MatlogIconButton(onClick = { menuOpen = true }) {
                                 MatlogIcon(
                                     R.drawable.ic_more_vert,
                                     contentDescription = stringResource(R.string.matlog_more_options)
@@ -780,9 +779,7 @@ private fun LogText(log: String) {
         Text(
             text = log,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            fontFamily = FontFamily.Monospace,
-            fontSize = 12.sp,
-            lineHeight = 16.sp,
+            style = MaterialTheme.typography.logText,
             softWrap = false,
         )
     }

@@ -31,7 +31,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +38,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -65,7 +63,9 @@ import com.pluscubed.logcat.helper.LogExporter
 import com.pluscubed.logcat.helper.SaveLogHelper
 import com.pluscubed.logcat.ui.compose.BackButton
 import com.pluscubed.logcat.ui.compose.MatlogIcon
+import com.pluscubed.logcat.ui.compose.MatlogIconButton
 import com.pluscubed.logcat.ui.compose.MatlogLoadingIndicator
+import com.pluscubed.logcat.ui.compose.MatlogTextButton
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import java.io.File
 import java.io.FileFilter
@@ -261,7 +261,7 @@ private fun SavedLogsScreen(
                 },
                 navigationIcon = {
                     if (selecting) {
-                        IconButton(onClick = { selected = emptySet() }) {
+                        MatlogIconButton(onClick = { selected = emptySet() }) {
                             MatlogIcon(R.drawable.ic_close, contentDescription = stringResource(R.string.matlog_back))
                         }
                     } else {
@@ -270,19 +270,19 @@ private fun SavedLogsScreen(
                 },
                 actions = {
                     if (selecting) {
-                        IconButton(onClick = {
+                        MatlogIconButton(onClick = {
                             val all = list.orEmpty().map { it.name }.toSet()
                             selected = if (selection == all) emptySet() else all
                         }) {
                             MatlogIcon(R.drawable.ic_select_all, contentDescription = stringResource(R.string.matlog_select_all))
                         }
-                        IconButton(onClick = {
+                        MatlogIconButton(onClick = {
                             deleting = list.orEmpty().filter { it.name in selection }.map { it.file }
                         }) {
                             MatlogIcon(R.drawable.ic_delete, contentDescription = stringResource(R.string.matlog_saved_logs_delete))
                         }
                     } else if (!list.isNullOrEmpty()) {
-                        IconButton(onClick = { showSort = true }) {
+                        MatlogIconButton(onClick = { showSort = true }) {
                             MatlogIcon(R.drawable.ic_sort, contentDescription = stringResource(R.string.matlog_saved_logs_sort))
                         }
                     }
@@ -369,14 +369,14 @@ private fun SavedLogsScreen(
                 )
             },
             confirmButton = {
-                TextButton(onClick = {
+                MatlogTextButton(onClick = {
                     deleting = null
                     selected = emptySet()
                     onDelete(files)
                 }) { Text(stringResource(R.string.matlog_saved_logs_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { deleting = null }) { Text(stringResource(android.R.string.cancel)) }
+                MatlogTextButton(onClick = { deleting = null }) { Text(stringResource(android.R.string.cancel)) }
             },
         )
     }
@@ -425,7 +425,7 @@ private fun SavedLogItem(
         } else {
             {
                 Box {
-                    IconButton(onClick = { menuExpanded = true }) {
+                    MatlogIconButton(onClick = { menuExpanded = true }) {
                         MatlogIcon(R.drawable.ic_more_vert, contentDescription = stringResource(R.string.matlog_more_options))
                     }
                     DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
@@ -473,10 +473,10 @@ private fun SortDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { onDone(sortBy, ascending) }) { Text(stringResource(android.R.string.ok)) }
+            MatlogTextButton(onClick = { onDone(sortBy, ascending) }) { Text(stringResource(android.R.string.ok)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
+            MatlogTextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
         },
     )
 }
@@ -527,12 +527,12 @@ private fun RenameDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = { onRename(trimmed) }, enabled = error == null) {
+            MatlogTextButton(onClick = { onRename(trimmed) }, enabled = error == null) {
                 Text(stringResource(R.string.matlog_saved_logs_rename))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
+            MatlogTextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
         },
     )
 }

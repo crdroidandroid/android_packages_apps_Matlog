@@ -30,7 +30,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -48,7 +47,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -78,20 +76,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.omnirom.logcat.R
 
-private val OuterCorner = 20.dp
-private val InnerCorner = 4.dp
 private val DisabledAlpha = 0.38f
 
 enum class PreferencePosition { Single, Top, Middle, Bottom }
 
 private val LocalPreferencePosition = compositionLocalOf { PreferencePosition.Single }
 
-private fun preferenceShape(position: PreferencePosition): Shape = when (position) {
-    PreferencePosition.Single -> RoundedCornerShape(OuterCorner)
-    PreferencePosition.Top -> RoundedCornerShape(OuterCorner, OuterCorner, InnerCorner, InnerCorner)
-    PreferencePosition.Middle -> RoundedCornerShape(InnerCorner)
-    PreferencePosition.Bottom -> RoundedCornerShape(InnerCorner, InnerCorner, OuterCorner, OuterCorner)
-}
+@Composable
+private fun preferenceShape(position: PreferencePosition): Shape = MaterialTheme.shapes.segmented(
+    first = position == PreferencePosition.Single || position == PreferencePosition.Top,
+    last = position == PreferencePosition.Single || position == PreferencePosition.Bottom,
+)
 
 class PreferenceGroupScope internal constructor() {
     internal val items = mutableListOf<@Composable () -> Unit>()
@@ -343,7 +338,7 @@ fun ListPreference(
         },
         confirmButton = {},
         dismissButton = {
-            TextButton(onClick = { showDialog = false }) { Text(stringResource(android.R.string.cancel)) }
+            MatlogTextButton(onClick = { showDialog = false }) { Text(stringResource(android.R.string.cancel)) }
         },
     )
 }
@@ -392,7 +387,7 @@ fun MultiSelectListPreference(
             }
         },
         confirmButton = {
-            TextButton(
+            MatlogTextButton(
                 enabled = allowEmpty || selected.isNotEmpty(),
                 onClick = {
                     showDialog = false
@@ -401,7 +396,7 @@ fun MultiSelectListPreference(
             ) { Text(stringResource(android.R.string.ok)) }
         },
         dismissButton = {
-            TextButton(onClick = { showDialog = false }) { Text(stringResource(android.R.string.cancel)) }
+            MatlogTextButton(onClick = { showDialog = false }) { Text(stringResource(android.R.string.cancel)) }
         },
     )
 }
@@ -455,10 +450,10 @@ fun TextInputPreference(
             )
         },
         confirmButton = {
-            TextButton(onClick = submit) { Text(stringResource(android.R.string.ok)) }
+            MatlogTextButton(onClick = submit) { Text(stringResource(android.R.string.ok)) }
         },
         dismissButton = {
-            TextButton(onClick = { showDialog = false }) { Text(stringResource(android.R.string.cancel)) }
+            MatlogTextButton(onClick = { showDialog = false }) { Text(stringResource(android.R.string.cancel)) }
         },
     )
     LaunchedEffect(Unit) { focusRequester.requestFocus() }

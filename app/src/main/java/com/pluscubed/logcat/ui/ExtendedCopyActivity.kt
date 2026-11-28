@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,6 +34,7 @@ import com.pluscubed.logcat.helper.LogTextActions
 import com.pluscubed.logcat.helper.PreferenceHelper
 import com.pluscubed.logcat.ui.compose.BackButton
 import com.pluscubed.logcat.ui.compose.MatlogIcon
+import com.pluscubed.logcat.ui.compose.MatlogIconButton
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import org.omnirom.logcat.R
 
@@ -97,10 +97,10 @@ private fun ExtendedCopyScreen(
                 title = { Text(stringResource(R.string.matlog_extended_copy)) },
                 navigationIcon = { BackButton(onBack) },
                 actions = {
-                    IconButton(onClick = onCopyAll) {
+                    MatlogIconButton(onClick = onCopyAll) {
                         MatlogIcon(R.drawable.ic_copy, contentDescription = stringResource(R.string.matlog_copy_all))
                     }
-                    IconButton(onClick = onShare) {
+                    MatlogIconButton(onClick = onShare) {
                         MatlogIcon(R.drawable.ic_share_white_24dp, contentDescription = stringResource(R.string.matlog_share))
                     }
                 },

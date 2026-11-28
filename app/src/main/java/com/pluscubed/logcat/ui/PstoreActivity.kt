@@ -25,7 +25,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -52,6 +51,7 @@ import com.pluscubed.logcat.reader.PstoreFile
 import com.pluscubed.logcat.reader.PstoreReader
 import com.pluscubed.logcat.ui.compose.BackButton
 import com.pluscubed.logcat.ui.compose.MatlogIcon
+import com.pluscubed.logcat.ui.compose.MatlogIconButton
 import com.pluscubed.logcat.ui.compose.MatlogLoadingIndicator
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import java.text.DateFormat
@@ -152,7 +152,7 @@ private fun PstoreScreen(
                 title = { Text(stringResource(R.string.matlog_pstore)) },
                 navigationIcon = { BackButton(onBack) },
                 actions = {
-                    IconButton(onClick = onRefresh) {
+                    MatlogIconButton(onClick = onRefresh) {
                         MatlogIcon(R.drawable.ic_refresh, contentDescription = stringResource(R.string.matlog_pstore_refresh))
                     }
                 },
@@ -207,7 +207,7 @@ private fun PstoreItem(file: PstoreFile, onOpen: () -> Unit, onExport: () -> Uni
         },
         trailingContent = {
             Box {
-                IconButton(onClick = { menuOpen = true }) {
+                MatlogIconButton(onClick = { menuOpen = true }) {
                     MatlogIcon(R.drawable.ic_more_vert, contentDescription = stringResource(R.string.matlog_more_options))
                 }
                 DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {

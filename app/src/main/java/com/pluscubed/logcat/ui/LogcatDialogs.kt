@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +44,7 @@ import com.pluscubed.logcat.ui.compose.DialogMessage
 import com.pluscubed.logcat.ui.compose.FilenameDialog
 import com.pluscubed.logcat.ui.compose.MatlogDialog
 import com.pluscubed.logcat.ui.compose.MatlogIcon
+import com.pluscubed.logcat.ui.compose.MatlogIconButton
 import com.pluscubed.logcat.ui.compose.SuggestionTextField
 import com.pluscubed.logcat.ui.compose.SwitchRow
 import java.util.function.Consumer
@@ -222,7 +222,7 @@ private fun SavedSearchRow(text: String, onClick: () -> Unit, onDelete: () -> Un
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
-        IconButton(onClick = onDelete) {
+        MatlogIconButton(onClick = onDelete) {
             MatlogIcon(R.drawable.ic_delete, contentDescription = stringResource(R.string.delete))
         }
     }

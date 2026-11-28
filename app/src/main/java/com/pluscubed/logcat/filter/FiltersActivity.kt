@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.pluscubed.logcat.filter
 
 import android.content.Context
@@ -37,9 +39,9 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +49,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
@@ -73,6 +74,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.pluscubed.logcat.ui.compose.BackButton
 import com.pluscubed.logcat.ui.compose.MatlogIcon
+import com.pluscubed.logcat.ui.compose.MatlogIconButton
+import com.pluscubed.logcat.ui.compose.MatlogTextButton
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import java.time.Instant
 import java.time.LocalDate
@@ -270,7 +273,7 @@ private fun FilterListScreen(
                 title = { Text(stringResource(R.string.matlog_filters)) },
                 navigationIcon = { BackButton(onBack) },
                 actions = {
-                    IconButton(onClick = { menuExpanded = true }) {
+                    MatlogIconButton(onClick = { menuExpanded = true }) {
                         MatlogIcon(
                             R.drawable.ic_more_vert,
                             contentDescription = stringResource(R.string.matlog_more_options)
@@ -353,13 +356,13 @@ private fun FilterListScreen(
             title = { Text(stringResource(R.string.matlog_filters_delete_all)) },
             text = { Text(stringResource(R.string.matlog_filters_delete_all_message)) },
             confirmButton = {
-                TextButton(onClick = {
+                MatlogTextButton(onClick = {
                     confirmDeleteAll = false
                     onDeleteAll()
                 }) { Text(stringResource(android.R.string.ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmDeleteAll = false }) {
+                MatlogTextButton(onClick = { confirmDeleteAll = false }) {
                     Text(stringResource(android.R.string.cancel))
                 }
             },
@@ -544,11 +547,11 @@ private fun FilterEditorScreen(
                 navigationIcon = { BackButton(onBack) },
                 actions = {
                     existing?.let { filter ->
-                        IconButton(onClick = { onDelete(filter) }) {
+                        MatlogIconButton(onClick = { onDelete(filter) }) {
                             MatlogIcon(R.drawable.ic_delete, contentDescription = stringResource(R.string.matlog_filter_delete))
                         }
                     }
-                    IconButton(onClick = {
+                    MatlogIconButton(onClick = {
                         val filter = buildFilter()
                         val error = validationError(filter)
                         if (error == null) {
@@ -588,7 +591,7 @@ private fun FilterEditorScreen(
 
             Text(
                 stringResource(R.string.matlog_filter_levels),
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleSmallEmphasized,
             )
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 UserFilter.LEVELS.forEach { level ->
@@ -612,7 +615,7 @@ private fun FilterEditorScreen(
                 packageName, { packageName = it }, R.string.matlog_filter_package,
                 regex = packageRegex, onRegexChange = { packageRegex = it },
                 trailingExtra = {
-                    IconButton(onClick = { showAppPicker = true }) {
+                    MatlogIconButton(onClick = { showAppPicker = true }) {
                         MatlogIcon(R.drawable.ic_apps, contentDescription = stringResource(R.string.matlog_filter_pick_app))
                     }
                 },
@@ -628,7 +631,7 @@ private fun FilterEditorScreen(
 
             Text(
                 stringResource(R.string.matlog_filter_time_range),
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleSmallEmphasized,
             )
             TimeRangeRow(R.string.matlog_filter_since, since, { pickingSince = true }, { since = null })
             TimeRangeRow(R.string.matlog_filter_until, until, { pickingSince = false }, { until = null })
@@ -672,7 +675,7 @@ private fun TimeRangeRow(labelRes: Int, value: Long?, onPick: () -> Unit, onClea
         },
         trailingContent = if (value != null) {
             {
-                IconButton(onClick = onClear) {
+                MatlogIconButton(onClick = onClear) {
                     MatlogIcon(R.drawable.ic_close, contentDescription = stringResource(R.string.matlog_filter_clear))
                 }
             }
@@ -708,7 +711,7 @@ private fun DateTimePickerDialog(
         DatePickerDialog(
             onDismissRequest = onDismiss,
             confirmButton = {
-                TextButton(
+                MatlogTextButton(
                     onClick = {
                         dateState.selectedDateMillis?.let {
                             pickedDate = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
@@ -718,7 +721,7 @@ private fun DateTimePickerDialog(
                 ) { Text(stringResource(android.R.string.ok)) }
             },
             dismissButton = {
-                TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
+                MatlogTextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
             },
         ) {
             DatePicker(state = dateState)
@@ -732,7 +735,7 @@ private fun DateTimePickerDialog(
         AlertDialog(
             onDismissRequest = onDismiss,
             confirmButton = {
-                TextButton(onClick = {
+                MatlogTextButton(onClick = {
                     val time = if (endOfMinute) {
                         LocalTime.of(timeState.hour, timeState.minute, 59, 999_000_000)
                     } else {
@@ -742,7 +745,7 @@ private fun DateTimePickerDialog(
                 }) { Text(stringResource(android.R.string.ok)) }
             },
             dismissButton = {
-                TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
+                MatlogTextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
             },
             text = { TimeInput(state = timeState) },
         )

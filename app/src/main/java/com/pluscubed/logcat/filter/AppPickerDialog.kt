@@ -27,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +46,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.drawable.toBitmap
 import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MatlogLoadingIndicator
+import com.pluscubed.logcat.ui.compose.MatlogTextButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.omnirom.logcat.R
@@ -135,9 +135,9 @@ fun AppPickerDialog(
                         .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
+                    MatlogTextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
                     if (multiSelect) {
-                        TextButton(
+                        MatlogTextButton(
                             onClick = { onSelected(selected) },
                             enabled = selected.isNotEmpty(),
                         ) { Text(stringResource(android.R.string.ok)) }

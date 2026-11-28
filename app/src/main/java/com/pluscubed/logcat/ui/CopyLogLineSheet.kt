@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -30,12 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.pluscubed.logcat.data.LogLine
 import com.pluscubed.logcat.helper.LogTextActions
 import com.pluscubed.logcat.ui.compose.ComposeDialogs
+import com.pluscubed.logcat.ui.compose.logText
+import com.pluscubed.logcat.ui.compose.segmented
 import kotlinx.coroutines.launch
 import org.omnirom.logcat.R
 
@@ -92,7 +92,7 @@ private fun CopySheet(fields: List<Pair<Int, String>>, onDismiss: () -> Unit, on
                 modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
             )
             fields.forEachIndexed { index, (label, value) ->
-                CopyField(stringResource(label), value, fieldShape(index, fields.size)) {
+                CopyField(stringResource(label), value, MaterialTheme.shapes.segmented(index == 0, index == fields.lastIndex)) {
                     onCopy(value)
                     scope.launch { sheetState.hide() }.invokeOnCompletion { onDismiss() }
                 }
@@ -115,22 +115,10 @@ private fun CopyField(label: String, value: String, shape: Shape, onClick: () ->
         Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontFamily = FontFamily.Monospace,
+            style = MaterialTheme.typography.logText,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
         )
     }
-}
-
-private fun fieldShape(index: Int, count: Int): Shape {
-    val outer = 20.dp
-    val inner = 4.dp
-    return RoundedCornerShape(
-        topStart = if (index == 0) outer else inner,
-        topEnd = if (index == 0) outer else inner,
-        bottomStart = if (index == count - 1) outer else inner,
-        bottomEnd = if (index == count - 1) outer else inner,
-    )
 }
