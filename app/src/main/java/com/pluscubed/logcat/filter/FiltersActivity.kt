@@ -31,15 +31,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.FilterAlt
-import androidx.compose.material.icons.filled.FilterAltOff
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -48,7 +39,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.ListItem
@@ -82,17 +72,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.pluscubed.logcat.ui.compose.BackButton
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MatlogTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.omnirom.logcat.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.omnirom.logcat.R
 
 class FiltersActivity : ComponentActivity() {
 
@@ -280,8 +271,8 @@ private fun FilterListScreen(
                 navigationIcon = { BackButton(onBack) },
                 actions = {
                     IconButton(onClick = { menuExpanded = true }) {
-                        Icon(
-                            Icons.Filled.MoreVert,
+                        MatlogIcon(
+                            R.drawable.ic_more_vert,
                             contentDescription = stringResource(R.string.matlog_more_options)
                         )
                     }
@@ -322,7 +313,7 @@ private fun FilterListScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAdd) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.matlog_filter_add))
+                MatlogIcon(R.drawable.ic_add, contentDescription = stringResource(R.string.matlog_filter_add))
             }
         },
     ) { padding ->
@@ -382,8 +373,8 @@ private fun FilterListItem(filter: UserFilter, onClick: () -> Unit, onToggle: (B
     ListItem(
         modifier = Modifier.clickable(onClick = onClick),
         leadingContent = {
-            Icon(
-                if (filter.including) Icons.Filled.FilterAlt else Icons.Filled.FilterAltOff,
+            MatlogIcon(
+                if (filter.including) R.drawable.ic_filter else R.drawable.ic_filter_alt_off,
                 contentDescription = stringResource(
                     if (filter.including) R.string.matlog_filter_include else R.string.matlog_filter_exclude
                 ),
@@ -463,8 +454,8 @@ private fun EmptyFilters(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Icon(
-                Icons.Filled.FilterAlt,
+            MatlogIcon(
+                R.drawable.ic_filter,
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -554,7 +545,7 @@ private fun FilterEditorScreen(
                 actions = {
                     existing?.let { filter ->
                         IconButton(onClick = { onDelete(filter) }) {
-                            Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.matlog_filter_delete))
+                            MatlogIcon(R.drawable.ic_delete, contentDescription = stringResource(R.string.matlog_filter_delete))
                         }
                     }
                     IconButton(onClick = {
@@ -566,7 +557,7 @@ private fun FilterEditorScreen(
                             Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                         }
                     }) {
-                        Icon(Icons.Filled.Check, contentDescription = stringResource(R.string.matlog_filter_save))
+                        MatlogIcon(R.drawable.ic_check, contentDescription = stringResource(R.string.matlog_filter_save))
                     }
                 },
             )
@@ -622,7 +613,7 @@ private fun FilterEditorScreen(
                 regex = packageRegex, onRegexChange = { packageRegex = it },
                 trailingExtra = {
                     IconButton(onClick = { showAppPicker = true }) {
-                        Icon(Icons.Filled.Apps, contentDescription = stringResource(R.string.matlog_filter_pick_app))
+                        MatlogIcon(R.drawable.ic_apps, contentDescription = stringResource(R.string.matlog_filter_pick_app))
                     }
                 },
             )
@@ -682,7 +673,7 @@ private fun TimeRangeRow(labelRes: Int, value: Long?, onPick: () -> Unit, onClea
         trailingContent = if (value != null) {
             {
                 IconButton(onClick = onClear) {
-                    Icon(Icons.Filled.Clear, contentDescription = stringResource(R.string.matlog_filter_clear))
+                    MatlogIcon(R.drawable.ic_close, contentDescription = stringResource(R.string.matlog_filter_clear))
                 }
             }
         } else {

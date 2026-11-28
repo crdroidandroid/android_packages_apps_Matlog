@@ -13,18 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Label
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.FilterAlt
-import androidx.compose.material.icons.outlined.FolderZip
-import androidx.compose.material.icons.outlined.Numbers
-import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material.icons.outlined.SavedSearch
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,6 +44,7 @@ import com.pluscubed.logcat.ui.compose.DialogButton
 import com.pluscubed.logcat.ui.compose.DialogMessage
 import com.pluscubed.logcat.ui.compose.FilenameDialog
 import com.pluscubed.logcat.ui.compose.MatlogDialog
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.SuggestionTextField
 import com.pluscubed.logcat.ui.compose.SwitchRow
 import java.util.function.Consumer
@@ -75,14 +64,14 @@ object LogcatDialogs {
                 dismiss()
                 onSearch.accept(query)
             }
-            MatlogDialog(onDismiss = dismiss, icon = Icons.Outlined.FilterAlt, title = stringResource(R.string.filter_choice)) {
+            MatlogDialog(onDismiss = dismiss, icon = R.drawable.ic_filter, title = stringResource(R.string.filter_choice)) {
                 ActionRow(
                     label = stringResource(R.string.matlog_search_by_item, stringResource(R.string.filter_choice_tag), tag),
-                    icon = Icons.AutoMirrored.Outlined.Label,
+                    icon = R.drawable.ic_label,
                 ) { search(SearchCriteria.TAG_KEYWORD + if (' ' in tag) "\"$tag\"" else tag) }
                 ActionRow(
                     label = stringResource(R.string.matlog_search_by_item, stringResource(R.string.filter_choice_pid), pid.toString()),
-                    icon = Icons.Outlined.Numbers,
+                    icon = R.drawable.ic_numbers,
                 ) { search(SearchCriteria.PID_KEYWORD + pid) }
             }
         }
@@ -93,7 +82,7 @@ object LogcatDialogs {
         val labels = DialogHelper.logLevelLabels(activity).toList()
         ComposeDialogs.show(activity) { dismiss ->
             ChoiceDialog(
-                icon = Icons.Outlined.Tune,
+                icon = R.drawable.ic_tune,
                 title = stringResource(R.string.log_level),
                 options = labels,
                 selected = selected,
@@ -119,7 +108,7 @@ object LogcatDialogs {
             var include by remember { mutableStateOf(PreferenceHelper.getIncludeDeviceInfoPreference(activity)) }
             MatlogDialog(
                 onDismiss = dismiss,
-                icon = if (zip) Icons.Outlined.FolderZip else Icons.Outlined.Share,
+                icon = if (zip) R.drawable.ic_save_zip else R.drawable.ic_share_white_24dp,
                 title = stringResource(if (zip) R.string.save_log_zip else R.string.share_log),
                 confirmButton = {
                     DialogButton(android.R.string.ok, {
@@ -141,7 +130,7 @@ object LogcatDialogs {
     fun showSaveLog(activity: Activity, filename: String, onSave: Consumer<String>) {
         ComposeDialogs.show(activity) { dismiss ->
             FilenameDialog(
-                icon = Icons.Outlined.Save,
+                icon = R.drawable.ic_save,
                 title = stringResource(R.string.save_log),
                 filename = filename,
                 onDismiss = dismiss,
@@ -180,7 +169,7 @@ private fun SavedSearchesDialog(
     }
     MatlogDialog(
         onDismiss = onDismiss,
-        icon = Icons.Outlined.SavedSearch,
+        icon = R.drawable.ic_saved_search,
         title = stringResource(R.string.matlog_saved_searches),
     ) {
         DialogMessage(stringResource(R.string.message_filters))
@@ -197,7 +186,7 @@ private fun SavedSearchesDialog(
                 },
             )
         }
-        ActionRow(stringResource(R.string.add_filter_ellipsis), Icons.Outlined.Add) { adding = true }
+        ActionRow(stringResource(R.string.add_filter_ellipsis), R.drawable.ic_add) { adding = true }
     }
     if (adding) {
         AddSearchDialog(suggestions, onDismiss = { adding = false }) { text ->
@@ -225,7 +214,7 @@ private fun SavedSearchRow(text: String, onClick: () -> Unit, onDelete: () -> Un
             .padding(start = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Outlined.SavedSearch, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        MatlogIcon(R.drawable.ic_saved_search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.width(16.dp))
         Text(
             text = text,
@@ -234,7 +223,7 @@ private fun SavedSearchRow(text: String, onClick: () -> Unit, onDelete: () -> Un
             modifier = Modifier.weight(1f),
         )
         IconButton(onClick = onDelete) {
-            Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.delete))
+            MatlogIcon(R.drawable.ic_delete, contentDescription = stringResource(R.string.delete))
         }
     }
 }
@@ -249,7 +238,7 @@ private fun AddSearchDialog(suggestions: List<String>, onDismiss: () -> Unit, on
     }
     MatlogDialog(
         onDismiss = onDismiss,
-        icon = Icons.Outlined.Add,
+        icon = R.drawable.ic_add,
         title = stringResource(R.string.add_filter),
         confirmButton = { DialogButton(android.R.string.ok, submit) },
     ) {

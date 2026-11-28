@@ -30,23 +30,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Sort
-import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.SaveAlt
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -73,7 +61,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -90,6 +77,7 @@ import com.pluscubed.logcat.helper.SaveLogHelper
 import com.pluscubed.logcat.intents.Intents
 import com.pluscubed.logcat.ui.LogcatActivity
 import com.pluscubed.logcat.ui.compose.BackButton
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -350,22 +338,22 @@ private fun CrashesHomeScreen(
                             searching = !searching
                             if (!searching) query = ""
                         }) {
-                            Icon(
-                                if (searching) Icons.Filled.Close else Icons.Filled.Search,
+                            MatlogIcon(
+                                if (searching) R.drawable.ic_close else R.drawable.ic_search,
                                 contentDescription = stringResource(R.string.matlog_exceptions_search)
                             )
                         }
                         IconButton(onClick = { showSort = true }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.Sort,
+                            MatlogIcon(
+                                R.drawable.ic_sort,
                                 contentDescription = stringResource(R.string.matlog_exceptions_sort)
                             )
                         }
                     }
                     if (hasItems) {
                         IconButton(onClick = { confirmClear = true }) {
-                            Icon(
-                                Icons.Filled.DeleteSweep,
+                            MatlogIcon(
+                                R.drawable.ic_delete_sweep,
                                 contentDescription = stringResource(R.string.matlog_crash_clear_all)
                             )
                         }
@@ -395,7 +383,7 @@ private fun CrashesHomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp),
-                        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                        leadingIcon = { MatlogIcon(R.drawable.ic_search, contentDescription = null) },
                         placeholder = { Text(stringResource(R.string.matlog_exceptions_search)) },
                         singleLine = true,
                     )
@@ -464,7 +452,7 @@ private fun CrashesHomeScreen(
 private fun CrashList(crashes: List<Crash>?, onCrashClick: (Crash) -> Unit) {
     when {
         crashes == null -> Unit
-        crashes.isEmpty() -> EmptyState(Icons.Filled.BugReport, R.string.matlog_crashes_empty)
+        crashes.isEmpty() -> EmptyState(R.drawable.ic_bug_report, R.string.matlog_crashes_empty)
         else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(crashes, key = { it.id }) { crash ->
                 CrashListItem(crash, onClick = { onCrashClick(crash) })
@@ -502,7 +490,7 @@ private fun ExceptionList(
     }
     when {
         exceptions == null -> Unit
-        exceptions.isEmpty() -> EmptyState(Icons.Filled.BugReport, R.string.matlog_exceptions_empty)
+        exceptions.isEmpty() -> EmptyState(R.drawable.ic_bug_report, R.string.matlog_exceptions_empty)
         else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(shown, key = { it.id }) { exception ->
                 ExceptionListItem(exception, onClick = { onExceptionClick(exception) })
@@ -607,26 +595,26 @@ private fun CrashDetailsScreen(
                             CrashActionReceiver.copyToClipboard(context, current)
                             Toast.makeText(context, R.string.matlog_crash_copied, Toast.LENGTH_SHORT).show()
                         }) {
-                            Icon(
-                                Icons.Filled.ContentCopy,
+                            MatlogIcon(
+                                R.drawable.ic_copy,
                                 contentDescription = stringResource(R.string.matlog_crash_copy)
                             )
                         }
                         IconButton(onClick = { onShare(current) }) {
-                            Icon(
-                                Icons.Filled.Share,
+                            MatlogIcon(
+                                R.drawable.ic_share_white_24dp,
                                 contentDescription = stringResource(R.string.matlog_crash_share)
                             )
                         }
                         IconButton(onClick = { onExport(current) }) {
-                            Icon(
-                                Icons.Filled.SaveAlt,
+                            MatlogIcon(
+                                R.drawable.ic_download,
                                 contentDescription = stringResource(R.string.matlog_export)
                             )
                         }
                         IconButton(onClick = { onDelete(current) }) {
-                            Icon(
-                                Icons.Filled.Delete,
+                            MatlogIcon(
+                                R.drawable.ic_delete,
                                 contentDescription = stringResource(R.string.matlog_crash_delete)
                             )
                         }
@@ -692,21 +680,21 @@ private fun ExceptionDetailsScreen(
                 actions = {
                     if (current != null) {
                         IconButton(onClick = { LogTextActions.copy(context, current.log) }) {
-                            Icon(
-                                Icons.Filled.ContentCopy,
+                            MatlogIcon(
+                                R.drawable.ic_copy,
                                 contentDescription = stringResource(R.string.matlog_crash_copy)
                             )
                         }
                         IconButton(onClick = { onShare(current) }) {
-                            Icon(
-                                Icons.Filled.Share,
+                            MatlogIcon(
+                                R.drawable.ic_share_white_24dp,
                                 contentDescription = stringResource(R.string.matlog_crash_share)
                             )
                         }
                         Box {
                             IconButton(onClick = { menuOpen = true }) {
-                                Icon(
-                                    Icons.Filled.MoreVert,
+                                MatlogIcon(
+                                    R.drawable.ic_more_vert,
                                     contentDescription = stringResource(R.string.matlog_more_options)
                                 )
                             }
@@ -801,13 +789,13 @@ private fun LogText(log: String) {
 }
 
 @Composable
-private fun EmptyState(icon: ImageVector, textRes: Int) {
+private fun EmptyState(icon: Int, textRes: Int) {
     Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Icon(
+            MatlogIcon(
                 icon,
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
@@ -827,8 +815,8 @@ private fun AppIcon(icon: ImageBitmap?) {
     if (icon != null) {
         Image(icon, contentDescription = null, modifier = Modifier.size(40.dp))
     } else {
-        Icon(
-            Icons.Filled.BugReport,
+        MatlogIcon(
+            R.drawable.ic_bug_report,
             contentDescription = null,
             modifier = Modifier.size(40.dp).padding(8.dp),
         )

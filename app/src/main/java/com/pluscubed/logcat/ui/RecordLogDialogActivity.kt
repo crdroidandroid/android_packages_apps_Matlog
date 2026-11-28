@@ -11,9 +11,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.FiberManualRecord
-import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +35,7 @@ import com.pluscubed.logcat.ui.compose.DialogButton
 import com.pluscubed.logcat.ui.compose.DropdownField
 import com.pluscubed.logcat.ui.compose.FilenameDialog
 import com.pluscubed.logcat.ui.compose.MatlogDialog
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import com.pluscubed.logcat.ui.compose.SuggestionTextField
 import org.omnirom.logcat.R
@@ -86,7 +84,7 @@ private fun RecordLogDialog(
     if (starting) return
 
     FilenameDialog(
-        icon = Icons.Outlined.FiberManualRecord,
+        icon = R.drawable.ic_record,
         title = stringResource(R.string.record_log),
         filename = defaultFilename,
         onDismiss = { if (!starting) onDismiss() },
@@ -96,7 +94,7 @@ private fun RecordLogDialog(
         },
     ) {
         Spacer(Modifier.height(8.dp))
-        ActionRow(stringResource(R.string.text_filter_ellipsis), Icons.Outlined.FilterAlt) { editingFilter = true }
+        ActionRow(stringResource(R.string.text_filter_ellipsis), R.drawable.ic_filter) { editingFilter = true }
     }
     if (editingFilter) {
         RecordingFilterDialog(query, level, suggestions, onDismiss = { editingFilter = false }) { newQuery, newLevel ->
@@ -123,7 +121,7 @@ private fun RecordingFilterDialog(
     val submit = { onDone(text.text, values[selected]) }
     MatlogDialog(
         onDismiss = onDismiss,
-        icon = Icons.Outlined.FilterAlt,
+        icon = R.drawable.ic_filter,
         title = stringResource(R.string.title_filter),
         confirmButton = { DialogButton(android.R.string.ok, submit) },
     ) {

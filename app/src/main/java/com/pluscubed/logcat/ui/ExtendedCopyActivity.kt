@@ -17,11 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,6 +34,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.pluscubed.logcat.helper.LogTextActions
 import com.pluscubed.logcat.helper.PreferenceHelper
 import com.pluscubed.logcat.ui.compose.BackButton
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import org.omnirom.logcat.R
 
@@ -101,10 +98,10 @@ private fun ExtendedCopyScreen(
                 navigationIcon = { BackButton(onBack) },
                 actions = {
                     IconButton(onClick = onCopyAll) {
-                        Icon(Icons.Filled.ContentCopy, contentDescription = stringResource(R.string.matlog_copy_all))
+                        MatlogIcon(R.drawable.ic_copy, contentDescription = stringResource(R.string.matlog_copy_all))
                     }
                     IconButton(onClick = onShare) {
-                        Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.matlog_share))
+                        MatlogIcon(R.drawable.ic_share_white_24dp, contentDescription = stringResource(R.string.matlog_share))
                     }
                 },
                 scrollBehavior = scrollBehavior,

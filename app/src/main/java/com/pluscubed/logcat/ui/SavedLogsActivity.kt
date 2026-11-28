@@ -26,20 +26,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Sort
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -73,16 +64,17 @@ import com.pluscubed.logcat.helper.DialogHelper
 import com.pluscubed.logcat.helper.LogExporter
 import com.pluscubed.logcat.helper.SaveLogHelper
 import com.pluscubed.logcat.ui.compose.BackButton
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MatlogLoadingIndicator
 import com.pluscubed.logcat.ui.compose.MatlogTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.omnirom.logcat.R
 import java.io.File
 import java.io.FileFilter
 import java.text.DateFormat
 import java.util.Date
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.omnirom.logcat.R
 
 internal class SavedLogFile(val file: File, val lines: Int) {
     val name: String = file.name
@@ -270,7 +262,7 @@ private fun SavedLogsScreen(
                 navigationIcon = {
                     if (selecting) {
                         IconButton(onClick = { selected = emptySet() }) {
-                            Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.matlog_back))
+                            MatlogIcon(R.drawable.ic_close, contentDescription = stringResource(R.string.matlog_back))
                         }
                     } else {
                         BackButton(onBack)
@@ -282,16 +274,16 @@ private fun SavedLogsScreen(
                             val all = list.orEmpty().map { it.name }.toSet()
                             selected = if (selection == all) emptySet() else all
                         }) {
-                            Icon(Icons.Filled.SelectAll, contentDescription = stringResource(R.string.matlog_select_all))
+                            MatlogIcon(R.drawable.ic_select_all, contentDescription = stringResource(R.string.matlog_select_all))
                         }
                         IconButton(onClick = {
                             deleting = list.orEmpty().filter { it.name in selection }.map { it.file }
                         }) {
-                            Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.matlog_saved_logs_delete))
+                            MatlogIcon(R.drawable.ic_delete, contentDescription = stringResource(R.string.matlog_saved_logs_delete))
                         }
                     } else if (!list.isNullOrEmpty()) {
                         IconButton(onClick = { showSort = true }) {
-                            Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = stringResource(R.string.matlog_saved_logs_sort))
+                            MatlogIcon(R.drawable.ic_sort, contentDescription = stringResource(R.string.matlog_saved_logs_sort))
                         }
                     }
                 },
@@ -420,8 +412,8 @@ private fun SavedLogItem(
             ListItemDefaults.colors()
         },
         leadingContent = {
-            Icon(
-                if (selected) Icons.Filled.CheckCircle else Icons.Filled.Description,
+            MatlogIcon(
+                if (selected) R.drawable.ic_check_circle else R.drawable.ic_description,
                 contentDescription = null,
                 tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -434,7 +426,7 @@ private fun SavedLogItem(
             {
                 Box {
                     IconButton(onClick = { menuExpanded = true }) {
-                        Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.matlog_more_options))
+                        MatlogIcon(R.drawable.ic_more_vert, contentDescription = stringResource(R.string.matlog_more_options))
                     }
                     DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                         listOf(

@@ -7,23 +7,6 @@ package com.pluscubed.logcat.ui
 
 import android.content.SharedPreferences
 import android.widget.Toast
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.FilterAlt
-import androidx.compose.material.icons.outlined.FormatSize
-import androidx.compose.material.icons.outlined.Layers
-import androidx.compose.material.icons.outlined.LightMode
-import androidx.compose.material.icons.outlined.MonitorHeart
-import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material.icons.outlined.Numbers
-import androidx.compose.material.icons.outlined.PrivacyTip
-import androidx.compose.material.icons.outlined.ReportProblem
-import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material.icons.outlined.UnfoldMore
-import androidx.compose.material.icons.outlined.ViewColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
@@ -39,6 +22,7 @@ import androidx.preference.PreferenceManager
 import com.pluscubed.logcat.data.LogDisplayOptions
 import com.pluscubed.logcat.helper.PreferenceHelper
 import com.pluscubed.logcat.ui.compose.ListPreference
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MultiSelectListPreference
 import com.pluscubed.logcat.ui.compose.PreferenceGroup
 import com.pluscubed.logcat.ui.compose.SettingsScaffold
@@ -87,7 +71,7 @@ private fun AppearanceSettings(prefs: SharedPreferences) {
         item {
             ListPreference(
                 title = stringResource(R.string.pref_text_size_title),
-                icon = Icons.Outlined.FormatSize,
+                icon = R.drawable.ic_format_size,
                 options = options(R.array.text_sizes, R.array.text_size_values),
                 value = textSize,
                 onValueChange = { prefs.edit { putString(textSizeKey, it) } },
@@ -97,7 +81,7 @@ private fun AppearanceSettings(prefs: SharedPreferences) {
             SwitchPreference(
                 title = stringResource(R.string.pref_expanded_by_default_title),
                 summary = stringResource(R.string.pref_expanded_by_default_summary),
-                icon = Icons.Outlined.UnfoldMore,
+                icon = R.drawable.ic_unfold_more,
                 checked = expanded,
                 onCheckedChange = { prefs.edit { putBoolean(expandedKey, it) } },
             )
@@ -107,7 +91,7 @@ private fun AppearanceSettings(prefs: SharedPreferences) {
                 title = stringResource(R.string.matlog_pref_log_columns_title),
                 summary = labelsFor(columnOptions, columns).ifEmpty { columnsSummary },
                 message = columnsSummary,
-                icon = Icons.Outlined.ViewColumn,
+                icon = R.drawable.ic_view_column,
                 options = columnOptions,
                 values = columns,
                 onValuesChange = { prefs.edit { putStringSet(columnsKey, it) } },
@@ -117,7 +101,7 @@ private fun AppearanceSettings(prefs: SharedPreferences) {
             TextInputPreference(
                 title = stringResource(R.string.matlog_pref_date_format_title),
                 summary = date,
-                icon = Icons.Outlined.CalendarToday,
+                icon = R.drawable.ic_calendar_today,
                 value = date,
                 validate = validateFormat,
                 onValueChange = { prefs.edit { putString(dateKey, it) } },
@@ -127,7 +111,7 @@ private fun AppearanceSettings(prefs: SharedPreferences) {
             TextInputPreference(
                 title = stringResource(R.string.matlog_pref_time_format_title),
                 summary = time,
-                icon = Icons.Outlined.Schedule,
+                icon = R.drawable.ic_schedule,
                 value = time,
                 validate = validateFormat,
                 onValueChange = { prefs.edit { putString(timeKey, it) } },
@@ -137,7 +121,7 @@ private fun AppearanceSettings(prefs: SharedPreferences) {
             SwitchPreference(
                 title = stringResource(R.string.matlog_pref_keep_screen_on_title),
                 summary = stringResource(R.string.matlog_pref_keep_screen_on_summary),
-                icon = Icons.Outlined.LightMode,
+                icon = R.drawable.ic_light_mode,
                 checked = keepScreenOn,
                 onCheckedChange = { prefs.edit { putBoolean(keepScreenOnKey, it) } },
             )
@@ -161,7 +145,7 @@ private fun ConfigurationSettings(prefs: SharedPreferences) {
             MultiSelectListPreference(
                 title = stringResource(R.string.pref_buffer_title),
                 summary = labelsFor(bufferOptions, buffers) + if (buffers.size > 1) simultaneous else "",
-                icon = Icons.Outlined.Layers,
+                icon = R.drawable.ic_layers,
                 options = bufferOptions,
                 values = buffers,
                 allowEmpty = false,
@@ -171,7 +155,7 @@ private fun ConfigurationSettings(prefs: SharedPreferences) {
         item {
             ListPreference(
                 title = stringResource(R.string.pref_default_log_level_title),
-                icon = Icons.Outlined.Tune,
+                icon = R.drawable.ic_tune,
                 options = options(R.array.log_levels, R.array.log_levels_values),
                 value = level,
                 onValueChange = { prefs.edit { putString(levelKey, it) } },
@@ -181,7 +165,7 @@ private fun ConfigurationSettings(prefs: SharedPreferences) {
             SwitchPreference(
                 title = stringResource(R.string.matlog_pref_filter_on_search_title),
                 summary = stringResource(R.string.matlog_pref_filter_on_search_summary),
-                icon = Icons.Outlined.FilterAlt,
+                icon = R.drawable.ic_filter,
                 checked = filterOnSearch,
                 onCheckedChange = { prefs.edit { putBoolean(filterKey, it) } },
             )
@@ -205,7 +189,7 @@ private fun CrashSettings(prefs: SharedPreferences) {
             SwitchPreference(
                 title = stringResource(R.string.matlog_pref_crash_detection_title),
                 summary = stringResource(R.string.matlog_pref_crash_detection_summary),
-                icon = Icons.Outlined.BugReport,
+                icon = R.drawable.ic_bug_report,
                 checked = detection,
                 onCheckedChange = { prefs.edit { putBoolean(detectionKey, it) } },
             )
@@ -214,7 +198,7 @@ private fun CrashSettings(prefs: SharedPreferences) {
             SwitchPreference(
                 title = stringResource(R.string.matlog_pref_crash_notifications_title),
                 summary = stringResource(R.string.matlog_pref_crash_notifications_summary),
-                icon = Icons.Outlined.NotificationsActive,
+                icon = R.drawable.ic_notifications_active,
                 checked = notifications,
                 enabled = detection,
                 onCheckedChange = { prefs.edit { putBoolean(notificationsKey, it) } },
@@ -224,7 +208,7 @@ private fun CrashSettings(prefs: SharedPreferences) {
             SwitchPreference(
                 title = stringResource(R.string.matlog_pref_crash_monitor_service_title),
                 summary = stringResource(R.string.matlog_pref_crash_monitor_service_summary),
-                icon = Icons.Outlined.MonitorHeart,
+                icon = R.drawable.ic_monitor_heart,
                 checked = monitor,
                 enabled = detection,
                 onCheckedChange = { prefs.edit { putBoolean(monitorKey, it) } },
@@ -234,7 +218,7 @@ private fun CrashSettings(prefs: SharedPreferences) {
             SwitchPreference(
                 title = stringResource(R.string.matlog_pref_exception_monitor_title),
                 summary = stringResource(R.string.matlog_pref_exception_monitor_summary),
-                icon = Icons.Outlined.ReportProblem,
+                icon = R.drawable.ic_warning,
                 checked = exceptions,
                 enabled = detection && monitor,
                 onCheckedChange = { prefs.edit { putBoolean(exceptionsKey, it) } },
@@ -261,7 +245,7 @@ private fun AdvancedSettings(prefs: SharedPreferences) {
             TextInputPreference(
                 title = stringResource(R.string.pref_log_line_period_title),
                 summary = stringResource(R.string.pref_log_line_period_summary, period, periodDefault),
-                icon = Icons.Outlined.Timer,
+                icon = R.drawable.ic_timer,
                 value = period.toString(),
                 keyboardType = KeyboardType.Number,
                 validate = { if (it.toIntOrNull() in MIN_LOG_LINE_PERIOD..MAX_LOG_LINE_PERIOD) null else periodError },
@@ -272,7 +256,7 @@ private fun AdvancedSettings(prefs: SharedPreferences) {
             TextInputPreference(
                 title = stringResource(R.string.pref_display_limit_title),
                 summary = stringResource(R.string.pref_display_limit_summary, limit, limitDefault),
-                icon = Icons.Outlined.Numbers,
+                icon = R.drawable.ic_numbers,
                 value = limit.toString(),
                 keyboardType = KeyboardType.Number,
                 validate = { if (it.toIntOrNull() in MIN_DISPLAY_LIMIT..MAX_DISPLAY_LIMIT) null else limitError },
@@ -286,7 +270,7 @@ private fun AdvancedSettings(prefs: SharedPreferences) {
             SwitchPreference(
                 title = stringResource(R.string.scrubber),
                 summary = stringResource(R.string.scrubber_summary),
-                icon = Icons.Outlined.PrivacyTip,
+                icon = R.drawable.ic_privacy_tip,
                 checked = scrubber,
                 onCheckedChange = { prefs.edit { putBoolean(PREF_SCRUBBER, it) } },
             )

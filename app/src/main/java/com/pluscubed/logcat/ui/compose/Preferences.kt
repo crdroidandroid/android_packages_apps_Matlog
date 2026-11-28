@@ -34,16 +34,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
@@ -72,7 +67,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -130,8 +124,8 @@ fun SettingsScaffold(
                             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         ),
                     ) {
-                        Icon(
-                            Icons.AutoMirrored.Outlined.ArrowBack,
+                        MatlogIcon(
+                            R.drawable.ic_arrow_back,
                             contentDescription = stringResource(R.string.matlog_back),
                         )
                     }
@@ -186,7 +180,7 @@ fun PreferenceGroup(title: String? = null, content: PreferenceGroupScope.() -> U
 @Composable
 fun BasePreference(
     title: String,
-    icon: ImageVector,
+    icon: Int,
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
@@ -211,8 +205,8 @@ fun BasePreference(
                 .alpha(contentAlpha),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                imageVector = icon,
+            MatlogIcon(
+                id = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.size(24.dp),
@@ -249,7 +243,7 @@ fun BasePreference(
 @Composable
 fun ClickablePreference(
     title: String,
-    icon: ImageVector,
+    icon: Int,
     onClick: () -> Unit,
     summary: String? = null,
     enabled: Boolean = true,
@@ -266,7 +260,7 @@ fun ClickablePreference(
 @Composable
 fun SwitchPreference(
     title: String,
-    icon: ImageVector,
+    icon: Int,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     summary: String? = null,
@@ -294,8 +288,8 @@ fun SwitchPreference(
                 interactionSource = interactionSource,
                 thumbContent = {
                     Crossfade(checked, animationSpec = MaterialTheme.motionScheme.slowEffectsSpec()) {
-                        Icon(
-                            imageVector = if (it) Icons.Filled.Check else Icons.Filled.Close,
+                        MatlogIcon(
+                            id = if (it) R.drawable.ic_check else R.drawable.ic_close,
                             contentDescription = null,
                             modifier = Modifier.size(SwitchDefaults.IconSize),
                         )
@@ -309,7 +303,7 @@ fun SwitchPreference(
 @Composable
 fun ListPreference(
     title: String,
-    icon: ImageVector,
+    icon: Int,
     options: List<Pair<String, String>>,
     value: String,
     onValueChange: (String) -> Unit,
@@ -326,7 +320,7 @@ fun ListPreference(
     AlertDialog(
         onDismissRequest = { showDialog = false },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        icon = { Icon(icon, contentDescription = null) },
+        icon = { MatlogIcon(icon, contentDescription = null) },
         title = { Text(title) },
         text = {
             Column(Modifier.selectableGroup().verticalScroll(rememberScrollState())) {
@@ -357,7 +351,7 @@ fun ListPreference(
 @Composable
 fun MultiSelectListPreference(
     title: String,
-    icon: ImageVector,
+    icon: Int,
     options: List<Pair<String, String>>,
     values: Set<String>,
     onValuesChange: (Set<String>) -> Unit,
@@ -372,7 +366,7 @@ fun MultiSelectListPreference(
     AlertDialog(
         onDismissRequest = { showDialog = false },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        icon = { Icon(icon, contentDescription = null) },
+        icon = { MatlogIcon(icon, contentDescription = null) },
         title = { Text(title) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
@@ -416,7 +410,7 @@ fun MultiSelectListPreference(
 @Composable
 fun TextInputPreference(
     title: String,
-    icon: ImageVector,
+    icon: Int,
     value: String,
     summary: String?,
     validate: (String) -> String?,
@@ -441,7 +435,7 @@ fun TextInputPreference(
     AlertDialog(
         onDismissRequest = { showDialog = false },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        icon = { Icon(icon, contentDescription = null) },
+        icon = { MatlogIcon(icon, contentDescription = null) },
         title = { Text(title) },
         text = {
             OutlinedTextField(

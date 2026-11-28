@@ -21,14 +21,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -55,16 +51,17 @@ import com.pluscubed.logcat.helper.SaveLogHelper
 import com.pluscubed.logcat.reader.PstoreFile
 import com.pluscubed.logcat.reader.PstoreReader
 import com.pluscubed.logcat.ui.compose.BackButton
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MatlogLoadingIndicator
 import com.pluscubed.logcat.ui.compose.MatlogTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.omnirom.logcat.R
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.omnirom.logcat.R
 
 class PstoreActivity : ComponentActivity() {
 
@@ -156,7 +153,7 @@ private fun PstoreScreen(
                 navigationIcon = { BackButton(onBack) },
                 actions = {
                     IconButton(onClick = onRefresh) {
-                        Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.matlog_pstore_refresh))
+                        MatlogIcon(R.drawable.ic_refresh, contentDescription = stringResource(R.string.matlog_pstore_refresh))
                     }
                 },
             )
@@ -211,7 +208,7 @@ private fun PstoreItem(file: PstoreFile, onOpen: () -> Unit, onExport: () -> Uni
         trailingContent = {
             Box {
                 IconButton(onClick = { menuOpen = true }) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.matlog_more_options))
+                    MatlogIcon(R.drawable.ic_more_vert, contentDescription = stringResource(R.string.matlog_more_options))
                 }
                 DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                     DropdownMenuItem(

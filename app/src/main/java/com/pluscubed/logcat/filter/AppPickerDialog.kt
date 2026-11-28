@@ -20,11 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.drawable.toBitmap
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MatlogLoadingIndicator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -93,7 +90,7 @@ fun AppPickerDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 12.dp),
-                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                    leadingIcon = { MatlogIcon(R.drawable.ic_search, contentDescription = null) },
                     placeholder = { Text(stringResource(R.string.search)) },
                     singleLine = true,
                 )
@@ -171,7 +168,7 @@ private fun AppRow(app: InstalledApp, multiSelect: Boolean, checked: Boolean, on
             if (bitmap != null) {
                 Image(bitmap, contentDescription = null, modifier = Modifier.size(40.dp))
             } else {
-                Icon(Icons.Filled.Android, contentDescription = null, modifier = Modifier.size(40.dp).padding(8.dp))
+                MatlogIcon(R.drawable.ic_android, contentDescription = null, modifier = Modifier.size(40.dp).padding(8.dp))
             }
         },
         overlineContent = if (app.isSystem) {

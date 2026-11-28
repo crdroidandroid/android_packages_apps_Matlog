@@ -23,16 +23,12 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -50,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -79,7 +74,7 @@ object ComposeDialogs {
 @Composable
 fun MatlogDialog(
     onDismiss: () -> Unit,
-    icon: ImageVector,
+    icon: Int,
     title: String,
     confirmButton: @Composable () -> Unit = {},
     dismissButton: @Composable () -> Unit = { DialogButton(android.R.string.cancel, onDismiss) },
@@ -88,7 +83,7 @@ fun MatlogDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        icon = { Icon(icon, contentDescription = null) },
+        icon = { MatlogIcon(icon, contentDescription = null) },
         title = { Text(title) },
         text = { Column(Modifier.verticalScroll(rememberScrollState()), content = content) },
         confirmButton = confirmButton,
@@ -113,7 +108,7 @@ fun DialogMessage(text: String) {
 
 @Composable
 fun ChoiceDialog(
-    icon: ImageVector,
+    icon: Int,
     title: String,
     options: List<String>,
     selected: Int,
@@ -138,9 +133,9 @@ fun ChoiceDialog(
 }
 
 @Composable
-fun ActionRow(label: String, icon: ImageVector, onClick: () -> Unit) {
+fun ActionRow(label: String, icon: Int, onClick: () -> Unit) {
     DialogOptionRow(label = label, modifier = Modifier.clickable(onClick = onClick)) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        MatlogIcon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -155,8 +150,8 @@ fun SwitchRow(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Uni
             onCheckedChange = null,
             thumbContent = {
                 Crossfade(checked) { on ->
-                    Icon(
-                        imageVector = if (on) Icons.Filled.Check else Icons.Filled.Close,
+                    MatlogIcon(
+                        id = if (on) R.drawable.ic_check else R.drawable.ic_close,
                         contentDescription = null,
                         modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
@@ -255,7 +250,7 @@ fun DropdownField(
 // stays open with an error until the filename is valid
 @Composable
 fun FilenameDialog(
-    icon: ImageVector,
+    icon: Int,
     title: String,
     filename: String,
     onDismiss: () -> Unit,

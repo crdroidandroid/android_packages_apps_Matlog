@@ -17,29 +17,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.ClearAll
-import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.EditNote
-import androidx.compose.material.icons.outlined.FileUpload
-import androidx.compose.material.icons.outlined.FilterAlt
-import androidx.compose.material.icons.outlined.FilterAltOff
-import androidx.compose.material.icons.outlined.Memory
-import androidx.compose.material.icons.outlined.SavedSearch
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.SelectAll
-import androidx.compose.material.icons.outlined.Terminal
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -52,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -61,11 +41,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import com.pluscubed.logcat.data.LogLineViewHolder
+import com.pluscubed.logcat.ui.compose.MatlogIcon
 import com.pluscubed.logcat.ui.compose.MatlogTheme
 import java.util.function.IntConsumer
 import org.omnirom.logcat.R
 
-private class MenuEntry(val id: Int, val title: Int, val icon: ImageVector, val checked: Boolean? = null)
+private class MenuEntry(val id: Int, val title: Int, val icon: Int, val checked: Boolean? = null)
 
 // the log screen's menus, shown as Material 3 Expressive dropdowns
 object LogcatOverflowMenu {
@@ -84,24 +65,24 @@ object LogcatOverflowMenu {
     ) {
         show(toolbar, anchorItemId, onItemSelected, listOf(
             listOfNotNull(
-                MenuEntry(R.id.menu_log_level, R.string.log_level, Icons.Outlined.Tune),
-                MenuEntry(R.id.menu_saved_searches, R.string.matlog_saved_searches, Icons.Outlined.SavedSearch),
+                MenuEntry(R.id.menu_log_level, R.string.log_level, R.drawable.ic_tune),
+                MenuEntry(R.id.menu_saved_searches, R.string.matlog_saved_searches, R.drawable.ic_saved_search),
                 if (kernelAvailable) {
-                    MenuEntry(R.id.menu_kernel_log, R.string.matlog_kernel_log, Icons.Outlined.Terminal, kernelMode)
+                    MenuEntry(R.id.menu_kernel_log, R.string.matlog_kernel_log, R.drawable.ic_terminal, kernelMode)
                 } else null,
             ),
             listOfNotNull(
-                MenuEntry(R.id.menu_crashes, R.string.matlog_crashes, Icons.Outlined.BugReport),
-                if (pstoreAvailable) MenuEntry(R.id.menu_pstore, R.string.matlog_pstore, Icons.Outlined.Memory) else null,
+                MenuEntry(R.id.menu_crashes, R.string.matlog_crashes, R.drawable.ic_bug_report),
+                if (pstoreAvailable) MenuEntry(R.id.menu_pstore, R.string.matlog_pstore, R.drawable.ic_memory) else null,
             ),
-            listOf(MenuEntry(R.id.menu_export_log, R.string.matlog_export, Icons.Outlined.FileUpload)),
+            listOf(MenuEntry(R.id.menu_export_log, R.string.matlog_export, R.drawable.ic_upload)),
         ))
     }
 
     @JvmStatic
     fun showFind(toolbar: Toolbar, anchorItemId: Int, regex: Boolean, onItemSelected: IntConsumer) {
         show(toolbar, anchorItemId, onItemSelected, listOf(
-            listOf(MenuEntry(R.id.menu_search_regex, R.string.matlog_search_regex, Icons.Outlined.Code, regex)),
+            listOf(MenuEntry(R.id.menu_search_regex, R.string.matlog_search_regex, R.drawable.ic_code, regex)),
         ))
     }
 
@@ -109,8 +90,8 @@ object LogcatOverflowMenu {
     fun showSelection(toolbar: Toolbar, anchorItemId: Int, onItemSelected: IntConsumer) {
         show(toolbar, anchorItemId, onItemSelected, listOf(
             listOf(
-                MenuEntry(R.id.menu_selection_export, R.string.matlog_export, Icons.Outlined.FileUpload),
-                MenuEntry(R.id.menu_selection_extended_copy, R.string.matlog_extended_copy, Icons.Outlined.EditNote),
+                MenuEntry(R.id.menu_selection_export, R.string.matlog_export, R.drawable.ic_upload),
+                MenuEntry(R.id.menu_selection_extended_copy, R.string.matlog_extended_copy, R.drawable.ic_edit_note),
             ),
         ))
     }
@@ -120,19 +101,19 @@ object LogcatOverflowMenu {
     fun showLogLine(row: View, filterable: Boolean, onItemSelected: IntConsumer) {
         show(row, onItemSelected, listOfNotNull(
             listOf(
-                MenuEntry(LogLineViewHolder.CONTEXT_MENU_COPY_ID, R.string.copy_to_clipboard, Icons.Outlined.ContentCopy),
-                MenuEntry(LogLineViewHolder.CONTEXT_MENU_SELECT, R.string.matlog_select, Icons.Outlined.SelectAll),
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_COPY_ID, R.string.copy_to_clipboard, R.drawable.ic_copy),
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_SELECT, R.string.matlog_select, R.drawable.ic_select_all),
             ),
             if (filterable) listOf(
-                MenuEntry(LogLineViewHolder.CONTEXT_MENU_FILTER_ID, R.string.filter_choice, Icons.Outlined.Search),
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_FILTER_ID, R.string.filter_choice, R.drawable.ic_search),
                 MenuEntry(LogLineViewHolder.CONTEXT_MENU_INCLUDE_FILTER, R.string.matlog_filter_from_line_include,
-                    Icons.Outlined.FilterAlt),
+                    R.drawable.ic_filter),
                 MenuEntry(LogLineViewHolder.CONTEXT_MENU_EXCLUDE_FILTER, R.string.matlog_filter_from_line_exclude,
-                    Icons.Outlined.FilterAltOff),
+                    R.drawable.ic_filter_alt_off),
             ) else null,
             listOf(
-                MenuEntry(LogLineViewHolder.CONTEXT_MENU_EXPAND_ALL, R.string.expand_or_collapse_all, Icons.Outlined.UnfoldMore),
-                MenuEntry(LogLineViewHolder.CONTEXT_MENU_CLEAR, R.string.clear, Icons.Outlined.ClearAll),
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_EXPAND_ALL, R.string.expand_or_collapse_all, R.drawable.ic_unfold_more),
+                MenuEntry(LogLineViewHolder.CONTEXT_MENU_CLEAR, R.string.clear, R.drawable.ic_clear_all),
             ),
         ))
     }
@@ -211,15 +192,15 @@ private fun MenuItem(entry: MenuEntry, shape: Shape, onClick: () -> Unit) {
             role = Role.Switch
             toggleableState = ToggleableState(checked)
         },
-        leadingIcon = { Icon(entry.icon, contentDescription = null) },
+        leadingIcon = { MatlogIcon(entry.icon, contentDescription = null) },
         trailingIcon = checked?.let { isChecked ->
             @Composable {
                 Switch(
                     checked = isChecked,
                     onCheckedChange = null,
                     thumbContent = {
-                        Icon(
-                            imageVector = if (isChecked) Icons.Filled.Check else Icons.Filled.Close,
+                        MatlogIcon(
+                            id = if (isChecked) R.drawable.ic_check else R.drawable.ic_close,
                             contentDescription = null,
                             modifier = Modifier.size(SwitchDefaults.IconSize),
                         )
