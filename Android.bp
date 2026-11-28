@@ -23,8 +23,7 @@ android_app {
     required: ["matlog_dmesg"],
 
     srcs: [
-        "app/src/main/**/*.kt",
-        "app/src/main/**/*.java",
+        "app/src/main/kotlin/**/*.kt",
     ],
 
     resource_dirs: [
